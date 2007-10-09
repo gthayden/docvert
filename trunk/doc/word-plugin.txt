@@ -1,0 +1,40 @@
+Docvert Word Plugin
+===================
+This installs a toolbar in Microsoft Word '97 and up. It allows an office of
+people to share a single Docvert Server. See the Docvert homepage for
+screenshots.
+
+
+Supported Platforms
+====================
+Only available on the Windows version of Microsoft Office right now.
+
+Mac support isn't being developed but yeah if you want to develop it and stuff.
+
+OpenOffice.org (any platform) isn't supported either.
+
+
+Requirements
+============
+A Docvert server that supports MSWord uploads (eg, a Docvert server with
+OpenOffice.org or Abiword)
+
+
+Installation
+============
+
+	1.	Run the .exe in ~/wordplugins/ 
+	2.	Open c:\windows\docvert.ini and edit the file to point at the URL
+		 of the Docvert server. Include a trailing slash ("/")
+
+
+Programmers wanting to customise the installer
+==============================================
+The installer is built in NSIS, so
+
+	1.	Download the installer framework "NSIS" from nsis.sf.net
+	2.	In wordplugin/sources edit the docvert.ini to point at your
+		Docvert server.
+	3.	Compile the NSIS script to produce a .exe.
+		
+ 

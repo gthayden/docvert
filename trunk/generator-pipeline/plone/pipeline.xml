@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+	<stage process="Transform" withFile="plone.xsl"/>
+	<stage process="DownloadImagesAndSetLinks"/>
+	<stage process="TransformPagesHtmlToOpenDocumentContent"/>
+	<stage process="Serialize" toFile="content.xml"/>
+	<stage process="GenerateOtherNecessaryOpenDocumentFiles"/>
+</pipeline>
+

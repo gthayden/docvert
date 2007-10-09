@@ -1,0 +1,1 @@
+@"C:\Program Files\Trang\trang.exe" %1 %2

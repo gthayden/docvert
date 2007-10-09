@@ -1,0 +1,7 @@
+				<p style="clear:both">Here you can configure parts of Docvert.</p>
+				<h2>Configure OpenOffice.org</h2>
+				<form method="post" action="web-service.php" class="openofficeorg">
+					<p><input type="submit" id="setupOpenOfficeOrg" name="setupOpenOfficeOrg" value="Setup OpenOffice.org to allow Docvert Macros"/></p>
+				</form>
+				<!-- {{openoffice-server}} -->
+

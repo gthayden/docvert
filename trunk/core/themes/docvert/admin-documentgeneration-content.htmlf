@@ -1,0 +1,3 @@
+		<h2>Document Generation</h2>
+		<p>This lets you generate documents from webpages but it takes up network resources.</p>
+		{{toggle-document-generation}}

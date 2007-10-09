@@ -1,0 +1,279 @@
+Errors and Troubleshooting
+==========================
+
+* I get a "Parse error, unexpected T_STRING" about "webpage.php"
+* Docvert or OpenOffice.org freezes
+* Internal PHP error message
+* Sudo keeps asking for password but it has permissions, I set it via visudo
+* OpenOffice.org reports "Error in function createUserSettingsDocument
+  (elements.cxx)"
+* OpenOffice.org keeps giving me macro warnings even though I've told it to
+  trust macros
+* Start tag expected, '<' not found in [...]
+* I get a "sudo: unable to execute [...] No such file or directory" but the file
+  is there
+    OR
+  I get an error saying /bin/sh^M: bad interpreter: No such file or directory
+* Fatal error: Maximum execution time of 30 seconds exceeded in....
+* I forgot my admin password
+* When I use command line Docvert it says I don't have XSLT, but I do
+* Allowed memory size of X bytes exhausted
+* documentPath contains bad characters
+* I tried to view documentation in "/doc" from the web interface but it's
+  there's an error that it's not found.
+    OR
+  I can't download the sample documents.
+
+
+I get a "Parse error, unexpected T_STRING" about "webpage.php"
+--------------------------------------------------------------
+	If the error looks like,
+
+		Parse error: parse error, unexpected T_STRING, expecting 
+		T_OLD_FUNCTION or T_FUNCTION or T_VAR or '}' in
+		 /xxx/docvert/core/webpage.php on line 18
+
+	Then that means you're probably running PHP4.
+
+	Docvert needs PHP5, see the install.txt file for all install
+	requirements.
+
+Docvert or OpenOffice.org freezes
+---------------------------------
+
+	Check the process list to see if OpenOffice.org (OOo) is running,
+	if so it's likely that OOo is stuck in a dialog window that
+	needs clicking.
+
+		In *nix try killing OOo (and perhaps Xvfb too)... find
+		processes named "soffice".
+
+		Once this is done go to the admin page and click on
+		"Setup OpenOffice.org" to bring up the word processor.
+		Make sure it hasn't stalled.
+
+		In Windows it's a similar process of seeing what OOo is
+		doing. So kill the process, and if your web server is
+		installed as a Window Service ensure that - as in Step
+		2 of the installation notes (above) - the service can
+		interact with the desktop. Now from the admin page run
+		Docvert and OOo should pop up for you to have a look at.
+
+	When you've got OpenOffice.org up make sure it starts without
+	any dialogs.
+	
+
+Internal PHP error message
+--------------------------
+
+	Due to an apparent bug in the pclzip library that Docvert uses
+	you may see a PHP "notice" level error, typically supressed by
+	most configurations of PHP...
+	
+	"Undefined index: filename_len in /var/www/pclzip-2-3/
+	pclzip.lib.php on line 3949"
+
+	There's no fix from the pclzip authors at the moment. In the meantime
+	change the PHP error reporting level to supress "notice" level errors
+	by changing php.ini to read,
+
+	error_reporting  =  E_ALL & ~E_NOTICE
+
+
+
+Sudo keeps asking for password but it has permissions, I set it via visudo
+--------------------------------------------------------------------------
+
+	Try setting all the scripts in ~/config/ as executable (Eg, chmod)
+
+
+
+OpenOffice.org reports "Error in function createUserSettingsDocument (elements.cxx)"
+------------------------------------------------------------------------------------
+
+	OpenOffice.org is complaining that it's unable to save a user settings
+	file, so make sure OpenOffice.org is running as a user that can write to
+	their home directory. Make sure that the HOME environment variable is set
+	appropriately in convert-using-openoffice.org.sh. Typically you'll be
+	running as the root user.
+
+
+OpenOffice.org keeps giving me macro warnings even though I've told it to trust macros
+--------------------------------------------------------------------------------------
+
+	OpenOffice.org was unable to remember your configuration because it couldn't
+	save a config file. It may be that the user OpenOffice.org is running as
+	doesn't have write access to its home directory.
+
+	The home directory for your web-server user will probably be "/var/www"
+	(on an Ubuntu system) so you'll need to	give it write access. When it does
+	have write access it will make a ~/.openoffice.org2 directory.
+
+		(security conscious people might want to make that
+		"~/.openoffice.org2" directory for OOo, and only give it
+		write access to that)
+
+	NOTE: Be sure that you're starting OOo from the admin page so OOo will open
+	as the correct user, and save it's config to the this users' home directory.
+	Opening OOo from your desktop will open OOo as your user, not as your
+	web-server user.
+
+
+Start tag expected, '<' not found in [...]
+-------------------------------------------------------------------------------
+
+	This error message means that the processor tried to read your XML
+	but it was empty.
+
+	The cause of this problem will vary, but try to figure out what's responsible
+	for providing you with an empty document (Eg, you'll need understand how your
+	XML was generated). Something in this process is broken, and it's handing an
+	empty document to your XML or XSLT processor.
+
+	In Docvert this is typically caused by a bad bit of XSLT. Add a "debug" stage
+	to your pipeline just before the error to see what the contents are,
+
+		<stage process="Debug"/>
+
+	Move the debug stage around the pipeline until you can identify the process
+	that's causing the problem.
+
+	Have a go at fixing it yourself, but otherwise post on the mailing list about it
+	with a good description and include a link to a download of the pipeline to help
+	us diagnose the problem.
+
+	Any tips on what customisations you made to the XSLT would be useful too.
+
+
+I get a "sudo: unable to execute [...] No such file or directory" but the file is there
+OR
+I get an error saying /bin/sh^M: bad interpreter: No such file or directory
+------------------------------------------------------------------------------------
+
+	First make sure the file is there.
+
+	Then, if you're on Linux/Mac, see if the file is set as exectuable.
+
+	Finally, there are different linebreak characters on DOS vs Unix/Mac.
+	It's possible that DOS characters have made it into your text file, so try
+	removing them.
+
+
+Fatal error: Maximum execution time of 30 seconds exceeded in....
+-----------------------------------------------------------------
+
+	PHP has a time limit for script completion. You can increase this in php.ini.
+	There are a few reasons for this,
+	
+	1) Docvert usually works for you but this time you uploaded a big document
+	and Docvert wasn't able to complete processing in the alloted time.
+
+		Solution
+
+			Change your "max-execution-time" in php.ini to a longer
+			time, Find the line that reads,
+
+			max_execution_time = 30
+
+			And increase the value.	It's not unheard of to need 120
+			seconds or more of execution time.
+
+				See also,
+				http://tinyurl.com/yzynmj
+			
+			To activate the changes restart Apache (or your webserver)
+
+	2) Docvert hasn't worked for you yet or it doesn't work on small documents.
+	This is probably due to some external software (like OpenOffice.org) hanging
+	which will cause Docvert to stall and exceed the maximum execution time (which
+	means the time Docvert is allowed to run for).
+	
+		Solution
+
+			You should solve this problem by figuring out what caused
+			OpenOffice.org to hang. Try starting OpenOffice.org from the
+			admin page (as you did when you installed Docvert) and see
+			whether there are any dialog windows open that need clicking.
+
+	3) You've discovered a bug in Docvert.
+
+		Solution
+
+			Well there's no immediate fix, it could be anything,
+			Mention it on the mailing list and include these details:
+
+				- The version number of Docvert, PHP, Apache.
+				- The operating system (Windows? Linux? Which version)
+				- The document you were trying to convert
+				- Anything else you think might be useful.
+			
+
+I forgot my admin password
+--------------------------
+
+	View the writable/adminpassword.php file (feel free to edit this file directly)
+	or delete it.
+
+	Please note that if you delete this file then the first person to choose a new
+	password via the admin page will be able to do so.
+
+
+When I use command line Docvert it says I don't have XSLT, but I do
+-------------------------------------------------------------------
+	There's two scenarios I know of, the first much more likely than the second.
+
+	1. Command line PHP may have its own PHP.ini file.
+
+		Step 1) Find your PHP.ini file,
+
+			Linux/Unix: check under /etc/php5/cli/php.ini
+			Windows: unknown.. just search for php.ini
+		Step 2)
+			Find the file and reenable XSL.
+
+			This is usually done by adding a line that reads,
+				extension=xsl.so
+
+	2. It may be the the user you're running as is not allowed to access the XSLT
+	extension (the command line error message should have told you this).
+	Try running it as root, or as the web-server user to initially diagnose
+	whether permissions are the problem.
+	Then it's up to you whether it's worth changing permissions on the XSLT
+	extension, or whether running conversions as that user it acceptable.
+
+
+Allowed memory size of X bytes exhausted
+----------------------------------------
+
+	Due to a large document you uploaded Docvert needed a lot of memory.
+	Unfortunately it needed more memory than was allowed by PHP. So,
+
+	Step 1.	Change your "memory_limit" in php.ini to a larger value.
+		Find the line that reads,
+
+		memory_limit = 8M
+
+		And increase the value.
+
+	Step 2.	Restart Apache (or your webserver)
+
+
+documentPath contains bad characters
+------------------------------------
+
+	This is probably a bug in Docvert, so send the exact error message to the
+	mailing list or docvert@holloway.co.nz. We need to know the exact error
+	message because this error message is about Docvert's security rejecting
+	the filename of the file you uploaded.
+
+
+I tried to view documentation in "/doc" from the web interface but it's there's
+an error that it's not found
+    OR
+I can't download the sample documents.
+-------------------------------------------------------------------------------
+
+	See if Apache is configured to server the alias "/doc" to another
+	directory.
+
+

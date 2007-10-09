@@ -1,0 +1,18 @@
+<h2>Configure filenames</h2>
+<p>Some pipelines allow custom filenames.</p>
+<form method="post" style="margin-left:50px">
+	<table>
+		<tr>
+			<td style="width:150px"><input type="text" style="width:150px" id="custom_filename_index" name="custom_filename_index" value="{{custom_filename_index}}"/></td>
+			<td style="width:150px"><input type="text" style="width:150px" id="custom_filename_section" name="custom_filename_section" value="{{custom_filename_section}}"/></td>
+			<td align="left"><input type="submit" value="Save"/></td>
+		</tr>
+		<tr>
+			<td valign="top">Eg, index.html or default.htm</td>
+			<td valign="top">
+				Eg, section#.html or page#.html<br />
+				<small>The <b>#</b> will be replaced with the chapter number</small>
+			</td>
+		</tr>
+	</table>
+</form>

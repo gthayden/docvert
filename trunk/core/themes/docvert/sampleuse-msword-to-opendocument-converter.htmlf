@@ -1,0 +1,14 @@
+					<tr>
+						<td valign="top">
+							<b>To <abbr title="OpenDocument">ODF</abbr> Converter</b>
+						</td>
+						<td valign="top">
+							<label for="openofficeorg"><input type="radio" name="converter" checked="checked" value="openofficeorg" id="openofficeorg">&nbsp;OpenOffice&nbsp;2+</label>
+						</td>
+						<td valign="top">	
+							<label for="abiword"><input type="radio" name="converter" value="abiword" id="abiword">&nbsp;Abiword 2.4.2+ <abbr title="OpenDocument">OD</abbr> plugin</label>
+						</td>
+					</tr>
+					<tr>
+						<td style="font-size:2px;" colspan="3"><div style="border-top:solid 1px #999999;margin-top:5px">&nbsp;</div></td>
+					</tr>

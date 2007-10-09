@@ -1,0 +1,12 @@
+<h2>Use XVFB?</h2>
+<p>
+	<span style="margin:0px; border: solid 1px #999933; background: #ffffcc; color: #660000; font-size:small">
+		&#160;
+		<span style="color: #330000;font-weight:bold">Note:</span>
+		Because XVFB is currently disabled OpenOffice.org
+		may open on your desktop during conversions.
+	</span>
+</p>
+<p>In Ubuntu 6.06, XVFB is known not to work. If you have problems disable XVFB here.</p>
+
+<form method="post" action=""><p><input id="enablexvfb" name="enablexvfb" type="submit" value="Enable XVFB"/></p></form>

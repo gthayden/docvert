@@ -1,0 +1,282 @@
+Docvert
+
+
+Table of Contents
+=================
+
+* Requirements
+* Install + Security
+
+Requirements
+=============================================================
+
+*	PHP 5 or later, with the "ZLIB" and "XSL" extensions.
+
+*	If you want to convert Microsoft Word documents (no additional
+	software is required if you're just converting OpenDocument) then
+	you'll need to choose a 'Microsoft Word to OpenDocument' converter,
+
+	*	OpenOffice.org 1.9.122 or later.
+		The more current your version of OpenOffice.org
+		the more likely it'll be compatible with the
+		vagaries of the MS Word format - so keep your
+		OOo current.
+		On Linux/BSD/OSX you'll also need "Xvfb".
+		Accelerated OpenOffice.org conversions are supported
+		thanks to the fantastic work in PyODConverter and
+		JODConverter
+
+	*	Abiword 2.4.2 or later.
+
+Optional Libraries
+-------------------------------------------------------------
+
+*	If you want to convert bitmap images like BMP, JPG,
+	PNG, GIF you'll need PHP GD.
+
+*	If your documents files have diagrams or graphs in WMF
+	(windows metafile format) and you want to convert
+	them to PNG/JPEG/SVG then you'll need to install
+	"libwmf".
+	Windows,
+	  http://gnuwin32.sourceforge.net/packages/libwmf.htm
+	  and grab "Complete package, except sources"
+	Linux,
+	  your distribution's packaging, and find
+		libwmf0.2-7 or later,
+		libwmf-bin
+	  - http://wvware.sourceforge.net/libwmf.html
+
+*	If you want to validate documents against a schema
+	you'll need
+	Linux:
+		Trang from your distro's package manager or
+		<http://thaiopensource.com/relaxng/trang.html>
+	Windows:
+		...I don't know. If you could suggest a good
+		schema validator with command line support
+		I'll support it.
+
+*	If your documents have SVG images and you want to
+	convert them to PNG/JPEG/GIF, then you'll need to
+	install "svgrlib".
+	Windows,
+	  http://www.gimp.org/~tml/gimp/win32/downloads.html
+	Linux,
+	  your distribution's packaging, and find
+		librsvg2-2
+		librsvg-bin
+	  http://librsvg.sourceforge.net/download/
+
+*	If you're using "Document Generation" you'll need
+	HTMLTidy.
+
+Install + Security
+=============================================================
+
+Step 1.	Host the Docvert software on a web server.
+
+Step 2.	Secure Docvert's admin page,
+
+	Open on Docvert in your web browser and browse to
+	the admin page (the tab on the top-right).
+
+	On the admin page, set the password.
+
+Step 3. Do you want to convert Word Documents or just
+	OpenDocument files?
+
+	If you just want to convert OpenDocument files then
+	go to Step 4.
+
+	If you do want to convert Microsoft Word files (or
+	from other formats), then continue reading...
+
+
+	You'll need to choose a 'Microsoft Word to OpenDocument'
+	converter. You have the choice of,
+		* PyODConverter with OpenOffice.org
+		* Standalone OpenOffice.org
+		* JODConverter with OpenOffice.org
+		* Abiword
+
+	If you're just trialing Docvert then
+	"Standalone OpenOffice.org" is the easiest option to set up.
+
+	However if you've been using Docvert for a while then I recommend the
+	"PyODConverter with OpenOffice.org" option.
+
+	Choose now!
+
+
+	PyODConverter with OpenOffice
+	-----------------------------
+	
+		PyODConverter requires Python and OpenOffice.org to
+		be running in server mode (listening on a port).
+
+		Docvert includes its own copy of PyODConverter so there's
+		no need to download a copy, but you'll need to configure
+		OpenOffice.org to be listening on a port.
+
+		See http://www.artofsolving.com/opensource/pyodconverter
+		for how to configure OpenOffice.org to do this, however,
+		it can be as simple as running,
+
+			Unix
+			soffice -accept="socket,port=8100;urp;"
+
+			Windows
+			soffice.exe -accept="socket,port=8100;urp;"
+
+
+	Standalone OpenOffice.org 
+	---------------------------------------------------------------
+
+		Stage i)
+			Windows:
+				In "core/config/windows-specific" edit
+				these files,
+					"convert-using-openoffice.org.bat"
+
+			Linux/OSX:
+				In "core/config/unix-specific" edit
+				these files,
+					"convert-using-openoffice.org.sh"
+
+			...to point at the OpenOffice.org executable
+			(typically "oowriter" or "oowriter2").
+
+				For Linux/OSX users allow your web-server
+				user to run this script as root by adding
+				a reference in SUDO.
+				You can do this by using the "visudo" command and
+				adding some lines to sudoers as follows,
+
+	www-data ALL = NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-openoffice.org.sh
+	www-data ALL = NOPASSWD: /var/www/docvert/core/config/unix-specific/validate-against-schema.sh
+	www-data ALL = NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-abiword.sh
+
+				Where "www-data" is the web server user, and
+				/var/www/vhosts[...].sh are the paths to your
+				scripts. In the case of Abiword, point to Abiword
+				instead.
+
+				Note: As a security measure it's a good idea to
+				ensure that the webserver user cannot edit this file
+				and change it to run any command with root privledges.
+				Do this by removing write permissions for all files
+				under the "core/config/unix-specific" directory.
+
+		Stage ii)
+
+			In OpenOffice.org we'll need to tell it to trust Docvert's
+			macros. We do this by adding "core/config/trusted-macros"
+			to the list of trusted macros within OpenOffice.org.
+
+			Open up Docvert in your web browser and browse to the Admin
+			page (there's a tab on the top right). If it's complaining
+			about the "/writable" directory not being writable then
+			make that directory writable, create an admin password.
+
+			Now get on the same computer as the web server.
+
+				If you've got your Web Server as a Windows Service
+				it may be supress OOo from appearing so go to
+				Windows Services and the properties window for your
+				web server program. Go to the "Log On" tab, ensuring
+				that "Allow service to interact with desktop" is
+				ticked and then restart the service.
+				(Later, if you want to supress OOo from appearing
+				during conversions, as you probably do, then untick
+				that checkbox and then restart the service.)
+
+			Now click the "Setup OpenOffice.org" button on the admin page
+			to start OpenOffice.org.
+
+				If there are problems here check Step 2 again, and
+				follow the instructions on screen which will try
+				and detect common configuration mistakes. Also try
+				the troubleshooting.txt	guide.
+				You'll need to be able to start OpenOffice.org before
+				continuing.
+
+			Once you've got OpenOffice.org started go to TOOLS | OPTIONS
+			| SECURITY and "macro security". Add the directory
+			"core/config/trusted-macros" to the trusted list.
+
+			Exit OpenOffice.org and test that it's worked by clicking
+			on "Setup OpenOffice.org" again. Ensure there are no dialog
+			windows that appear when doing this.
+
+			If there are still dialog windows and you think you've followed
+			Stage ii correctly then read the troubleshooting.txt file, or
+			post on the Docvert mailing list.
+
+
+	JODConverter with OpenOffice
+	----------------------------
+	
+		JODConverter requires Java and OpenOffice.org to
+		be running in server mode (listening on a port).
+
+		Docvert DOES NOT include its own copy of JODConverter
+		so you'll need to download it and put it in
+
+			core/lib/jodconverter
+
+		Then you'll need to configure OpenOffice.org to be
+		listening on a port.
+
+		See http://www.artofsolving.com/opensource/jodconverter
+		for how to configure OpenOffice.org to do this, however,
+		it can be as simple as running,
+
+			Unix
+			soffice -accept="socket,port=8100;urp;"
+
+			Windows
+			soffice.exe -accept="socket,port=8100;urp;"
+
+
+	Abiword
+	-------------------------------------------------------------------------
+		Edit the core/config Abiword file for...
+			Linux/OSX:
+				In "core/config/unix-specific" edit
+				this file,
+					"convert-using-abiword.sh"
+			Windows:
+				In "core/config/windows-specific" edit
+				this file,
+					"convert-using-abiword.bat"
+
+Step 4.	That's it.
+
+	...well that's enough to convert, but there are additional
+	features you can set up too such as,
+
+	All of these involve editing the appropriate files under
+	"/core/config" to point at conversion libraries.
+	
+	Schema Validation
+	-----------------
+		And if you want Schema Validation then edit,
+			Linux/OSX,
+				"validate-against-schema.sh"
+			Windows,
+				"validate-against-schema.bat"
+		...to point to Trang.
+
+
+	Image Conversion
+	----------------
+		Edit these...
+			Linux/OSX,
+				"convert-using-wmf2gd.sh"
+				"convert-using-wmf2svg.sh"
+			Windows,
+				"convert-using-wmf2gd.bat"
+				"convert-using-wmf2svg.bat"
+
+
