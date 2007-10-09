@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+	<stage process="TransformOpenDocumentToDocBook"/>
+	<!-- <stage process="ValidateAgainstSchema" withFile="docbook.rng"/> -->
+	<stage process="DocBookToXHTML"/>
+	<stage process="Transform" withFile="mytheme.xsl"/>
+	<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
+	<stage process="Serialize" toFile="index.html"/>
+	<stage process="IncludeDependentFiles" withFiles="*.jpg, *.gif, *.css, *.js, pix, ui"/>
+</pipeline>
+

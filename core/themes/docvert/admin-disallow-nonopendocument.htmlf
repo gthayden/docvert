@@ -1,0 +1,4 @@
+<h2>Non-OpenDocument uploads?</h2>
+<form method="post">
+	<p><input type="submit" name="disablenonopendocument" id="disablenonopendocument" value="Disable non-opendocument uploads"/></p>
+</form>

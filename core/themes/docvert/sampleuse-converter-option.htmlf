@@ -1,0 +1,6 @@
+
+							<label for="{{converterIdHash}}">
+								<input type="radio" name="converter" {{checked}} value="{{converterIdLowercase}}" id="{{converterIdHash}}">
+								&nbsp;
+								{{converterName}}
+							</label>

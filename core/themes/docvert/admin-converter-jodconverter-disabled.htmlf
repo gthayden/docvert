@@ -1,0 +1,6 @@
+<p>
+	<form method="post" action="" style="display:inline">
+		Currently JODConverter is <span style="background:#ff9999">disabled</span>:
+		<input type="submit" name="converter-jodconverter-enable" value="Enable JODConverter"/>
+	</form>
+</p>

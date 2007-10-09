@@ -1,0 +1,62 @@
+Command Line Usage
+==================
+
+This provides information on command line usage of Docvert, as provided by PHP CLI.
+
+	Note: for errors also see trouble-shooting.txt
+
+Linux / OSX / BSD
+=================
+PHP CLI may not be included with the conventional Web interface. See your operating
+system's package manager for a "PHP CLI" package.
+
+Also your PHP may have a seperate php.ini file for command line use, and this
+php.ini may not have XSLT or other extensions enabled. In some systems they may be
+under /etc/php/cli/php.ini .
+
+The files in Docvert's "bin" directory are the scripts and they should be set as
+executable. For Linux, only use the scripts without filename extensions (the .php
+scripts are instead for Windows use).
+
+All of these extension-less scripts are identical (duplicates just so that you may
+type odt2xml or odf2hml and it'll work).
+
+From the command line call one of these scripts without any parameters/flags to
+receive usage information, and diagnostics.
+
+	Note: if you receive an error about being unable to find your PHP, then
+	type "which php" at the command line and update the scripts to point at
+	the given location. Eg., replace (#!/path/to/php -q) with the results of
+	the "which" command.
+
+Windows
+=======
+Here are some instructions on how to make PHP files executable from the command prompt in Windows.
+
+There is an environment variable (control panel->system->advanced->environment variables) named
+PATHEXT. This contains a list of extensions that you may execute from the command line, so
+add .php and .PHP to this list.
+
+PHP's default application will now be run, so we need to make the PHP command line executable
+the default application. First, we have to find it (although typically this is "php.exe"):
+
+	Open Windows File Explorer and go to your PHP directory. Hover the mouse pointer over
+	the executables until - in an info bubble - the word "CLI" is shown.
+
+Once we've found it we need to set up a default action,
+
+	To set up the default action:
+	Open Explorer.
+	Go to Tools->folder options->file types
+	Find the extension you're looking for.  If it's not there, click New to add it.
+	Click on the file type, then on Advanced, then New.
+	For the action, type "Run" or "Execute" or whatever makes sense.
+	For the application, type
+
+		  "c:\program files\php\php.exe" %1 %2 %3 %4 %5 %6 %7 %8 %9
+
+	Where the path to php points at your PHP command-line executable.
+
+It's now done. Use cmd.exe (not command.com) to open up a command line prompt, and then
+go to the "bin" directory and run any script with .php at the end (these .php scripts are
+all identical). Call the script to receive usage information, and diagnostics.

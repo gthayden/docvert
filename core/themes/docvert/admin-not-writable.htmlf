@@ -1,0 +1,5 @@
+		<div class="docvertError" style="clear:both">
+			<h1>The <tt>"/writable"</tt> directory is not writable.</h1>
+			<p>In order to use this admin page the <tt>/writable</tt> directory must be made writable to the user that Docvert is running under (typically the web-server user).</p>
+			<p>See <a href="doc/install.txt">install.txt</a> for details.</p>
+		</div>

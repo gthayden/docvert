@@ -1,0 +1,55 @@
+/* CSS for conversion previews */
+
+	.menu { background: #eeeeee; font-size:small; padding: 10px; margin:10px;}		
+	body {padding:0px;margin:0px;font-family:sans-serif}
+	div.menu h1 { font-size:xx-small }
+	.pageTitle { margin:0px; background:#dddddd; padding:4px 10px; font-style:italic }
+	.documentTitle { margin:0px; background:#cccccc; font-size:small; padding:4px 10px; font-style:italic }
+	.page {margin-left:30%;}
+	#footnotes {border-top: solid 2px #dddddd;margin:40px;font-size:x-small}
+	#pageInternalMenu {float:right;width:20%}
+	#pagesMenu {width:25%;float:left;}
+	#nextPreviousMenu {margin-left:30%}
+
+	table, td
+		{
+		border: solid 1px #cccccc;
+		}
+
+
+
+		ul, ol
+			{
+			margin-top: 0px;
+			padding-top: 0px;
+			}
+
+		li p
+			{
+			margin-bottom:0px;
+			padding-bottom:0px;
+			margin-top:0px;
+			padding-top:0px;
+			}
+
+
+	#tableOfContents
+		{
+		background: #eeeeee;
+		border: 1px inset #ffffff;
+		font-size:small;
+		padding-left:2em;
+		margin-right:1em;
+		margin-top:0.7em;
+		margin-bottom:1.5em;
+		color:#444444;
+		}
+
+		#tableOfContents h1
+			{
+			font-size:small;
+			color:#445544;
+			}
+
+
+

@@ -1,0 +1,14 @@
+<h3 style="margin:0px 0px 5px 30px">Existing upload locations</h3>
+<table id="existingUploads" style="margin-left:30px;border: solid 2px #dddddd">
+	<tr>
+		<th>Name</th>
+		<th>Host</th>
+		<th>Protocol</th>
+		<th>Port</th>
+		<th>Username</th>
+		<th>Password</th>
+		<th>Remote directory</th>
+		<th>Delete</th>
+	</tr>
+	{{existing-upload-rows}}
+</table>
