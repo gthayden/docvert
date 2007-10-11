@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 export PATH=$PATH:/usr/bin/X11
 export LANG=en_US
 export LC_ALL=C
