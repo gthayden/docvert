@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 schemaPath=$1
 htmlDocument=$2
 

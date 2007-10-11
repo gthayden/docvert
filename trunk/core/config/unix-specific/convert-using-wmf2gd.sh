@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 insideDirectory=$1
 inputImagePath=$2
 outputImagePath=$3
