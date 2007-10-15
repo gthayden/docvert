@@ -332,7 +332,7 @@ class Themes
 		$directoryHandler = dir('core'.DIRECTORY_SEPARATOR.'auto-pipelines');
 		while (false !== ($entry = $directoryHandler->read()))
 			{
-			if($entry != ".." && $entry != ".")
+			if(substr($entry, 0, 1) != ".")
 				{
 				$autopipeline = str_replace('.xml', '', $entry);
 				$autopipelineId = 'autopipeline_'.md5($autopipeline);
@@ -360,7 +360,7 @@ class Themes
 		$directoryHandler = dir('pipeline');
 		while (false !== ($entry = $directoryHandler->read()))
 			{
-			if($entry != ".." && $entry != ".")
+			if(substr($entry, 0, 1) != ".")
 				{
 				$pipelinesString .= "\t".'<option ';
 				$pipelineContents = file_get_contents('pipeline'.DIRECTORY_SEPARATOR.$entry.DIRECTORY_SEPARATOR.'pipeline.xml');
@@ -405,10 +405,27 @@ class Themes
 			$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 			$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
 			$template = file_get_contents($this->themeDirectory.'admin-setupopenofficeorg.htmlf');
+
 			$openOfficeServerStatusPath = $docvertWritableDir.'openofficeorg-server.txt';
+			$runAsCustomUser = '';
 			$toggleStatus = '';
 			if(DIRECTORY_SEPARATOR == '/')
 				{
+				$runAsCustomUserConfigurationPath = $docvertWritableDir.'use-custom-user.php';
+				$customUser = '';
+				if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
+					{
+					$customUserFileData = '<'.'?'.'php '.'$'.'customUser="'.trim($_REQUEST['runasuser']).'"; ?'.'>';
+					file_put_contents($runAsCustomUserConfigurationPath, $customUserFileData);
+					}
+
+				if($customUser == '' && file_exists($runAsCustomUserConfigurationPath))
+					{
+					include($runAsCustomUserConfigurationPath);
+					}
+				$runAsCustomUser = file_get_contents($this->themeDirectory.'admin-configureopenofficeorg-runasuser.htmlf');
+				$runAsCustomUser = str_replace('{{username}}', $customUser, $runAsCustomUser);
+
 				$disallowXVFB = $docvertWritableDir.'do-not-use-xvfb-on-unix.txt';
 				if(isset($_POST['startOpenOfficeOrgServerLinux']))
 					{
@@ -440,9 +457,9 @@ class Themes
 						{
 						if(!is_executable($bashScript))
 							{
-							$diagnostics = '<p>The script is not set as executable, so "<tt>chmod +x</tt>" it. So, the problem is that, or...</p>'.$diagnostics;
-							}						
-						$diagnostics = '<div style="background:#ffff99;border: solid 1px #ffff99;"><h1 style="font-size:small;padding-left:1%;color:red">Diagnostics</h1> <p>There were problems opening up JODConverter OpenOffice.org Server</p><p>I ran this command,</p><blockquote><tt>'.$shellCommandTemplate.'</tt></blockquote><p>But I don\'t think I was able to start OpenOffice.org because the script returned.</p><blockquote><tt>'.$output.'</tt></blockquote>'.$diagnostics.'</div>';
+							$diagnostics .= '<p>The script is not set as executable, so "<tt>chmod +x</tt>" it. So, the problem is that, or...</p>'.$diagnostics;
+							}
+						$diagnostics .= '<div style="background:#ffff99;border: solid 1px #ffff99;"><h1 style="font-size:small;padding-left:1%;color:red">Diagnostics</h1> <p>There were problems opening up JODConverter OpenOffice.org Server</p><p>I ran this command,</p><blockquote><tt>'.$shellCommandTemplate.'</tt></blockquote><p>But I don\'t think I was able to start OpenOffice.org because the script returned.</p><blockquote><tt>'.$output.'</tt></blockquote>'.$diagnostics.'</div>';
 						$toggleStatus = $diagnostics.$toggleStatus;
 						}
 					else
@@ -463,11 +480,11 @@ class Themes
 				$openOfficeServer = file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-linux.htmlf');
 				if(file_exists($openOfficeServerStatusPath))
 					{
-					$toggleStatus = $toggleStatus.file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-jodconverter-stop.htmlf');
+					$toggleStatus .= file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-jodconverter-stop.htmlf');
 					}
 				else
 					{
-					$toggleStatus = $toggleStatus.file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-jodconverter-start.htmlf');
+					$toggleStatus .= file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-jodconverter-start.htmlf');
 					}
 
 				}
@@ -477,6 +494,7 @@ class Themes
 				}
 			$template = str_replace('{{openoffice-server}}', $openOfficeServer, $template);
 			$template = str_replace('{{toggle}}', $toggleStatus, $template);
+			$template = str_replace('{{run-as-user}}', $runAsCustomUser, $template);
 			return $template;
 			}
 		}
@@ -1027,8 +1045,6 @@ class Themes
 						}
 					$template = str_replace('{{page-order}}', implode($listItems), $template);
 					$template = str_replace('{{hidden-form-chosen-pages}}', implode($hiddenFormChosenPages), $template);
-
-
 
 					$generatorPipelines = glob($this->docvertRootDirectory.'generator-pipeline'.DIRECTORY_SEPARATOR.'*');
 					$generatorPipelinesArray = Array();

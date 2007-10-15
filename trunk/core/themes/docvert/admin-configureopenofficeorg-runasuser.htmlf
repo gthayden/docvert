@@ -1,0 +1,6 @@
+				<h3 style="margin-bottom:0px;">Run as User</h3>
+				<form method="post">
+					<p style="margin:0.5em 30px;font-size:small">Run OpenOffice.org sudo'd as the user <input type="text" name="runasuser" id="runasuser" value="{{username}}"/><input type="submit" name="setcustomuser" id="setcustomuser" value="Set user"/></p>
+					<p style="margin:0.5em 30px;font-size:small">(by default the <tt>root</tt> user will be used)</p>
+				</form>
+

@@ -147,20 +147,29 @@ Step 3. Do you want to convert Word Documents or just
 			...to point at the OpenOffice.org executable
 			(typically "oowriter" or "oowriter2").
 
-				For Linux/OSX users allow your web-server
-				user to run this script as root by adding
-				a reference in SUDO.
-				You can do this by using the "visudo" command and
-				adding some lines to sudoers as follows,
+				For Linux/OSX users you'll need to allow
+				your web-server user to run this script
+				so go to the admin page and under the
+				"Run as User" heading enter the username
+				to run OpenOffice.org as (by default it
+				will run as root), then you'll need to
+				configure permissions with the "visudo"
+				command to add some lines to sudoers,
 
-	www-data ALL = NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-openoffice.org.sh
-	www-data ALL = NOPASSWD: /var/www/docvert/core/config/unix-specific/validate-against-schema.sh
-	www-data ALL = NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-abiword.sh
+				Add these lines (read below for which
+				bits to edit)
 
-				Where "www-data" is the web server user, and
+	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-openoffice.org.sh
+	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/validate-against-schema.sh
+	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-abiword.sh
+
 				/var/www/vhosts[...].sh are the paths to your
 				scripts. In the case of Abiword, point to Abiword
 				instead.
+				Replace NAMEOFUSER with.. the name of the user but
+				leave the brackets () because sudoers wants them.
+				And replace www-data with the web server user if it's
+				something else.
 
 				Note: As a security measure it's a good idea to
 				ensure that the webserver user cannot edit this file

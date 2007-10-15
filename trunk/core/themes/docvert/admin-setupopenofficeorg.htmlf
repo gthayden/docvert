@@ -3,5 +3,6 @@
 				<form method="post" action="web-service.php" class="openofficeorg">
 					<p><input type="submit" id="setupOpenOfficeOrg" name="setupOpenOfficeOrg" value="Setup OpenOffice.org to allow Docvert Macros"/></p>
 				</form>
+				{{run-as-user}}
 				<!-- {{openoffice-server}} -->
 
