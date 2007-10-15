@@ -2,14 +2,14 @@
 /*
 	Docvert 3.3 - Copyright (C) 2005-2006-2007
 	by Matthew Cruickshank and the smart people in the CREDITS file.
-	One day I'll release them from that file.
+	"One day I'll release them from that file."
 	
 	Licenced for use under the GPL version 3. See the LICENCE file.
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+	any later version.
 
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -363,6 +363,20 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				{
 				$disallowXVFB = 'writable'.DIRECTORY_SEPARATOR.'do-not-use-xvfb-on-unix.txt';
 				$commandTemplateVariable['elevatePermissions'] = 'sudo';
+				$runAsCustomUserConfigurationPath = $docvertWritableDir.'use-custom-user.php';
+				if(file_exists($runAsCustomUserConfigurationPath))
+					{
+					include_once($runAsCustomUserConfigurationPath);
+					if(isset($customUser))
+						{
+						$customUser = trim($customUser);
+						if($customUser != '' && $customUser != 'root')
+							{
+							$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
+							}
+						}
+					}
+				
 				if($mockConversion || file_exists($disallowXVFB))
 					{
 					$commandTemplateVariable['useXVFB'] = 'true';
@@ -527,8 +541,23 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 			}
 		if(stripos($output, 'X11') !== false || stripos($output, 'refused by server Xlib') !== false )
 			{
-			$suggestedFixes .= '<p>As it\'s complaining about "X11" the problem might be that the ROOT user can\'t access your desktop, so allow them by using <tt style="font-weight:bold">xhost</tt>. If that\'s the problem you can allow ROOT access to your desktop by typing this command: <blockquote><tt>sudo xhost local:root</tt></blockquote></p>';
+			$runAsUser = 'root';
+			$runAsCustomUserConfigurationPath = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR.'use-custom-user.php';
+
+			if(file_exists($runAsCustomUserConfigurationPath))
+				{
+				include($runAsCustomUserConfigurationPath);
+				$runAsUser = trim($customUser);
+				}
+
+			$suggestedFixes .= '<p>As it\'s complaining about "X11" the problem might be that the "'.$runAsUser.'" user can\'t access your desktop, so allow them by using <tt style="font-weight:bold">xhost</tt>. If that\'s the problem you can allow '.$runAsUser.' access to your desktop by typing this command: <blockquote><tt>sudo xhost local:'.$runAsUser.'</tt></blockquote></p>';
 			}
+
+		if(stripos($output, 'no passwd entry for'))
+			{
+			$suggestedFixes .= '<p>As it\'s complaining about the lack of a password entry, this probably means that you haven\'t configured visudo for this user. Read the <a href="doc/install.txt">install.txt</a> about this.</p>';
+			}
+
 		if(stripos($output, 'xvfb-run: not found') !== false)
 			{
 			$suggestedFixes .= '<p>Did you install XVFB? See <a href="doc/install.txt">install.txt</a> for install instructions or disable XVFB from the admin page.';
@@ -579,11 +608,11 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 
 /**
  * Start OpenOfficeOrg on the desktop in order to let the user configure it.
- * Not to be done remotely.
+ * Not to be called remotely -- this actually starts it up on their desktop.
  */
 function setupOpenOfficeOrg()
 	{
-	set_time_limit(60 * 10);
+	set_time_limit(60 * 2);
 	include_once('security.php');
 	$adminPassword = Security::getAdminPassword();
 	if($adminPassword === FALSE)
@@ -598,7 +627,7 @@ function setupOpenOfficeOrg()
 	$output = makeOasisOpenDocument(null, 'openofficeorg', true);
 	$body = null;
 	$body .= '<h1>Docvert tried to start OpenOffice.org on your desktop</h1>';
-	if(trim($output) != '' && stripos($output, 'uninitialized value') === false )
+	if(trim($output) != '' && stripos($output, 'uninitialized value') === false && stripos($output, 'stat: missing operand') === false)
 		{
 		$body .= '<p>...but this appears to have failed. This is what was returned:</p><blockquote><tt>'.$output.'</tt></blockquote>';
 		$body .= suggestFixesToCommandLineErrorMessage($output, null, false);
