@@ -1,5 +1,5 @@
 #!/bin/bash
-inputImagePath=$1
-outputImagePath=$2
+inputImagePath="$1"
+outputImagePath="$2"
 
-wmf2svg "${inputImagePath}" -o "${outputImagePath}"
+/usr/bin/wmf2svg "${inputImagePath}" -o "${outputImagePath}"
