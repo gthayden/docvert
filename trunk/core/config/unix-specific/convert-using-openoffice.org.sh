@@ -1,19 +1,15 @@
 #!/bin/bash
-export PATH=$PATH:/usr/bin/X11
-export LANG=en_US
-export LC_ALL=C
-export localXPort=:0.0
-
-mockConversion=$1
-docvertMacrosDocumentPath=$2
-inputDocumentUrl=$3
-outputDocumentUrl=$4
+mockConversion="$1"
+docvertMacrosDocumentPath="$2"
+inputDocumentUrl="$3"
+outputDocumentUrl="$4"
 
 if [ $mockConversion = "true" ]
 then
 	XDisplayToUse="-display :0.0"
+	export localXPort=":0.0"
 else
-	xvfbRun="xvfb-run"
+	xvfbRun="/usr/bin/xvfb-run"
 fi
 
-${xvfbRun} oowriter -norestore ${XDisplayToUse} ${docvertMacrosDocumentPath} macro://macros/Standard.convert.toOasisOpenDocumentFormat\(${inputDocumentUrl},${outputDocumentUrl}\)
+${xvfbRun} /usr/lib/openoffice/program/soffice -writer -norestore "${XDisplayToUse}" "${docvertMacrosDocumentPath}" macro://macros/Standard.convert.toOasisOpenDocumentFormat\(${inputDocumentUrl},${outputDocumentUrl}\)

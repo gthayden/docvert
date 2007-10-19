@@ -1,5 +1,5 @@
 #!/bin/bash
-schemaPath=$1
-htmlDocument=$2
+schemaPath="$1"
+htmlDocument="$2"
 
-xmllint --noout --relaxng ${schemaPath} ${htmlDocument}
+/usr/bin/xmllint --noout --relaxng "${schemaPath}" "${htmlDocument}"
