@@ -279,6 +279,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 	if(!file_exists($inputDocumentPath) && !$mockConversion) webServiceError(500, 'In makeOasisOpenDocument(...) the inputDocumentPath points to a non-existant file.');
 	$inputDocumentPath = convertPathSlashesForCurrentOperatingSystem($inputDocumentPath);
 	$docvertCommandPath = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR;
+	
 	$commandTemplate = null;
 	$extensionlessOutputDocumentPath = null;
 	$outputDocumentPath = null;
@@ -463,19 +464,19 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		{
 		$errorMessage = '<p>Unable to generate an OpenDocument file from your upload.</p>';
 		$errorMessage .= '<p>The command I tried to run was:</p>';
-		$errorMessage .= '<blockquote><tt>'.$command.'</tt></blockquote>';
+		$errorMessage .= '<blockquote><tt>'.revealXml($command).'</tt></blockquote>';
 		$errorMessage .= '<p>In response to that command, the following was returned</p>';
-		$errorMessage .= '<blockquote><tt>'.$output.'</tt></blockquote>';
+		$errorMessage .= '<blockquote><tt>'.revealXml($output).'</tt></blockquote>';
 		$errorMessage .= suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable, true);
 		if(isset($commandTemplateVariable['scriptPath']) && !is_executable($commandTemplateVariable['scriptPath']))
 			{
 			if($operatingSystemFamily == 'Windows')
 				{
-				$errorMessage .= '<p>It appears that the conversion script isn\'t executable, but as you\'re running Windows I can\'t be sure of that. This may be a <a href="http://en.wikipedia.org/wiki/Red_herring">red herring</a> but check whether the script is executable to the web server user. The script can be found at,</p><blockquote><tt>'.$commandTemplateVariable['scriptPath'].'</tt></blockquote>';
+				$errorMessage .= '<p>It appears that the conversion script isn\'t executable, but as you\'re running Windows I can\'t be sure of that. This may be a <a href="http://en.wikipedia.org/wiki/Red_herring">red herring</a> but check whether the script is executable to the web server user. The script can be found at,</p><blockquote><tt>'.revealXml($commandTemplateVariable['scriptPath']).'</tt></blockquote>';
 				}
 			elseif($operatingSystemFamily == 'Unix')
 				{
-				$errorMessage .= '<p>The conversion script isn\'t executable, so change its permissions (Eg. on Unix/Linux "chmod" it and ensure the web server user has access). The script can be found at, <blockquote><tt>'.$commandTemplateVariable['scriptPath'].'</tt></blockquote></p>';
+				$errorMessage .= '<p>The conversion script isn\'t executable, so change its permissions (Eg. on Unix/Linux "chmod" it and ensure the web server user has access). The script can be found at, <blockquote><tt>'.revealXml($commandTemplateVariable['scriptPath']).'</tt></blockquote></p>';
 				}
 			}
 		webServiceError($errorMessage);
@@ -522,7 +523,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				{
 				$commandTemplateVariable['scriptPath'] = '';
 				}
-			$suggestedFixes .= '<p>As it\'s saying it cannot find the path this probably means your <tt>'.basename($commandTemplateVariable['scriptPath']).'</tt> isn\'t pointing at an application. If so, try the install docs...</p>';
+			$suggestedFixes .= '<p>As it\'s saying it cannot find the path this probably means your <tt>'.basename(revealXml($commandTemplateVariable['scriptPath'])).'</tt> isn\'t pointing at an application. If so, try the install docs...</p>';
 			}
 		if(stripos($output, 'command not found') !== false)
 			{
@@ -532,7 +533,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				}
 			if(stripos($output, 'xvfb-run') !== false)
 				{
-				$suggestedFixes .= '<p>As it\'s saying it can\'t find <b>xvfb-run</b> this means either that it\'s not installed, or that the script <tt>'.basename($commandTemplateVariable['scriptPath']).'</tt> isn\'t pointing at the file.</p>';
+				$suggestedFixes .= '<p>As it\'s saying it can\'t find <b>xvfb-run</b> this means either that it\'s not installed, or that the script <tt>'.basename(revealXml($commandTemplateVariable['scriptPath'])).'</tt> isn\'t pointing at the file.</p>';
 				}
 			else
 				{
@@ -550,7 +551,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				$runAsUser = trim($customUser);
 				}
 
-			$suggestedFixes .= '<p>As it\'s complaining about "X11" the problem might be that the "'.$runAsUser.'" user can\'t access your desktop, so allow them by using <tt style="font-weight:bold">xhost</tt>. If that\'s the problem you can allow '.$runAsUser.' access to your desktop by typing this command: <blockquote><tt>sudo xhost local:'.$runAsUser.'</tt></blockquote></p>';
+			$suggestedFixes .= '<p>As it\'s complaining about "X11" the problem might be that the "'.revealXml($runAsUser).'" user can\'t access your desktop, so allow them by using <tt style="font-weight:bold">xhost</tt>. If that\'s the problem you can allow '.$runAsUser.' access to your desktop by typing this command: <blockquote><tt>sudo xhost local:'.$runAsUser.'</tt></blockquote></p>';
 			}
 
 		if(stripos($output, 'no passwd entry for'))
@@ -592,7 +593,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				$temporaryDirectoryMessage = dirname($commandTemplateVariable['outputDocumentPath']);
 				$temporaryDirectoryMessage = ' ("'.$temporaryDirectoryMessage.'") ';
 				}
-			$suggestedFixes .= '<p>PyODConverter/JODConverter or OpenOffice.org seems to be having some problems... it may be that OpenOffice is unable to save to the temporary directory '.$temporaryDirectoryMessage.'.</p><p>If so, be sure that the user you started OpenOffice as had write access to that temporary directory.</p><p>Regardless, the problem seems to be occuring outside Docvert so try getting PyODConverter/JODConverter running from the command line first.</p><p><small>(But if JODConverter is running correctly then let me know because then Docvert must be at fault)</small></p>';
+			$suggestedFixes .= '<p>PyODConverter/JODConverter or OpenOffice.org seems to be having some problems... it may be that OpenOffice is unable to save to the temporary directory '.revealXml($temporaryDirectoryMessage).'.</p><p>If so, be sure that the user you started OpenOffice as had write access to that temporary directory.</p><p>Regardless, the problem seems to be occuring outside Docvert so try getting PyODConverter/JODConverter running from the command line first.</p><p><small>(But if PyODConverter/JODConverter is running correctly then let me know because then Docvert must be at fault)</small></p>';
 			}
 		if(stripos($output, 'jodconverter') !== false && stripos($output, 'inputFile doesn\'t exist') !== false)
 			{
