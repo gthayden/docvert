@@ -44,12 +44,12 @@
 	indent="yes"
 	omit-xml-declaration="no"/>
 
+
+<xsl:variable name="detectedDepth">
+	<xsl:call-template name="detectDepth"/>
+</xsl:variable>
+
 <xsl:template match="/db:book">
-
-	<xsl:variable name="detectedDepth">
-		<xsl:call-template name="detectDepth"/>
-	</xsl:variable>
-
 	<xsl:copy>
 		<xsl:apply-templates select="db:title"/>
 		<xsl:apply-templates select="db:abstract"/>
@@ -144,8 +144,18 @@
 		<xsl:if test="db:title">
 			<db:tocentry><db:link xlink:href="{$customFilenameIndex}"><xsl:value-of select="db:title"/></db:link></db:tocentry>
 		</xsl:if>
-		<xsl:for-each select="db:preface | db:chapter">
-			<xsl:variable name="url">
+		<xsl:apply-templates mode="tableOfContents">
+			<xsl:with-param name="breakAt" select=" 'chapter' "/>
+		</xsl:apply-templates>
+	</db:toc>
+</xsl:template>
+
+<xsl:template match="db:preface | db:chapter | db:sect1 | db:sect2 | db:sect3 | db:sect4 | db:sect5 | db:sect6 | db:sect7 | db:sect8 | db:sect9" mode="tableOfContents">
+	<xsl:param name="breakAt"/>
+	<xsl:variable name="url">
+		<xsl:choose>
+			<xsl:when test="$breakAt = 'chapter' ">
+				<xsl:variable name="chapterIndex" select=" count(preceding::db:chapter | preceding::db:preface) "/>
 				<xsl:choose>
 					<xsl:when test="self::db:preface">
 						<xsl:value-of select="$customFilenameIndex"/>
@@ -154,82 +164,27 @@
 						<xsl:call-template name="search-and-replace">
 							<xsl:with-param name="input" select="$customFilenameSection"/>
 							<xsl:with-param name="search-string" select=" '#' "/>
-							<xsl:with-param name="replace-string" select=" position() - 1 "/>
+							<xsl:with-param name="replace-string" select=" $chapterIndex "/>
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>
-			</xsl:variable>
-			<xsl:if test="db:title[1]">
-				<db:tocentry>
-					<db:link xlink:href="{$url}">
-						<xsl:value-of select="db:title[1]"/>
-					</db:link>
-				</db:tocentry>
-			</xsl:if>
-			<xsl:if test="db:sect1">
-				<db:tocchap>
-					<xsl:for-each select="db:sect1">
-						<xsl:for-each select="db:title[1]">
-							<db:tocentry>
-								<db:link>
-									<xsl:attribute name="xlink:href">
-										<xsl:value-of select="$url"/>
-										<xsl:text>#title</xsl:text>
-										<xsl:number level="any"/>
-									</xsl:attribute>
-									<xsl:value-of select="."/>
-								</db:link>
-							</db:tocentry>
-						</xsl:for-each>
-						<xsl:if test="db:sect2">
-							<!-- <db:tocentry><xsl:value-of select="db:title[1]"/></db:tocentry> -->
-							<db:tocchap>
-								<xsl:for-each select="db:sect2">
-									<db:tocentry>
-										<db:link>
-											<xsl:attribute name="xlink:href">
-												<xsl:value-of select="$url"/>
-												<xsl:text>#title</xsl:text>
-												<xsl:number level="any"/>
-											</xsl:attribute>
-											<xsl:value-of select="db:title[1]"/>
-										</db:link>
-									</db:tocentry>
-									<xsl:if test="db:sect3">
-										<db:tocentry>
-											<db:link>
-												<xsl:attribute name="xlink:href">
-													<xsl:value-of select="$url"/>
-													<xsl:text>#title</xsl:text>
-													<xsl:number level="any"/>
-												</xsl:attribute>
-												<xsl:value-of select="db:title[1]"/>
-											</db:link>
-										</db:tocentry>
-										<db:tocchap>
-											<xsl:for-each select="db:sect3">
-												<db:tocentry>
-													<db:link>
-														<xsl:attribute name="xlink:href">
-															<xsl:value-of select="$url"/>
-															<xsl:text>#title</xsl:text>
-															<xsl:number level="any"/>
-														</xsl:attribute>
-														<xsl:value-of select="db:title[1]"/>
-													</db:link>
-												</db:tocentry>
-											</xsl:for-each>
-										</db:tocchap>
-									</xsl:if>
-								</xsl:for-each>
-							</db:tocchap>
-						</xsl:if>
-					</xsl:for-each>
-				</db:tocchap>
-			</xsl:if>
-		</xsl:for-each>
-	</db:toc>
+			</xsl:when>
+		</xsl:choose>
+		<xsl:text>#title</xsl:text>
+		<xsl:value-of select="count(preceding::db:title) + 1"/>
+	</xsl:variable>
+	<db:tocentry>
+		<db:link xlink:href="{$url}">
+			<xsl:value-of select="db:title[1]"/>
+		</db:link>
+		<xsl:apply-templates mode="tableOfContents">
+			<xsl:with-param name="breakAt" select=" $breakAt "/>
+		</xsl:apply-templates>
+
+	</db:tocentry>
 </xsl:template>
+
+<xsl:template match="text()" mode="tableOfContents"/>
 
 <xsl:template name="break-at-chapter--next-previous-menu">
 	<!-- Menu: Next Previous -->

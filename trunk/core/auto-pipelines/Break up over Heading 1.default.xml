@@ -18,9 +18,13 @@
 		<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
 		<stage process="Serialize" toFile="{customSection}"/>
 	</stage>
+
 	<stage process="GetPreface"/>
+
 	<!-- <stage process="ValidateAgainstSchema" withFile="docbook.rng"/> -->
+
 	<stage process="DocBookToXHTML" withTableOfContents="true"/>
+
 	<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
 	{{custom-stages}}
 	<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
