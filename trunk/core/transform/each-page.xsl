@@ -177,9 +177,13 @@
 		<db:link xlink:href="{$url}">
 			<xsl:value-of select="db:title[1]"/>
 		</db:link>
-		<xsl:apply-templates mode="tableOfContents">
-			<xsl:with-param name="breakAt" select=" $breakAt "/>
-		</xsl:apply-templates>
+		<xsl:if test="descendant::db:preface or descendant::db:chapter or descendant::db:sect1 or descendant::db:sect2 or descendant::db:sect3 or descendant::db:sect4 or descendant::db:sect5 or descendant::db:sect6 or descendant::db:sect7 or descendant::db:sect8 or descendant::db:sect9 ">
+			<db:tocchap>
+				<xsl:apply-templates mode="tableOfContents">
+					<xsl:with-param name="breakAt" select=" $breakAt "/>
+				</xsl:apply-templates>
+			</db:tocchap>
+		</xsl:if>
 
 	</db:tocentry>
 </xsl:template>
