@@ -1,0 +1,4 @@
+<b>Apr&egraves la conversion...</b>
+	<input type="radio" value="preview" name="afterconversion" checked="checked" id="afterconversion_preview"/><label for="afterconversion_preview">&#160;Aper&ccedil;u</label>
+	&nbsp;
+	<input type="radio" value="downloadZip" name="afterconversion" id="afterconversion_downloadZip"/><label for="afterconversion_downloadZip">&#160;T&eacute;l&eacute;charger en .ZIP</label>

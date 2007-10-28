@@ -1,0 +1,11 @@
+/* CSS for conversion previews */
+
+	.menu { background: #eeeeee; font-size:small; padding: 10px; margin:10px;}		
+	body {padding:0px;margin:0px;}
+	div.menu h1 { font-size:xx-small }
+	.documentTitle { margin:0px; background:#dddddd; padding:4px 10px; }
+	.page {margin-left:30%;}
+	#footnotes {border-top: solid 2px #dddddd;margin:40px;font-size:x-small}
+	#pageInternalMenu {float:right;width:20%}
+	#pagesMenu {width:25%;float:left;}
+	#nextPreviousMenu {margin-left:30%}

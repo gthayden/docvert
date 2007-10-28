@@ -1,0 +1,1 @@
+<a href="#upload-results" class="uploadResults" onclick="return openUploadDialog();">Envoi!</a>

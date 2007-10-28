@@ -1,0 +1,5 @@
+				<form method="post" class="login">
+					<span class="login">
+						Mot de passe de l'administrateur: <input type="password" id="password" name="password" class="textbox"/> <input type="submit" value="Connexion"/>
+					</span>
+				</form>

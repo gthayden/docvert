@@ -1,0 +1,5 @@
+		<div class="docvertError" style="clear:both">
+			<h1>Le dossier <tt>"/writable"</tt> n'est pas inscriptible.</h1>
+			<p>Pour utiliser cette page d'administration, le dossier <tt>/writable</tt> doit &ecirc;tre inscriptible par l'utilisateur responsable de Docvert (normalement, l'utilisateur responsable du serveur Web).</p>
+			<p>Voir <a href="doc/install.txt">install.txt</a> pour plus de d&eacute;tails.</p>
+		</div>

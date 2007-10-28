@@ -1,0 +1,18 @@
+<h2>Configurer les noms de fichiers</h2>
+<p>Certaines pipelines permettent des noms de fichiers personalis&eacute;s.</p>
+<form method="post" style="margin-left:50px">
+	<table>
+		<tr>
+			<td style="width:150px"><input type="text" style="width:150px" id="custom_filename_index" name="custom_filename_index" value="{{custom_filename_index}}"/></td>
+			<td style="width:150px"><input type="text" style="width:150px" id="custom_filename_section" name="custom_filename_section" value="{{custom_filename_section}}"/></td>
+			<td align="left"><input type="submit" value="Enregistrer"/></td>
+		</tr>
+		<tr>
+			<td valign="top">Par exemple: index.html ou default.htm</td>
+			<td valign="top">
+				Par exemple: section#.html ou page#.html<br />
+				<small>Le <b>#</b> sera remplac&eacute; par le num&eacute;ro du chap&icirc;tre</small>
+			</td>
+		</tr>
+	</table>
+</form>
