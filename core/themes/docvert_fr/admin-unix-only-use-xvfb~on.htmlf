@@ -1,0 +1,4 @@
+<h2>Utiliser XVFB?</h2>
+<p>Avec Ubuntu 6.06, XVFB ne fonctionne pas. Si vous avez des probl&egrave;mes, d&eacute;savtiver XVFB ici.</p>
+<form method="post" action=""><p><input id="disablexvfb" name="disablexvfb" type="submit" value="D&eacute;sactiver XVFB"/></p></form>
+ 

@@ -1,0 +1,6 @@
+<p>
+	<form method="post" action="" style="display:inline">
+		OpenOffice.org est pr&eacute;sentement <span style="background:#99ff99">activ&eacute;</span>:
+		<input type="submit" name="converter-openofficeorg-disable" value="D&eacute;sactiver OOo"/>
+	</form>
+</p>

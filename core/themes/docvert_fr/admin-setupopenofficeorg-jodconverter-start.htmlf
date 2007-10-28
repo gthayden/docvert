@@ -1,0 +1,3 @@
+				<form method="post" action="admin.php" class="openofficeorg">
+					<p><input type="submit" id="startOpenOfficeOrgServerLinux" name="startOpenOfficeOrgServerLinux" value="D&eacute;marrer le serveur JODConverter OpenOffice.org"/></p>
+				</form>

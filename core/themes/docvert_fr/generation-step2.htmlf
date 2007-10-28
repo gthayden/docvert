@@ -1,0 +1,13 @@
+	<form method="post">
+		<fieldset style="width:90%" id="generator">
+			<input type="hidden" name="step" value="3"/>
+			<legend>&Eacute;tape 2: Choisir les pages</legend>
+			<input type="submit" value="Suivant" style="float:right;padding:0.5em"/>
+			<p>Choisissez les pages &agrave; inclure dans le document (l'ordre des pages viendra plus tard).</p>
+			<ul class="listOfPossiblePageUrls">
+				{{scrape-results}}
+			</ul>
+			<input type="submit" value="Suivant" style="float:right;padding:0.5em"/>
+		</fieldset>
+	</form>
+
