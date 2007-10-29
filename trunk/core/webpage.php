@@ -36,7 +36,7 @@ class Themes
 		$this->allowedAdminAccess = false;
 		include_once('security.php');
 		$adminPassword = Security::getAdminPassword();
-		if($adminPassword !== FALSE)
+		if($adminPassword !== null)
 			{
 			if(isset($_POST['password']) && $_POST['password'] == $adminPassword || isset($_SESSION['docvert_p']) && $_SESSION['docvert_p'] == $adminPassword)
 				{
@@ -51,23 +51,18 @@ class Themes
 					//print 'changepassword';
 					$this->allowedAdminAccess = true;
 					Security::setAdminPassword($_POST['changepassword']);
-					$_SESSION['docvert_p'] = trim($_POST['password']);
+					$_SESSION['docvert_p'] = trim($_POST['changepassword']);
 					}
 				elseif(isset($_POST['disablexvfb']) || isset($_POST['enablexvfb']))
 					{
 					$this->allowedAdminAccess = true;
-					$disallowXVFB = 'writable'.DIRECTORY_SEPARATOR.'do-not-use-xvfb-on-unix.txt';
 					if(isset($_POST['disablexvfb']))
 						{
-						touch($disallowXVFB);
-						chmod($disallowXVFB, 0777);
+						setConfigItem('disallowXVFB', 'true');
 						}
 					else
 						{
-						if(file_exists($disallowXVFB))
-							{
-							unlink($disallowXVFB);
-							}
+						setConfigItem('disallowXVFB', 'false');
 						}
 					}
 				elseif(isset($_POST['logout']))
@@ -384,7 +379,7 @@ class Themes
 	
 	function login()
 		{
-		if(!$this->allowedAdminAccess && Security::getAdminPassword() !== FALSE)
+		if(!$this->allowedAdminAccess && Security::getAdminPassword() !== null)
 			{
 			return file_get_contents($this->themeDirectory.'admin-login.htmlf');
 			}
@@ -392,175 +387,136 @@ class Themes
 
 	function logout()
 		{
-		if($this->allowedAdminAccess)
-			{
-			return file_get_contents($this->themeDirectory.'admin-logout.htmlf');
-			}
+		if(!$this->allowedAdminAccess) return;
+		return file_get_contents($this->themeDirectory.'admin-logout.htmlf');
 		}
 
 	function setupOpenOfficeOrg()
 		{
-		if($this->allowedAdminAccess)
+		if(!$this->allowedAdminAccess) return;
+
+		$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
+		$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
+		$template = file_get_contents($this->themeDirectory.'admin-setupopenofficeorg.htmlf');
+
+		$runAsCustomUser = '';
+		$toggleStatus = '';
+		include_once('config.php');
+		if(DIRECTORY_SEPARATOR == '/')
 			{
-			$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-			$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
-			$template = file_get_contents($this->themeDirectory.'admin-setupopenofficeorg.htmlf');
-
-			$openOfficeServerStatusPath = $docvertWritableDir.'openofficeorg-server.txt';
-			$runAsCustomUser = '';
-			$toggleStatus = '';
-			if(DIRECTORY_SEPARATOR == '/')
+			if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
 				{
-				$runAsCustomUserConfigurationPath = $docvertWritableDir.'use-custom-user.php';
-				$customUser = '';
-				if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
-					{
-					$customUserFileData = '<'.'?'.'php '.'$'.'customUser="'.trim($_REQUEST['runasuser']).'"; ?'.'>';
-					file_put_contents($runAsCustomUserConfigurationPath, $customUserFileData);
-					}
-
-				if($customUser == '' && file_exists($runAsCustomUserConfigurationPath))
-					{
-					include($runAsCustomUserConfigurationPath);
-					}
-				$runAsCustomUser = file_get_contents($this->themeDirectory.'admin-configureopenofficeorg-runasuser.htmlf');
-				$runAsCustomUser = str_replace('{{username}}', $customUser, $runAsCustomUser);
-
-				$disallowXVFB = $docvertWritableDir.'do-not-use-xvfb-on-unix.txt';
-				if(isset($_POST['startOpenOfficeOrgServerLinux']))
-					{
-					$shellCommandTemplate = '{{elevate-privledges}} {{bash-script}} {{xvfb}}';
-					$bashScript = '';
-					$xvfbCommand = '';
-					$elevatePrivledges = '';
-
-					if(!file_exists($disallowXVFB))
-						{
-						$xvfbCommand = 'true';
-						}
-
-					$bashScript = dirname(__FILE__).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'unix-specific'.DIRECTORY_SEPARATOR.'start-openoffice-server.sh';
-					$elevatePrivledges = 'sudo';
-
-					if(!file_exists($bashScript))
-						{
-						die("Can't find bash script at ".$bashScript);
-						}
-
-					$shellCommandTemplate = str_replace('{{xvfb}}', $xvfbCommand, $shellCommandTemplate);
-					$shellCommandTemplate = str_replace('{{elevate-privledges}}', $elevatePrivledges, $shellCommandTemplate);
-					$shellCommandTemplate = str_replace('{{bash-script}}', $bashScript, $shellCommandTemplate);
-					$output = shellCommand($shellCommandTemplate, 3);
-					include_once('lib.php');
-					$diagnostics = suggestFixesToCommandLineErrorMessage($output, Array(), false);
-					if($diagnostics)
-						{
-						if(!is_executable($bashScript))
-							{
-							$diagnostics .= '<p>The script is not set as executable, so "<tt>chmod +x</tt>" it. So, the problem is that, or...</p>'.$diagnostics;
-							}
-						$diagnostics .= '<div style="background:#ffff99;border: solid 1px #ffff99;"><h1 style="font-size:small;padding-left:1%;color:red">Diagnostics</h1> <p>There were problems opening up JODConverter OpenOffice.org Server</p><p>I ran this command,</p><blockquote><tt>'.$shellCommandTemplate.'</tt></blockquote><p>But I don\'t think I was able to start OpenOffice.org because the script returned.</p><blockquote><tt>'.$output.'</tt></blockquote>'.$diagnostics.'</div>';
-						$toggleStatus = $diagnostics.$toggleStatus;
-						}
-					else
-						{
-						touch($openOfficeServerStatusPath);
-						}
-					}
-				else if(isset($_POST['stopOpenOfficeOrgServerLinux']))
-					{
-					if(!file_exists($openOfficeServerStatusPath))
-						{
-						$processId = file_get_contents($openOfficeServerStatusPath);
-						shellCommand('kill -TERM '.$processId);
-						}
-					unlink($openOfficeServerStatusPath);
-					}
-
-				$openOfficeServer = file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-linux.htmlf');
-				if(file_exists($openOfficeServerStatusPath))
-					{
-					$toggleStatus .= file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-jodconverter-stop.htmlf');
-					}
-				else
-					{
-					$toggleStatus .= file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-jodconverter-start.htmlf');
-					}
-
+				setConfigItem('runOpenOfficeAsCustomUser', $_REQUEST['runasuser']);
 				}
-			else
+
+			$customUser = getConfigItem('runOpenOfficeAsCustomUser');			
+
+			$runAsCustomUser = file_get_contents($this->themeDirectory.'admin-configureopenofficeorg-runasuser.htmlf');
+			$runAsCustomUser = str_replace('{{username}}', $customUser, $runAsCustomUser);
+
+			$disallowXVFB = getConfigItem('disallowXVFB');
+			if(isset($_POST['startOpenOfficeOrgServerLinux']))
 				{
-				$openOfficeServer = file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-windows.htmlf');
+				$shellCommandTemplate = '{{elevate-privledges}} {{bash-script}} {{xvfb}}';
+				$bashScript = '';
+				$xvfbCommand = '';
+				$elevatePrivledges = '';
+
+				if($disallowXVFB)
+					{
+					$xvfbCommand = 'true';
+					}
+
+				$bashScript = dirname(__FILE__).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'unix-specific'.DIRECTORY_SEPARATOR.'start-openoffice-server.sh';
+				$elevatePrivledges = 'sudo';
+
+				if(!file_exists($bashScript))
+					{
+					die("Can't find bash script at ".$bashScript);
+					}
+
+				$shellCommandTemplate = str_replace('{{xvfb}}', $xvfbCommand, $shellCommandTemplate);
+				$shellCommandTemplate = str_replace('{{elevate-privledges}}', $elevatePrivledges, $shellCommandTemplate);
+				$shellCommandTemplate = str_replace('{{bash-script}}', $bashScript, $shellCommandTemplate);
+				$output = shellCommand($shellCommandTemplate, 3);
+				include_once('lib.php');
+				$diagnostics = suggestFixesToCommandLineErrorMessage($output, Array(), false);
+				if($diagnostics)
+					{
+					if(!is_executable($bashScript))
+						{
+						$diagnostics .= '<p>The script is not set as executable, so "<tt>chmod +x</tt>" it. So, the problem is that, or...</p>'.$diagnostics;
+						}
+					$diagnostics .= '<div style="background:#ffff99;border: solid 1px #ffff99;"><h1 style="font-size:small;padding-left:1%;color:red">Diagnostics</h1> <p>There were problems opening up JODConverter OpenOffice.org Server</p><p>I ran this command,</p><blockquote><tt>'.$shellCommandTemplate.'</tt></blockquote><p>But I don\'t think I was able to start OpenOffice.org because the script returned.</p><blockquote><tt>'.$output.'</tt></blockquote>'.$diagnostics.'</div>';
+					$toggleStatus = $diagnostics.$toggleStatus;
+					}
 				}
-			$template = str_replace('{{openoffice-server}}', $openOfficeServer, $template);
-			$template = str_replace('{{toggle}}', $toggleStatus, $template);
-			$template = str_replace('{{run-as-user}}', $runAsCustomUser, $template);
-			return $template;
+			$openOfficeServer = file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-linux.htmlf');
 			}
+		else
+			{
+			$openOfficeServer = file_get_contents($this->themeDirectory.'admin-setupopenofficeorg-windows.htmlf');
+			}
+		$template = str_replace('{{openoffice-server}}', $openOfficeServer, $template);
+		$template = str_replace('{{toggle}}', $toggleStatus, $template);
+		$template = str_replace('{{run-as-user}}', $runAsCustomUser, $template);
+		return $template;
 		}
 
 	function documentGeneration()
 		{
-		if($this->allowedAdminAccess)
+		if(!$this->allowedAdminAccess) return;
+
+		$template = file_get_contents($this->themeDirectory.'admin-documentgeneration-content.htmlf');
+
+		if(isset($_REQUEST['disableDocumentGeneration']))
 			{
-			$template = file_get_contents($this->themeDirectory.'admin-documentgeneration-content.htmlf');
-			$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-			$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
-			$disallowDocumentGeneration = $docvertWritableDir.'do-not-allow-document-generation.txt';
-
-			if(isset($_REQUEST['disableDocumentGeneration']))
-				{
-				touch($disallowDocumentGeneration);
-				}
-			elseif(isset($_REQUEST['enableDocumentGeneration']))
-				{
-				unlink($disallowDocumentGeneration);
-				}
-
-
-			if(file_exists($disallowDocumentGeneration))
-				{
-				$template = str_replace('{{toggle-document-generation}}', file_get_contents($this->themeDirectory.'admin-documentgeneration-disabled.htmlf'), $template);
-				}
-			else
-				{
-				$template = str_replace('{{toggle-document-generation}}', file_get_contents($this->themeDirectory.'admin-documentgeneration-enabled.htmlf'), $template);
-				}
-			return $template;
+			setConfigItem('doNotAllowDocumentGeneration', 'true');
 			}
+		elseif(isset($_REQUEST['enableDocumentGeneration']))
+			{
+			setConfigItem('doNotAllowDocumentGeneration', 'false');
+			}
+
+		$disallowDocumentGeneration = getConfigItem('doNotAllowDocumentGeneration');
+		if($disallowDocumentGeneration === null || $disallowDocumentGeneration == 'true')
+			{
+			$template = str_replace('{{toggle-document-generation}}', file_get_contents($this->themeDirectory.'admin-documentgeneration-disabled.htmlf'), $template);
+			}
+		else
+			{
+			$template = str_replace('{{toggle-document-generation}}', file_get_contents($this->themeDirectory.'admin-documentgeneration-enabled.htmlf'), $template);
+			}
+		return $template;
 		}
 
 	function nonOpenDocumentUploads()
 		{
-		if($this->allowedAdminAccess)
+		if(!$this->allowedAdminAccess) return;
+
+		if(isset($_POST['disablenonopendocument']))
 			{
-			$disallowNonOpenDocumentUploads = 'writable'.DIRECTORY_SEPARATOR.'disallow-nonopendocumentuploads.txt';
-			if(isset($_POST['disablenonopendocument']))
-				{
-				touch($disallowNonOpenDocumentUploads);
-				chmod($disallowNonOpenDocumentUploads, 0777);
-				}
-			elseif(isset($_POST['enablenonopendocument']))
-				{
-				unlink($disallowNonOpenDocumentUploads);
-				}
-			if(file_exists($disallowNonOpenDocumentUploads))
-				{
-				return file_get_contents($this->themeDirectory.'admin-allow-nonopendocument.htmlf');
-				}
-			else
-				{
-				return file_get_contents($this->themeDirectory.'admin-disallow-nonopendocument.htmlf');
-				}
+			setConfigItem('disallowNonOpenDocumentUploads', 'true');
+			}
+		elseif(isset($_POST['enablenonopendocument']))
+			{
+			setConfigItem('disallowNonOpenDocumentUploads', 'false');
+			}
+		$disallowNonOpenDocumentUploads = getConfigItem('disallowNonOpenDocumentUploads');
+		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'true')
+			{
+			return file_get_contents($this->themeDirectory.'admin-allow-nonopendocument.htmlf');
+			}
+		else
+			{
+			return file_get_contents($this->themeDirectory.'admin-disallow-nonopendocument.htmlf');
 			}
 		}
 
 	function mswordToOpenDocumentConverter()
 		{
-		$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-		$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
-		$disallowNonOpenDocumentUploads = $docvertWritableDir.'disallow-nonopendocumentuploads.txt';
-		if(!file_exists($disallowNonOpenDocumentUploads))
+		$disallowNonOpenDocumentUploads = getConfigItem('disallowNonOpenDocumentUploads');
+		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'false')
 			{
 			$converterTemplatePath = $this->themeDirectory.'sampleuse-converter-content.htmlf';
 			if(file_exists($converterTemplatePath))
@@ -569,8 +525,9 @@ class Themes
 				$numberOfConvertersThatAreDisallowed = 0;
 				foreach($this->converters as $converterId => $converterName)
 					{
-					$doNotUseConverterPath = $docvertWritableDir.'do-not-use-'.$converterId.'.txt';
-					if(file_exists($doNotUseConverterPath))
+					$doNotUseConverter = 'doNotUseConverter'.$converterId;
+					$doNotUseConverterConfig = getConfigItem($doNotUseConverter);
+					if($doNotUseConverterConfig == 'true')
 						{
 						$numberOfConvertersThatAreDisallowed++;
 						}
@@ -591,9 +548,9 @@ class Themes
 				$converterIndex = 0;
 				foreach($this->converters as $converterId => $converterName)
 					{
-					
-					$doNotUseConverterPath = $docvertWritableDir.'do-not-use-'.$converterId.'.txt';
-					if(!file_exists($doNotUseConverterPath))
+					$doNotUseConverter = 'doNotUseConverter'.$converterId;
+					$doNotUseConverterConfig = getConfigItem($doNotUseConverter);
+					if($doNotUseConverterConfig === null || $doNotUseConverterConfig == 'false')
 						{
 						$option = $optionTemplate;
 						$checkedContent = '';
@@ -627,8 +584,8 @@ class Themes
 
 	function sampleDocument()
 		{
-		$disallowNonOpenDocumentUploads = 'writable'.DIRECTORY_SEPARATOR.'disallow-nonopendocumentuploads.txt';
-		if(file_exists($disallowNonOpenDocumentUploads))
+		$disallowNonOpenDocumentUploads = getConfigItem('disallowNonOpenDocumentUploads');
+		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'true')
 			{
 			return file_get_contents($this->themeDirectory.'sampleuse-sampledocument-odt.htmlf');
 			}
@@ -647,9 +604,7 @@ class Themes
 		else
 			{
 			include_once('security.php');
-			$changePassword = null;
-			if(isset($_POST['changepassword'])) $changePassword = $_POST['changepassword'];
-			if(Security::getAdminPassword($changePassword) === FALSE)
+			if(Security::getAdminPassword() === null)
 				{
 				return file_get_contents($this->themeDirectory.'admin-createpassword.htmlf');
 				}
@@ -658,24 +613,17 @@ class Themes
 
 	function unixOnly_useXVFB()
 		{
-		if($this->allowedAdminAccess)
+		if(!$this->allowedAdminAccess) return;
+		if(DIRECTORY_SEPARATOR == '\\') return; //windows
+		
+		$disallowXVFB = getConfigItem('disallowXVFB');
+		if($disallowXVFB === null || $disallowXVFB === 'false')
 			{
-			if(DIRECTORY_SEPARATOR == '/') //Unix
-				{
-				$disallowXVFB = 'writable'.DIRECTORY_SEPARATOR.'do-not-use-xvfb-on-unix.txt';
-				if(file_exists($disallowXVFB))
-					{
-					return file_get_contents($this->themeDirectory.'admin-unix-only-use-xvfb~off.htmlf');
-					}
-				else
-					{
-					return file_get_contents($this->themeDirectory.'admin-unix-only-use-xvfb~on.htmlf');
-					}
-				}
-			else
-				{
-				return null;
-				}
+			return file_get_contents($this->themeDirectory.'admin-unix-only-use-xvfb~on.htmlf');
+			}
+		else
+			{
+			return file_get_contents($this->themeDirectory.'admin-unix-only-use-xvfb~off.htmlf');
 			}
 		}
 
@@ -772,87 +720,86 @@ class Themes
 
 	function configureUploadLocations()
 		{
-		if($this->allowedAdminAccess)
+		if(!$this->allowedAdminAccess) return;
+
+		//[uploadid] => {{upload-id}} [protocol] => webdav [defaultPort] => on
+		//[customPort] => [username] => [password] => [basedirectory] => /var/www/
+
+		include_once('upload-locations.php');
+		if(isset($_POST['host']) && trim($_POST['host']) != '')
 			{
-			//[uploadid] => {{upload-id}} [protocol] => webdav [defaultPort] => on
-			//[customPort] => [username] => [password] => [basedirectory] => /var/www/
-
-			include_once('upload-locations.php');
-			if(isset($_POST['host']) && trim($_POST['host']) != '')
+			//print 'Add because post protocol<br />';
+			$port = $_POST['customPort'];
+			if(isset($_POST["defaultPort"]))
 				{
-				//print 'Add because post protocol<br />';
-				$port = $_POST['customPort'];
-				if(isset($_POST["defaultPort"]))
+				switch($_POST['protocol'])
 					{
-					switch($_POST['protocol'])
-						{
-						case 'ftp':
-						case 'ftp-pasv':
-							$port = "21";
-							break;
-						case 'webdav':
-							$port = '80';
-							break;
-						case 'webdav-ssl':
-						case 'webdav-tls':
-							$port = "443";
-						}
-					
+					case 'ftp':
+					case 'ftp-pasv':
+						$port = "21";
+						break;
+					case 'webdav':
+						$port = '80';
+						break;
+					case 'webdav-ssl':
+					case 'webdav-tls':
+						$port = "443";
 					}
-				addUploadLocation($_POST['name'], $_POST['protocol'],  $_POST['host'], $port, $_POST['username'], $_POST['uploadpassword'], $_POST['basedirectory']);
+				
 				}
-			$uploadLocations = getUploadLocations();
-			if(isset($_POST['deleteuploadid']))
-				{
-				$uploadIndex = $_POST['deleteuploadid'] - 1;
-				//print 'delete upload id '.$uploadIndex.'<br />';
-				$uploadLocations = array_merge(
-					array_slice($uploadLocations, 0, $uploadIndex),
-					array_slice($uploadLocations, $uploadIndex + 1, count($uploadLocations) - $uploadIndex)
-					);
-				saveUploadLocations($uploadLocations);
-				}
-
-			$uploadLocationsTemplate = file_get_contents($this->themeDirectory.'admin-configure-upload-locations.htmlf');
-			
-			$existingUploadLocationsHtml = '';
-
-			if(count($uploadLocations))
-				{
-				$existingUploadLocationsHtml = file_get_contents($this->themeDirectory.'admin-existing-upload-table.htmlf');
-				$existingUploadTemplateRow = file_get_contents($this->themeDirectory.'admin-existing-uploads.htmlf');
-
-				$existingUploadLocationsRows = '';
-				$uploadId = 1;
-				foreach($uploadLocations as $uploadLocation)
-					{
-					$thisRow = $existingUploadTemplateRow;
-					foreach($uploadLocation as $key => $value)
-						{
-						$thisRow = str_replace('{{'.$key.'}}', $value, $thisRow);
-						}
-
-					$rowStyle = '';
-					if(($uploadId % 2) != 1)
-						{
-						$rowStyle = 'background: #eeeeee;';
-						}
-					$thisRow = str_replace('{{rowStyle}}', $rowStyle, $thisRow);
-					$thisRow = str_replace('{{uploadId}}', $uploadId, $thisRow);
-					$thisRow = preg_replace('/{{.*?}}/', '', $thisRow);
-					$existingUploadLocationsRows .= $thisRow;
-					$uploadId++;
-					}
-				$existingUploadLocationsHtml = str_replace('{{existing-upload-rows}}', $existingUploadLocationsRows, $existingUploadLocationsHtml);
-				}
-			else
-				{
-				$existingUploadLocationsHtml = file_get_contents($this->themeDirectory.'admin-existing-uploads-none.htmlf');
-				}
-
-			$uploadsTemplate = str_replace('{{existing-uploads}}', $existingUploadLocationsHtml, $uploadLocationsTemplate);
-			return $uploadsTemplate;
+			addUploadLocation($_POST['name'], $_POST['protocol'],  $_POST['host'], $port, $_POST['username'], $_POST['uploadpassword'], $_POST['basedirectory']);
 			}
+		$uploadLocations = getUploadLocations();
+		if(isset($_POST['deleteuploadid']))
+			{
+			$uploadIndex = $_POST['deleteuploadid'] - 1;
+			//print 'delete upload id '.$uploadIndex.'<br />';
+			$uploadLocations = array_merge(
+				array_slice($uploadLocations, 0, $uploadIndex),
+				array_slice($uploadLocations, $uploadIndex + 1, count($uploadLocations) - $uploadIndex)
+				);
+			saveUploadLocations($uploadLocations);
+			}
+
+		$uploadLocationsTemplate = file_get_contents($this->themeDirectory.'admin-configure-upload-locations.htmlf');
+		
+		$existingUploadLocationsHtml = '';
+
+		if(count($uploadLocations))
+			{
+			$existingUploadLocationsHtml = file_get_contents($this->themeDirectory.'admin-existing-upload-table.htmlf');
+			$existingUploadTemplateRow = file_get_contents($this->themeDirectory.'admin-existing-uploads.htmlf');
+
+			$existingUploadLocationsRows = '';
+			$uploadId = 1;
+			foreach($uploadLocations as $uploadLocation)
+				{
+				$thisRow = $existingUploadTemplateRow;
+				foreach($uploadLocation as $key => $value)
+					{
+					$thisRow = str_replace('{{'.$key.'}}', $value, $thisRow);
+					}
+
+				$rowStyle = '';
+				if(($uploadId % 2) != 1)
+					{
+					$rowStyle = 'background: #eeeeee;';
+					}
+				$thisRow = str_replace('{{rowStyle}}', $rowStyle, $thisRow);
+				$thisRow = str_replace('{{uploadId}}', $uploadId, $thisRow);
+				$thisRow = preg_replace('/{{.*?}}/', '', $thisRow);
+				$existingUploadLocationsRows .= $thisRow;
+				$uploadId++;
+				}
+			$existingUploadLocationsHtml = str_replace('{{existing-upload-rows}}', $existingUploadLocationsRows, $existingUploadLocationsHtml);
+			}
+		else
+			{
+			$existingUploadLocationsHtml = file_get_contents($this->themeDirectory.'admin-existing-uploads-none.htmlf');
+			}
+
+		$uploadsTemplate = str_replace('{{existing-uploads}}', $existingUploadLocationsHtml, $uploadLocationsTemplate);
+		return $uploadsTemplate;
 		}
 
 	static function deleteDirectoryRecursively($path)
@@ -929,18 +876,17 @@ class Themes
 
 	function showPhpInfo()
 		{
-		if($this->allowedAdminAccess)
-			{
-			ob_start();
-			phpinfo();
-			$phpinfo = ob_get_contents();
-			ob_end_clean();
-			ob_start();
-			$phpinfo = substr($phpinfo, strpos($phpinfo, "<body") + 5);
-			$phpinfo = substr($phpinfo, strpos($phpinfo, ">") + 1);
-			$phpinfo = substr($phpinfo, 0, strpos($phpinfo, "</body>"));
-			return '<h2>Your <a href="http://www.php.net/phpinfo" style="color:#666677">phpinfo()</a></h2><p>This is the configuration of your server. Please copy and paste the text below into any bug reports...</p><div id="phpinfo">'.$phpinfo.'</div>';
-			}
+		if(!$this->allowedAdminAccess) return;
+
+		ob_start();
+		phpinfo();
+		$phpinfo = ob_get_contents();
+		ob_end_clean();
+		ob_start();
+		$phpinfo = substr($phpinfo, strpos($phpinfo, "<body") + 5);
+		$phpinfo = substr($phpinfo, strpos($phpinfo, ">") + 1);
+		$phpinfo = substr($phpinfo, 0, strpos($phpinfo, "</body>"));
+		return '<h2>Your <a href="http://www.php.net/phpinfo" style="color:#666677">phpinfo()</a></h2><p>This is the configuration of your server. Please copy and paste the text below into any bug reports...</p><div id="phpinfo">'.$phpinfo.'</div>';
 		}
 
 	function uploadId()
@@ -971,34 +917,34 @@ class Themes
 
 	function configureFilenames()
 		{
-		if($this->allowedAdminAccess)
+		if(!$this->allowedAdminAccess) return;
+
+		$defaultCustomFilenameIndex = "index.html";
+		$defaultCustomFilenameSection = "section#.html";
+
+		if(isset($_POST['custom_filename_index']) && isset($_POST['custom_filename_section']))
 			{
-			$custom_filename_index = "index.html";
-			$custom_filename_section = "section#.html";
-
-			$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-			$docvertWritableDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'writable';
-			$customFilenamesPath = $docvertWritableDir.DIRECTORY_SEPARATOR.'customfilenames.php';
-			if(isset($_POST['custom_filename_index']))
-				{
-				$fileData = array("index" => $_POST['custom_filename_index'], "section" => $_POST['custom_filename_section']);
-				$phpFileData = generatePhpDataFileContents('custom', $fileData);
-				file_put_contents($customFilenamesPath, $phpFileData);
-				}
-			if(file_exists($customFilenamesPath))
-				{
-				include($customFilenamesPath);
-				$custom_filename_index = $custom['index'];
-				$custom_filename_section = $custom['section'];
-				}
-
-			$template = file_get_contents($this->themeDirectory.'admin-configure-filenames.htmlf');
-			$template = str_replace('{{custom_filename_index}}', $custom_filename_index, $template);
-			$template = str_replace('{{custom_filename_section}}', $custom_filename_section, $template);
-
-			return $template;
+			setConfigItem('customFilenameIndex', $_POST['custom_filename_index']);
+			setConfigItem('customFilenameSection', $_POST['custom_filename_section']);
 			}
-		return '';
+		
+		$customFilenameIndex = getConfigItem('customFilenameIndex');
+		if($customFilenameIndex === null)
+			{
+			$customFilenameIndex = $defaultCustomFilenameIndex;
+			}
+
+		$customFilenameSection = getConfigItem('customFilenameSection');
+		if($customFilenameSection === null)
+			{
+			$customFilenameSection = $defaultCustomFilenameSection;
+			}
+
+		$template = file_get_contents($this->themeDirectory.'admin-configure-filenames.htmlf');
+		$template = str_replace('{{custom_filename_index}}', $customFilenameIndex, $template);
+		$template = str_replace('{{custom_filename_section}}', $customFilenameSection, $template);
+
+		return $template;
 		}
 
 	function protocolMessage()
@@ -1022,9 +968,9 @@ class Themes
 	function showGenerationStep()
 		{
 		$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-		$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
-		$disallowDocumentGeneration = $docvertWritableDir.'do-not-allow-document-generation.txt';
-		if(file_exists($disallowDocumentGeneration))
+		
+		$disallowDocumentGeneration = getConfigItem('doNotAllowDocumentGeneration');
+		if($disallowDocumentGeneration == 'true')
 			{
 			return file_get_contents($this->themeDirectory.'generation-disabled.htmlf');
 			}
@@ -1256,56 +1202,50 @@ class Themes
 
 	function chooseConverters()
 		{
-		if($this->allowedAdminAccess)
+		if(!$this->allowedAdminAccess) return;
+		$template = file_get_contents($this->themeDirectory.'admin-converter-content.htmlf');
+
+		foreach($this->converters as $converterId => $converterName)
 			{
-			$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-			$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
-			
-			$template = file_get_contents($this->themeDirectory.'admin-converter-content.htmlf');
-
-			foreach($this->converters as $converterId => $converterName)
+			$doNotUseConverter = 'doNotUseConverter'.$converterId;
+		
+			if(isset($_POST['converter-'.$converterId.'-enable']))
 				{
-				$doNotUseConverterPath = $docvertWritableDir.'do-not-use-'.$converterId.'.txt';
-				$interfacePath = null;
-			
-				if(isset($_POST['converter-'.$converterId.'-enable']) && file_exists($doNotUseConverterPath))
-					{
-					@unlink($doNotUseConverterPath);
-					}
-				elseif(isset($_POST['converter-'.$converterId.'-disable']))
-					{
-					touch($doNotUseConverterPath);
-					}
-
-				if(!file_exists($doNotUseConverterPath))
-					{
-					$interfacePath = $this->themeDirectory.'admin-converter-'.$converterId.'-enabled.htmlf';
-					}
-				else
-					{
-					$interfacePath = $this->themeDirectory.'admin-converter-'.$converterId.'-disabled.htmlf';
-					}
-				$converterPlaceholder = '{{toggle-'.$converterId.'}}';
-				if(stripos($template, $converterPlaceholder) === false)
-					{
-					$template .=  '<br/><br />&#160; Cannot find placeholder of '.$converterPlaceholder.' and so cannot display an interface for '.$converterName.'<br/>';
-					}
-				else if(!file_exists($interfacePath))
-					{
-					$template = str_replace($converterPlaceholder, 'Cannot find interface file at '.$interfacePath.'<br /> ', $template);
-					}
-				else if(!is_readable($interfacePath))
-					{
-					$template = str_replace($converterPlaceholder, 'Interface file <tt>'.$interfacePath.'</tt> was not readable.', $template);
-					}
-				else
-					{
-					$template = str_replace($converterPlaceholder, file_get_contents($interfacePath), $template);
-					}
+				setConfigItem($doNotUseConverter, 'false');
 				}
-			return $template;
+			elseif(isset($_POST['converter-'.$converterId.'-disable']))
+				{
+				setConfigItem($doNotUseConverter, 'true');
+				}
+			$interfacePath = null;
+			$convertConfig = getConfigItem($doNotUseConverter);
+			if($convertConfig === null || $convertConfig == 'false')
+				{
+				$interfacePath = $this->themeDirectory.'admin-converter-'.$converterId.'-enabled.htmlf';
+				}
+			else
+				{
+				$interfacePath = $this->themeDirectory.'admin-converter-'.$converterId.'-disabled.htmlf';
+				}
+			$converterPlaceholder = '{{toggle-'.$converterId.'}}';
+			if(stripos($template, $converterPlaceholder) === false)
+				{
+				$template .=  '<br/><br />&#160; Cannot find placeholder of '.$converterPlaceholder.' and so cannot display an interface for '.$converterName.'<br/>';
+				}
+			else if(!file_exists($interfacePath))
+				{
+				$template = str_replace($converterPlaceholder, 'Cannot find interface file at '.$interfacePath.'<br /> ', $template);
+				}
+			else if(!is_readable($interfacePath))
+				{
+				$template = str_replace($converterPlaceholder, 'Interface file <tt>'.$interfacePath.'</tt> was not readable.', $template);
+				}
+			else
+				{
+				$template = str_replace($converterPlaceholder, file_get_contents($interfacePath), $template);
+				}
 			}
-		return '';
+		return $template;
 		}
 	}
 

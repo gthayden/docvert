@@ -25,6 +25,7 @@ include_once('process/interface-to-implement.php');
 include_once('xslt.php');
 include_once('shell-command.php');
 include_once('xml.php');
+include_once('config.php');
 set_error_handler('phpErrorHandler');
 date_default_timezone_set('UTC');
 
@@ -261,8 +262,8 @@ function isAnOasisOpenDocument($fileUploadArray)
 		}
 	if(!$isAnOasisOpenDocument)
 		{
-		$disallowNonOpenDocumentUploads = 'writable'.DIRECTORY_SEPARATOR.'disallow-nonopendocumentuploads.txt';
-		if(file_exists($disallowNonOpenDocumentUploads))
+		$disallowNonOpenDocumentUploads = getConfigItem('disallowNonOpenDocumentUploads');
+		if($disallowNonOpenDocumentUploads == 'true')
 			{
 			webServiceError('<h1>Only OpenDocument Files Allowed</h1><p>This installation has been configured to only allow OpenDocument uploads. This means that although MSWord is typically supported in Docvert, this particular server has chosen not to support it.</p><p>Supporting MS Word requires additional software that this server doesn\'t have.</p>');
 			}
@@ -316,8 +317,8 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		$numberOfConvertersThatAreDisallowed = 0;
 		foreach($converters as $converterId => $converterName)
 			{
-			$doNotUseConverterPath = $docvertWritableDir.'do-not-use-'.$converterId.'.txt';
-			if(file_exists($doNotUseConverterPath))
+			$doNotUseConverter = getConfigItem('doNotUseConverter'.$converterId);
+			if($doNotUseConverter == 'true')
 				{
 				$numberOfConvertersThatAreDisallowed++;
 				}
@@ -333,10 +334,10 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			// There's only one choice, so don't bother asking the user
 			}
 		}
+	
+	$doNotUseConverter = getConfigItem('doNotUseConverter'.$converter);
 
-	$doNotUseConverterPath = $docvertWritableDir.'do-not-use-'.$converter.'.txt';
-
-	if(file_exists($doNotUseConverterPath))
+	if($doNotUseConverter == 'true')
 		{
 		webServiceError('The chosen converter "'.$converter.'" has been disabled by the Docvert administrator.');
 		}
@@ -362,23 +363,15 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				}
 			elseif($operatingSystemFamily == 'Unix')
 				{
-				$disallowXVFB = 'writable'.DIRECTORY_SEPARATOR.'do-not-use-xvfb-on-unix.txt';
+				$disallowXVFB = getConfigItem('disallowXVFB');
 				$commandTemplateVariable['elevatePermissions'] = 'sudo';
-				$runAsCustomUserConfigurationPath = $docvertWritableDir.'use-custom-user.php';
-				if(file_exists($runAsCustomUserConfigurationPath))
+				$customUser = getConfigItem('runOpenOfficeAsCustomUser');
+				if($customUser != '' && $customUser != 'root')
 					{
-					include_once($runAsCustomUserConfigurationPath);
-					if(isset($customUser))
-						{
-						$customUser = trim($customUser);
-						if($customUser != '' && $customUser != 'root')
-							{
-							$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
-							}
-						}
+					$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
 					}
 				
-				if($mockConversion || file_exists($disallowXVFB))
+				if($disallowXVFB == 'true')
 					{
 					$commandTemplateVariable['useXVFB'] = 'true';
 					}
@@ -1160,7 +1153,7 @@ function deleteDirectoryRecursively($directoryPath)
 		$rmdirCommand = 'rmdir /s /q '.$directoryPath;
 		$response = shellCommand($rmdirCommand);
 		$response = trim($response);
-		file_put_contents('c:\\results.txt', "\r\n".$response."\r\n", FILE_APPEND);
+		//file_put_contents('c:\\results.txt', "\r\n".$response."\r\n", FILE_APPEND);
 		if(stripos($response, 'process cannot access the file') !== false)
 			{
 			$detailedError .= '. Reason: '.$response;
@@ -1298,7 +1291,7 @@ function phpErrorHandler($errorLevel, $message, $file, $line)
 	{
 	//$errorLevelToDescribeMerelyDeprecatedWarnings = 2048;
 	//if($errorLevel < $errorLevelToDescribeMerelyDeprecatedWarnings)
-	//this uses stripos rather than docvet stringContains() in order to be more stand alone
+	//this uses stripos rather than docvert containsString() in order to be more stand alone
 	if(
 		stripos($message, "rmdir") === false &&
 		stripos($message, "mkdir") === false &&
@@ -1310,22 +1303,6 @@ function phpErrorHandler($errorLevel, $message, $file, $line)
 		{
 		webServiceError('<h1>Unhandled Internal Error (<abbr title="Error Level">#</abbr>'.$errorLevel.')</h1><p>"'.$message.'"</p><p>In <tt>'.$file.'</tt> &nbsp; line: <tt>'.$line.'</tt></p>');
 		}
-	}
-
-function generatePhpDataFileContents($variableName, $dataArray)
-	{
-	$template = '<'.'?'.'php'."\n$".$variableName." = array({{body}});\n?".'>';
-
-	$fileBody = '';
-	$phpFormattedArray = array();
-	foreach($dataArray as $key => $value)
-		{
-		$phpFormattedArray[] = '"'.escapeValue($key).'" => "'.escapeValue($value).'"';
-		}
-
-	$fileBody = str_replace('{{body}}', implode(', ', $phpFormattedArray), $template);
-
-	return $fileBody;
 	}
 
 function webServiceError($message, $errorNumber = 500)
@@ -1853,8 +1830,8 @@ function generateDocument($pages, $generatorPipeline)
 
 	$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 	$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
-	$disallowDocumentGeneration = $docvertWritableDir.'do-not-allow-document-generation.txt';
-	if(file_exists($disallowDocumentGeneration))
+	$disallowDocumentGeneration = getConfigItem('doNotAllowDocumentGeneration');
+	if($disallowDocumentGeneration == 'true')
 		{
 		webServiceError('Document Generation is currently disabled on this install of Docvert.');
 		}
