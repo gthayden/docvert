@@ -2,36 +2,54 @@
 
 include_once('lib.php');
 
-function getConfigPath()
+function getConfigDirectory()
 	{
-	$configPath = null;
+	$configDirectory = null;
 	if(DIRECTORY_SEPARATOR == '/')
 		{
-		$configPath = '/etc/docvert/docvert.conf';
+		$configDirectory = '/etc/docvert/';
 		}
 	else
 		{
-		$configPath = dirname(dirname(__file__)).'/writable/docvert.conf';
+		$configDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR.'docvert.conf';
 		}
+	if(!is_writable($configDirectory))
+		{
+		webServiceError('The configuration directory is not writable at <tt>'.$configDirectory.'</tt>. ');
+		}
+	return $configDirectory;
+	}
+
+function getGlobalConfigPath()
+	{
+	$configPath = getConfigDirectory().'docvert.conf';
 	if(file_exists($configPath))
 		{
+		if(!is_readable($configPath))
+			{
+			webServiceError('The configuration file is not readable at <tt>'.$configPath.'</tt>. Ask your administrator to check the permissions on that file.');
+			}
 		return $configPath;
 		}
-	// doesn't exist, initialize file
-	if(!is_writable(dirname($configPath)))
-		{
-		webServiceError('The configuration directory is not writable at <tt>'.$configPath.'</tt>.');
-		}
-	$configHeader = '; Docvert web service configuration.'."\n".'; Project homepage at <http://docvert.org>';
-	file_put_contents($configPath, $configHeader);
+	initializeIniFile($configPath);
 	return $configPath;
 	}
 
-function setConfigItem($key, $value)
+function initializeIniFile($path)
+	{
+	$header = '; Docvert web service configuration.'."\n".'; Project homepage at <http://docvert.org>';
+	file_put_contents($path, $header);
+	}
+
+function setConfigItem($configPath, $key, $value)
 	{
 	//todo sanitise key/value
-	$currentValue = getConfigItem($key);
-	$configPath = getConfigPath();
+	$currentValue = getConfigItem($configPath, $key);
+	if(!is_writable($configPath))
+		{
+		webServiceError('The configuration file is not writable at <tt>'.$configPath.'</tt>. This may be intentional, ask your administrator.');
+		}
+	
 	$newConfigItemLine = $key.'="'.$value.'"';
 	if($currentValue === null) // no previous value, just append
 		{
@@ -57,9 +75,9 @@ function setConfigItem($key, $value)
 	file_put_contents($configPath, implode('', $newIniLines));
 	}
 
-function getConfigItem($key)
+function getConfigItem($configPath, $key)
 	{
-	$options = parse_ini_file(getConfigPath());
+	$options = parse_ini_file(getGlobalConfigPath());
 	if(array_key_exists($key, $options))
 		{
 		return $options[$key];
@@ -67,9 +85,14 @@ function getConfigItem($key)
 	return null;
 	}
 
-if(isset($arg) and count($arg) > 0) // if called from command line
+function getGlobalConfigItem($key)
 	{
-	//
+	return getConfigItem(getGlobalConfigPath(), $key);
+	}
+
+function setGlobalConfigItem($key, $value)
+	{
+	return getConfigItem(getGlobalConfigPath(), $key, $value);
 	}
 
 ?>

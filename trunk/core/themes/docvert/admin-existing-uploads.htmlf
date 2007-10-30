@@ -6,5 +6,5 @@
 	<td>{{username}}</td>
 	<td><strike>xxxxxxx</strike></td>
 	<td>{{baseDirectory}}</td>
-	<td><form method="post"><input type="hidden" name="deleteuploadid" value="{{uploadId}}"/><input type="submit" onclick="return confirm('Really delete upload location #{{uploadId}}?')" title="Delete upload location #{{uploadId}}" style="cursor:pointer; cursor:hand;" value="&times;"/></form></td>
+	<td><form method="post"><input type="hidden" name="deleteuploadid" value="{{uploadId}}"/><input type="submit" onclick="return confirm('Really delete upload location #{{uploadId}}?')" title="Delete upload location '{{uploadId}}'" style="cursor:pointer; cursor:hand;" value="&times;"/></form></td>
 </tr>

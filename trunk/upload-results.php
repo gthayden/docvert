@@ -12,44 +12,28 @@ p {font-size:x-small;}
 $appDir = dirname($_SERVER["SCRIPT_FILENAME"]).DIRECTORY_SEPARATOR;
 define('DOCVERT_DIR', $appDir);
 define('DOCVERT_CLIENT_TYPE', 'web');
-include('core/lib.php');
-include('core/ftp.php');
-include('core/http.php');
-include('core/upload-locations.php');
+include_once('core/lib.php');
+include_once('core/ftp.php');
+include_once('core/http.php');
+include_once('core/upload-locations.php');
 
 if(isset($_POST['uploadto']) && isset($_POST['id']))
 	{
 	$previewId = $_POST['id'];
 
-	$uploadToParts = explode('|', $_POST['uploadto']);
-	if(count($uploadToParts) != 2)
-		{
-		die("uploadToParts does not have two parts");
-		}
+	$uploadId = $_POST['uploadto'];
 	$remoteDirectory = '';
 	if(isset($_POST['remoteDirectory']))
 		{
 		$remoteDirectory = $_POST['remoteDirectory'];
 		}
 
-	$uploadLocations = getUploadLocations();
-	if(count($uploadLocations) == 0)
+	$uploadLocation = getUploadLocation($uploadId);
+	if($uploadLocation === null)
 		{
-		webServiceError("No upload locations available. ");
+		webServiceError('This upload location does not exist.');
 		}
-	$uploadLocation = $uploadLocations[$uploadToParts[0]];
-	if($uploadLocation["name"] != $uploadToParts[1])
-		{
-		$errorMessage = 'An administrator changed the upload configuration while you were uploading. Get the administrator to retrieve upload Id '.$previewId;
-		if(function_exists('webServiceError'))
-			{
-			webServiceError($errorMessage);
-			}
-		else
-			{
-			die($errorMessage);
-			}
-		}
+
 	$previewDirectory = realpath('writable'.DIRECTORY_SEPARATOR.$previewId);
 	if(!file_exists($previewDirectory))
 		{

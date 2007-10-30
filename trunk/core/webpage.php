@@ -58,11 +58,11 @@ class Themes
 					$this->allowedAdminAccess = true;
 					if(isset($_POST['disablexvfb']))
 						{
-						setConfigItem('disallowXVFB', 'true');
+						setGlobalConfigItem('disallowXVFB', 'true');
 						}
 					else
 						{
-						setConfigItem('disallowXVFB', 'false');
+						setGlobalConfigItem('disallowXVFB', 'false');
 						}
 					}
 				elseif(isset($_POST['logout']))
@@ -406,15 +406,15 @@ class Themes
 			{
 			if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
 				{
-				setConfigItem('runOpenOfficeAsCustomUser', $_REQUEST['runasuser']);
+				setGlobalConfigItem('runOpenOfficeAsCustomUser', $_REQUEST['runasuser']);
 				}
 
-			$customUser = getConfigItem('runOpenOfficeAsCustomUser');			
+			$customUser = getGlobalConfigItem('runOpenOfficeAsCustomUser');			
 
 			$runAsCustomUser = file_get_contents($this->themeDirectory.'admin-configureopenofficeorg-runasuser.htmlf');
 			$runAsCustomUser = str_replace('{{username}}', $customUser, $runAsCustomUser);
 
-			$disallowXVFB = getConfigItem('disallowXVFB');
+			$disallowXVFB = getGlobalConfigItem('disallowXVFB');
 			if(isset($_POST['startOpenOfficeOrgServerLinux']))
 				{
 				$shellCommandTemplate = '{{elevate-privledges}} {{bash-script}} {{xvfb}}';
@@ -471,14 +471,14 @@ class Themes
 
 		if(isset($_REQUEST['disableDocumentGeneration']))
 			{
-			setConfigItem('doNotAllowDocumentGeneration', 'true');
+			setGlobalConfigItem('doNotAllowDocumentGeneration', 'true');
 			}
 		elseif(isset($_REQUEST['enableDocumentGeneration']))
 			{
-			setConfigItem('doNotAllowDocumentGeneration', 'false');
+			setGlobalConfigItem('doNotAllowDocumentGeneration', 'false');
 			}
 
-		$disallowDocumentGeneration = getConfigItem('doNotAllowDocumentGeneration');
+		$disallowDocumentGeneration = getGlobalConfigItem('doNotAllowDocumentGeneration');
 		if($disallowDocumentGeneration === null || $disallowDocumentGeneration == 'true')
 			{
 			$template = str_replace('{{toggle-document-generation}}', file_get_contents($this->themeDirectory.'admin-documentgeneration-disabled.htmlf'), $template);
@@ -496,13 +496,13 @@ class Themes
 
 		if(isset($_POST['disablenonopendocument']))
 			{
-			setConfigItem('disallowNonOpenDocumentUploads', 'true');
+			setGlobalConfigItem('disallowNonOpenDocumentUploads', 'true');
 			}
 		elseif(isset($_POST['enablenonopendocument']))
 			{
-			setConfigItem('disallowNonOpenDocumentUploads', 'false');
+			setGlobalConfigItem('disallowNonOpenDocumentUploads', 'false');
 			}
-		$disallowNonOpenDocumentUploads = getConfigItem('disallowNonOpenDocumentUploads');
+		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
 		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'true')
 			{
 			return file_get_contents($this->themeDirectory.'admin-allow-nonopendocument.htmlf');
@@ -515,7 +515,7 @@ class Themes
 
 	function mswordToOpenDocumentConverter()
 		{
-		$disallowNonOpenDocumentUploads = getConfigItem('disallowNonOpenDocumentUploads');
+		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
 		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'false')
 			{
 			$converterTemplatePath = $this->themeDirectory.'sampleuse-converter-content.htmlf';
@@ -526,7 +526,7 @@ class Themes
 				foreach($this->converters as $converterId => $converterName)
 					{
 					$doNotUseConverter = 'doNotUseConverter'.$converterId;
-					$doNotUseConverterConfig = getConfigItem($doNotUseConverter);
+					$doNotUseConverterConfig = getGlobalConfigItem($doNotUseConverter);
 					if($doNotUseConverterConfig == 'true')
 						{
 						$numberOfConvertersThatAreDisallowed++;
@@ -549,7 +549,7 @@ class Themes
 				foreach($this->converters as $converterId => $converterName)
 					{
 					$doNotUseConverter = 'doNotUseConverter'.$converterId;
-					$doNotUseConverterConfig = getConfigItem($doNotUseConverter);
+					$doNotUseConverterConfig = getGlobalConfigItem($doNotUseConverter);
 					if($doNotUseConverterConfig === null || $doNotUseConverterConfig == 'false')
 						{
 						$option = $optionTemplate;
@@ -584,7 +584,7 @@ class Themes
 
 	function sampleDocument()
 		{
-		$disallowNonOpenDocumentUploads = getConfigItem('disallowNonOpenDocumentUploads');
+		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
 		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'true')
 			{
 			return file_get_contents($this->themeDirectory.'sampleuse-sampledocument-odt.htmlf');
@@ -616,7 +616,7 @@ class Themes
 		if(!$this->allowedAdminAccess) return;
 		if(DIRECTORY_SEPARATOR == '\\') return; //windows
 		
-		$disallowXVFB = getConfigItem('disallowXVFB');
+		$disallowXVFB = getGlobalConfigItem('disallowXVFB');
 		if($disallowXVFB === null || $disallowXVFB === 'false')
 			{
 			return file_get_contents($this->themeDirectory.'admin-unix-only-use-xvfb~on.htmlf');
@@ -708,11 +708,9 @@ class Themes
 		include_once('upload-locations.php');
 		$uploadHtml = '';
 		$uploadLocations = getUploadLocations();
-		$uploadId = 0;
-		foreach($uploadLocations as $uploadLocation)
+		foreach($uploadLocations as $uploadId => $uploadLocation)
 			{
-			$uploadHtml .= '<option value="'.$uploadId.'|'.$uploadLocation["name"].'">'.$uploadLocation["name"].'</option>';
-			$uploadId++;
+			$uploadHtml .= '<option value="'.$uploadId.'">'.$uploadLocation["name"].'</option>';
 			}
 		return $uploadHtml;
 		}
@@ -749,18 +747,13 @@ class Themes
 				}
 			addUploadLocation($_POST['name'], $_POST['protocol'],  $_POST['host'], $port, $_POST['username'], $_POST['uploadpassword'], $_POST['basedirectory']);
 			}
-		$uploadLocations = getUploadLocations();
+
 		if(isset($_POST['deleteuploadid']))
 			{
-			$uploadIndex = $_POST['deleteuploadid'] - 1;
-			//print 'delete upload id '.$uploadIndex.'<br />';
-			$uploadLocations = array_merge(
-				array_slice($uploadLocations, 0, $uploadIndex),
-				array_slice($uploadLocations, $uploadIndex + 1, count($uploadLocations) - $uploadIndex)
-				);
-			saveUploadLocations($uploadLocations);
+			deleteUploadLocation($_POST['deleteuploadid']);			
 			}
 
+		$uploadLocations = getUploadLocations();
 		$uploadLocationsTemplate = file_get_contents($this->themeDirectory.'admin-configure-upload-locations.htmlf');
 		
 		$existingUploadLocationsHtml = '';
@@ -771,8 +764,8 @@ class Themes
 			$existingUploadTemplateRow = file_get_contents($this->themeDirectory.'admin-existing-uploads.htmlf');
 
 			$existingUploadLocationsRows = '';
-			$uploadId = 1;
-			foreach($uploadLocations as $uploadLocation)
+			$uploadIndex = 0;
+			foreach($uploadLocations as $uploadId => $uploadLocation)
 				{
 				$thisRow = $existingUploadTemplateRow;
 				foreach($uploadLocation as $key => $value)
@@ -781,7 +774,7 @@ class Themes
 					}
 
 				$rowStyle = '';
-				if(($uploadId % 2) != 1)
+				if(($uploadIndex % 2) != 1)
 					{
 					$rowStyle = 'background: #eeeeee;';
 					}
@@ -789,7 +782,7 @@ class Themes
 				$thisRow = str_replace('{{uploadId}}', $uploadId, $thisRow);
 				$thisRow = preg_replace('/{{.*?}}/', '', $thisRow);
 				$existingUploadLocationsRows .= $thisRow;
-				$uploadId++;
+				$uploadIndex++;
 				}
 			$existingUploadLocationsHtml = str_replace('{{existing-upload-rows}}', $existingUploadLocationsRows, $existingUploadLocationsHtml);
 			}
@@ -924,17 +917,17 @@ class Themes
 
 		if(isset($_POST['custom_filename_index']) && isset($_POST['custom_filename_section']))
 			{
-			setConfigItem('customFilenameIndex', $_POST['custom_filename_index']);
-			setConfigItem('customFilenameSection', $_POST['custom_filename_section']);
+			setGlobalConfigItem('customFilenameIndex', $_POST['custom_filename_index']);
+			setGlobalConfigItem('customFilenameSection', $_POST['custom_filename_section']);
 			}
 		
-		$customFilenameIndex = getConfigItem('customFilenameIndex');
+		$customFilenameIndex = getGlobalConfigItem('customFilenameIndex');
 		if($customFilenameIndex === null)
 			{
 			$customFilenameIndex = $defaultCustomFilenameIndex;
 			}
 
-		$customFilenameSection = getConfigItem('customFilenameSection');
+		$customFilenameSection = getGlobalConfigItem('customFilenameSection');
 		if($customFilenameSection === null)
 			{
 			$customFilenameSection = $defaultCustomFilenameSection;
@@ -969,7 +962,7 @@ class Themes
 		{
 		$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 		
-		$disallowDocumentGeneration = getConfigItem('doNotAllowDocumentGeneration');
+		$disallowDocumentGeneration = getGlobalConfigItem('doNotAllowDocumentGeneration');
 		if($disallowDocumentGeneration == 'true')
 			{
 			return file_get_contents($this->themeDirectory.'generation-disabled.htmlf');
@@ -1211,14 +1204,14 @@ class Themes
 		
 			if(isset($_POST['converter-'.$converterId.'-enable']))
 				{
-				setConfigItem($doNotUseConverter, 'false');
+				setGlobalConfigItem($doNotUseConverter, 'false');
 				}
 			elseif(isset($_POST['converter-'.$converterId.'-disable']))
 				{
-				setConfigItem($doNotUseConverter, 'true');
+				setGlobalConfigItem($doNotUseConverter, 'true');
 				}
 			$interfacePath = null;
-			$convertConfig = getConfigItem($doNotUseConverter);
+			$convertConfig = getGlobalConfigItem($doNotUseConverter);
 			if($convertConfig === null || $convertConfig == 'false')
 				{
 				$interfacePath = $this->themeDirectory.'admin-converter-'.$converterId.'-enabled.htmlf';

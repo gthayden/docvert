@@ -1,88 +1,55 @@
 <?php
-//[uploadid] => {{upload-id}} [protocol] => webdav [defaultPort] => on
-//[customPort] => [username] => [password] => [basedirectory] => /var/www/
-
 include_once('lib.php');
-
-function getUploadLocationsPath()
-	{
-	$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-	$docvertWritableDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'writable';
-	$uploadLocationsPath = $docvertWritableDir.DIRECTORY_SEPARATOR.'uploadlocations.php';
-	return $uploadLocationsPath;
-	}
+include_once('config.php');
 
 function getUploadLocations()
 	{
-	$uploadLocationsPath = getUploadLocationsPath();
-	$uploadLocations = array();
-	if(file_exists($uploadLocationsPath))
+	$uploadLocations = Array();
+	$uploadConfigsPathPattern = getConfigDirectory().'upload-*.conf';
+	$uploadConfigs = glob($uploadConfigsPathPattern);
+	foreach($uploadConfigs as $uploadConfig)
 		{
-		if(is_readable($uploadLocationsPath))
-			{
-			include($uploadLocationsPath);
-			}
-		else
-			{
-			webServiceError('The upload locations configuration exists but is unreadable. Change the permissions of the file at <tt>"'.$uploadLocationsPath.'"</tt>');
-			}
+		$uploadId = basename($uploadConfig, '.conf');
+		$uploadId = substr($uploadId, 7);
+		$uploadLocations[$uploadId] = parse_ini_file($uploadConfig);
 		}
 	return $uploadLocations;
 	}
 
+function getUploadLocation($uploadId)
+	{
+	//todo sanitise $name
+	$uploadLocationPath = getConfigDirectory().'upload-'.$uploadId.'.conf';
+	if(!file_exists($uploadLocationPath)) return null;
+	return parse_ini_file($uploadLocationPath);
+	}
 
 function addUploadLocation($name, $protocol, $host, $port, $username, $password, $baseDirectory)
 	{
-	$uploadLocations = getUploadLocations();
-	$uploadLocations[] = array('name' => $name, 'protocol' => $protocol, 'host' => $host, 'port' => $port, 'username' => $username, 'password' => $password, 'baseDirectory' => $baseDirectory);
-	saveUploadLocations($uploadLocations);
-	}
-
-function saveUploadLocations($uploadLocations)
-	{
-	//print "<pre>";
-	//print_r($uploadLocations);
-	//print "</pre>";  
-	$uploadLocationsPath = getUploadLocationsPath();
-	$docvertWritableDir = dirname($uploadLocationsPath);
-	if(!is_writable($docvertWritableDir))
-		{
-		$errorMessage = 'Cannot save upload location because the <tt>/writable</tt> directory is not actually writable. The writable directory is at <tt>"'.$docvertWritableDir.'"</tt>.';
-		if(function_exists('webServiceError'))
-			{
-			webServiceError($errorMessage);
-			}
-		else
-			{
-			die($errorMessage);
-			}
-		}
-	$uploadTemplate = '<'.'?'.'php'."\n$"."uploadLocations = array".'();'."\n{{body}}?".'>';
-	$uploadTemplateItem = '$'."uploadLocations[]".' = array('."{{body}});\n";
+	//todo sanitise $name
+	$configDirectory = getConfigDirectory();
+	$uploadLocationPath = $configDirectory.'upload-'.$name.'.conf';
 	
-	$fileBody = '';
-	foreach($uploadLocations as $uploadLocation)
+	while(file_exists($uploadLocationPath))
 		{
-		$uploadLocationArray = array();
-		foreach($uploadLocation as $key => $value)
-			{
-			$uploadLocationArray[] = '"'.escapeValue($key).'" => "'.escapeValue($value).'"';
-			}
-		$uploadLocationValues = implode(', ', $uploadLocationArray);
-		$fileBody .= str_replace('{{body}}', $uploadLocationValues, $uploadTemplateItem);
+		$uploadLocationPath = $configDirectory.'upload-'.$name.'-'.rand(1, 1000).'.conf';
 		}
-	$fileData = str_replace('{{body}}', $fileBody, $uploadTemplate);
-	file_put_contents($uploadLocationsPath, $fileData);
-	chmod($uploadLocationsPath, 0600);
+
+	initializeIniFile($uploadLocationPath);
+	setConfigItem($uploadLocationPath, 'name', $name);
+	setConfigItem($uploadLocationPath, 'protocol', $protocol);
+	setConfigItem($uploadLocationPath, 'host', $host);
+	setConfigItem($uploadLocationPath, 'port', $port);
+	setConfigItem($uploadLocationPath, 'username', $username);
+	setConfigItem($uploadLocationPath, 'password', $password);
+	setConfigItem($uploadLocationPath, 'baseDirectory', $baseDirectory);
 	}
 
-function escapeValue($value)
+function deleteUploadLocation($uploadId)
 	{
-	$value = str_replace("\n", '', $value);
-	$value = str_replace("\r", '', $value);
-	$value = str_replace('\\', '\\\\', $value);
-	$value = str_replace('"', '\\"', $value);
-	return $value;
+	//todo sanitise $nam
+	$uploadLocationPath = getConfigDirectory().'upload-'.$uploadId.'.conf';
+	unlink($uploadLocationPath);
 	}
 
 ?>
