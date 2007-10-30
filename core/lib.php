@@ -262,7 +262,7 @@ function isAnOasisOpenDocument($fileUploadArray)
 		}
 	if(!$isAnOasisOpenDocument)
 		{
-		$disallowNonOpenDocumentUploads = getConfigItem('disallowNonOpenDocumentUploads');
+		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
 		if($disallowNonOpenDocumentUploads == 'true')
 			{
 			webServiceError('<h1>Only OpenDocument Files Allowed</h1><p>This installation has been configured to only allow OpenDocument uploads. This means that although MSWord is typically supported in Docvert, this particular server has chosen not to support it.</p><p>Supporting MS Word requires additional software that this server doesn\'t have.</p>');
@@ -317,7 +317,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		$numberOfConvertersThatAreDisallowed = 0;
 		foreach($converters as $converterId => $converterName)
 			{
-			$doNotUseConverter = getConfigItem('doNotUseConverter'.$converterId);
+			$doNotUseConverter = getGlobalConfigItem('doNotUseConverter'.$converterId);
 			if($doNotUseConverter == 'true')
 				{
 				$numberOfConvertersThatAreDisallowed++;
@@ -335,7 +335,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			}
 		}
 	
-	$doNotUseConverter = getConfigItem('doNotUseConverter'.$converter);
+	$doNotUseConverter = getGlobalConfigItem('doNotUseConverter'.$converter);
 
 	if($doNotUseConverter == 'true')
 		{
@@ -363,15 +363,15 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				}
 			elseif($operatingSystemFamily == 'Unix')
 				{
-				$disallowXVFB = getConfigItem('disallowXVFB');
+				$disallowXVFB = getGlobalConfigItem('disallowXVFB');
 				$commandTemplateVariable['elevatePermissions'] = 'sudo';
-				$customUser = getConfigItem('runOpenOfficeAsCustomUser');
-				if($customUser != '' && $customUser != 'root')
+				$customUser = getGlobalConfigItem('runOpenOfficeAsCustomUser');
+				if($customUser !== null && $customUser != '' && $customUser != 'root')
 					{
 					$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
 					}
 				
-				if($disallowXVFB == 'true')
+				if($disallowXVFB == 'true' || $mockConversion)
 					{
 					$commandTemplateVariable['useXVFB'] = 'true';
 					}
@@ -609,19 +609,19 @@ function setupOpenOfficeOrg()
 	set_time_limit(60 * 2);
 	include_once('security.php');
 	$adminPassword = Security::getAdminPassword();
-	if($adminPassword === FALSE)
+	if($adminPassword === null)
 		{
 		webServiceError('Refusing to start OpenOffice.org because a password hasn\'t been set. See install.txt for details on how to do this.', 300);
 		}
 	else
 		{
 		session_start();
-		if($_SESSION['docvert_p'] != $adminPassword) webServiceError('Refusing to start OpenOffice.org due to incorrect password. Your password is "'.$_COOKIE['docvert_p'].'"', 300); 
+		if($_SESSION['docvert_p'] != $adminPassword) webServiceError('Refusing to start OpenOffice.org due to incorrect password. Login on the admin page and try again.', 300); 
 		}
 	$output = makeOasisOpenDocument(null, 'openofficeorg', true);
 	$body = null;
 	$body .= '<h1>Docvert tried to start OpenOffice.org on your desktop</h1>';
-	if(trim($output) != '' && stripos($output, 'uninitialized value') === false && stripos($output, 'stat: missing operand') === false)
+	if(trim($output) != '')
 		{
 		$body .= '<p>...but this appears to have failed. This is what was returned:</p><blockquote><tt>'.$output.'</tt></blockquote>';
 		$body .= suggestFixesToCommandLineErrorMessage($output, null, false);
@@ -1830,7 +1830,7 @@ function generateDocument($pages, $generatorPipeline)
 
 	$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 	$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
-	$disallowDocumentGeneration = getConfigItem('doNotAllowDocumentGeneration');
+	$disallowDocumentGeneration = getGlobalConfigItem('doNotAllowDocumentGeneration');
 	if($disallowDocumentGeneration == 'true')
 		{
 		webServiceError('Document Generation is currently disabled on this install of Docvert.');
