@@ -1731,7 +1731,7 @@ function sanitiseStringToAlphaNumeric($toxicString)
 
 function sanitiseToIniValue($toxicString)
 	{
-	$badCharactersInAnIniValue = Array("\n", "\r", '"', '\\')
+	$badCharactersInAnIniValue = Array("\n", "\r", '"', '\\');
 	return str_replace($badCharactersInAnIniValue, '', $toxicString);
 	}
 
