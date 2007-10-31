@@ -215,7 +215,7 @@ function moveUploadToConversionDirectory($file, $temporaryDirectory)
 	{
 	$documentPathInfo = pathinfo($file['name']);
 	$documentName = basename($documentPathInfo['basename'], '.'.$documentPathInfo['extension']);
-	//TODO: filter the name against a list of valid characters
+	$documentName = sanitiseStringToAlphaNumeric($documentName);
 	$conversionDirectory = $temporaryDirectory;
 	$conversionDirectoryToUse = ensureMakeDirectory($conversionDirectory, $documentName);
 	$documentPath = $conversionDirectoryToUse.DIRECTORY_SEPARATOR.$documentPathInfo['basename'];
@@ -1723,8 +1723,17 @@ function characterEntityToNCR($text)
 	return $text;
 	}
 
+function sanitiseStringToAlphaNumeric($toxicString)
+	{
+	$toxicString = str_replace(' ', '-', $toxicString);
+	return preg_replace('/[^a-zA-Z0-9-]/s', '', $toxicString);
+	}
 
-
+function sanitiseToIniValue($toxicString)
+	{
+	$badCharactersInAnIniValue = Array("\n", "\r", '"', '\\')
+	return str_replace($badCharactersInAnIniValue, '', $toxicString);
+	}
 
 function resolveRelativeUrl($relativeUrl)
 	{
