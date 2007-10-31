@@ -40,6 +40,7 @@ class Themes
 			{
 			if(isset($_POST['password']) && $_POST['password'] == $adminPassword || isset($_SESSION['docvert_p']) && $_SESSION['docvert_p'] == $adminPassword)
 				{
+		
 				if(isset($_POST['password']))
 					{
 					//print 'password';
@@ -53,8 +54,9 @@ class Themes
 					Security::setAdminPassword($_POST['changepassword']);
 					$_SESSION['docvert_p'] = trim($_POST['changepassword']);
 					}
-				elseif(isset($_POST['disablexvfb']) || isset($_POST['enablexvfb']))
+				if(isset($_POST['disablexvfb']) || isset($_POST['enablexvfb']))
 					{
+				
 					$this->allowedAdminAccess = true;
 					if(isset($_POST['disablexvfb']))
 						{

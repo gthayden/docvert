@@ -11,7 +11,7 @@ function getConfigDirectory()
 		}
 	else
 		{
-		$configDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR.'docvert.conf';
+		$configDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR;
 		}
 	if(!is_writable($configDirectory))
 		{
@@ -43,7 +43,9 @@ function initializeIniFile($path)
 
 function setConfigItem($configPath, $key, $value)
 	{
-	//todo sanitise key/value
+	$key = sanitiseStringToAlphaNumeric($key);
+	$value = sanitiseToIniValue($value);
+
 	$currentValue = getConfigItem($configPath, $key);
 	if(!is_writable($configPath))
 		{
@@ -92,7 +94,7 @@ function getGlobalConfigItem($key)
 
 function setGlobalConfigItem($key, $value)
 	{
-	return getConfigItem(getGlobalConfigPath(), $key, $value);
+	return setConfigItem(getGlobalConfigPath(), $key, $value);
 	}
 
 ?>
