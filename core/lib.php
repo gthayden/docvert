@@ -140,7 +140,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 	 	*
 		 * So I'm doing a "400 Bad Request" in the meantime.
 		*/
-		webServiceError('<h1>No files uploaded</h1><p>This web service takes HTTP POSTs of binary MSWord, OpenDocument, and other word processing files but none were given. If you did give a file for upload then check local file permissions to see whether your browser could upload the file.</p>', '400 Bad Request');
+		webServiceError('<h1>No files uploaded</h1><p>This web service takes HTTP POSTs of binary MSWord, OpenDocument, and other word processing files but none were given.</p><p>If you did provide a file here are some things to check...</p><ul><li>If you uploaded a large file check your php.ini configuration for <tt>upload_max_filesize</tt> and ensure it\'s large enough.</li><li>Check local file permissions to see whether your browser could upload the file.</li></ul>', '400 Bad Request');
 		}
 	}
 
@@ -718,7 +718,7 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 					* 15 = WBMP, 16 = XBM
 					*/
 					$imageTypes = array("GIF", "JPG", "PNG", "SWF", "PSD", "BMP", "TIFF", "TIFF", "JPC", "JP2", "JPX", "JB2", "SWC", "IFF", "WBMP", "XBM");
-					if(trim($imageMetadata[1]) != "" && $imageMetadata[1] < count($imageTypes))
+					if(trim($imageMetadata[1]) != null && trim($imageMetadata[1]) != "" && $imageMetadata[1] < count($imageTypes))
 						{
 						$imageTypeIndex = $imageMetadata[1] - 1;
 						$fileExtension = strtolower($imageTypes[$imageTypeIndex]);
