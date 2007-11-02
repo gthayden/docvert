@@ -1,0 +1,12 @@
+<div style="width:100%;clear:both">
+	<h2>&choose-docvert-theme-title;</h2>
+	<form method="post">
+		<p>
+			&choose-a-theme-form-label;:
+			<select name="chooseTheme">
+				{{list-of-themes}}
+			</select>
+			<input type="submit" name="saveTheme" value="&set-theme-button-text;"/>
+		</p>
+	</form>
+</div>
