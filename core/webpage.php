@@ -29,9 +29,6 @@ class Themes
 
 	function drawTheme()
 		{
-		$this->chosenTheme = 'docvert';
-		$this->docvertRootDirectory = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-		$this->themeDirectory = dirname(__FILE__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$this->chosenTheme.DIRECTORY_SEPARATOR;
 		$this->page = basename($_SERVER['SCRIPT_FILENAME'], '.php');
 		$this->allowedAdminAccess = false;
 		include_once('security.php');
@@ -56,7 +53,6 @@ class Themes
 					}
 				if(isset($_POST['disablexvfb']) || isset($_POST['enablexvfb']))
 					{
-				
 					$this->allowedAdminAccess = true;
 					if(isset($_POST['disablexvfb']))
 						{
@@ -67,6 +63,11 @@ class Themes
 						setGlobalConfigItem('disallowXVFB', 'false');
 						}
 					}
+				if(isset($_POST['chooseTheme']))
+					{
+					setGlobalConfigItem('theme', $_POST['chooseTheme']);
+					}
+
 				elseif(isset($_POST['logout']))
 					{
 					//print 'logout';
@@ -86,7 +87,16 @@ class Themes
 			$this->allowedAdminAccess = true;
 			}
 
-		$htmlTemplate = $this->getThemeFragment($this->themeDirectory.'template.html');
+		$this->chosenTheme = getGlobalConfigItem('theme');
+		if($this->chosenTheme == null)
+			{
+			$this->chosenTheme = 'docvert';
+			}
+
+		$this->docvertRootDirectory = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
+		$this->themeDirectory = dirname(__FILE__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$this->chosenTheme.DIRECTORY_SEPARATOR;
+
+		$htmlTemplate = $this->getThemeFragment('template.html');
 		$htmlTemplate = str_replace('{{content}}', $this->choosePage(), $htmlTemplate);
 		$htmlTemplate = str_replace('{{menu-items}}', $this->menuItems(), $htmlTemplate);
 		switch($this->page)
@@ -102,6 +112,7 @@ class Themes
 				$htmlTemplate = str_replace('{{login}}', $this->login(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{logout}}', $this->logout(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{change-password}}', $this->changePassword(), $htmlTemplate);
+				$htmlTemplate = str_replace('{{choose-theme}}', $this->chooseTheme(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{choose-converters}}', $this->chooseConverters(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{unix-only-use-xvfb}}', $this->unixOnly_useXVFB(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{configure-upload-locations}}', $this->configureUploadLocations(), $htmlTemplate);
@@ -135,7 +146,12 @@ class Themes
 
 	function getThemeFragment($path)
 		{
-		$themeFragment = file_get_contents($path);
+		$themePath = $this->themeDirectory.$path;
+		if(!file_exists($themePath)) //instead use default directory
+			{
+			$themePath = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'docvert'.DIRECTORY_SEPARATOR.$path;
+			}
+		$themeFragment = file_get_contents($themePath);
 		return preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $themeFragment);
 		}
 
@@ -256,23 +272,24 @@ class Themes
 		webServiceError('Unable to display previewDirectory of "'.$this->previewDirectory.'"');
 		}
 
+
 	function choosePage()
 		{
 		if($this->page == 'sample-use')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'sampleuse-content.htmlf');
+			return $this->getThemeFragment('sampleuse-content.htmlf');
 			}
 		elseif($this->page == 'web-service')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'conversionpreview-content.htmlf');
+			return $this->getThemeFragment('conversionpreview-content.htmlf');
 			}
 		elseif($this->page == 'admin')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-content.htmlf');
+			return $this->getThemeFragment('admin-content.htmlf');
 			}
 		elseif($this->page == 'generation')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'generation-content.htmlf');
+			return $this->getThemeFragment('generation-content.htmlf');
 			}
 		else
 			{
@@ -300,11 +317,11 @@ class Themes
 		{
 		if(!is_writable('writable'))
 			{
-			return $this->getThemeFragment($this->themeDirectory.'sampleuse-no-preview-until-writable.htmlf');
+			return $this->getThemeFragment('sampleuse-no-preview-until-writable.htmlf');
 			}
 		else
 			{
-			return $this->getThemeFragment($this->themeDirectory.'sampleuse-after-conversion.htmlf');
+			return $this->getThemeFragment('sampleuse-after-conversion.htmlf');
 			}
 		}
 
@@ -312,20 +329,20 @@ class Themes
 		{
 		if($this->page == 'admin')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'menu-admin.htmlf');
+			return $this->getThemeFragment('menu-admin.htmlf');
 			}
 		if($this->page == 'web-service')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'menu-webservice.htmlf');
+			return $this->getThemeFragment('menu-webservice.htmlf');
 			}
 		if($this->page == 'generation')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'menu-generation.htmlf');
+			return $this->getThemeFragment('menu-generation.htmlf');
 			}
 
 		else
 			{
-			return $this->getThemeFragment($this->themeDirectory.'menu-sampleuse.htmlf');
+			return $this->getThemeFragment('menu-sampleuse.htmlf');
 			}
 		}
 
@@ -389,14 +406,14 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess && Security::getAdminPassword() !== null)
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-login.htmlf');
+			return $this->getThemeFragment('admin-login.htmlf');
 			}
 		}
 
 	function logout()
 		{
 		if(!$this->allowedAdminAccess) return;
-		return $this->getThemeFragment($this->themeDirectory.'admin-logout.htmlf');
+		return $this->getThemeFragment('admin-logout.htmlf');
 		}
 
 	function setupOpenOfficeOrg()
@@ -405,7 +422,7 @@ class Themes
 
 		$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 		$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
-		$template = $this->getThemeFragment($this->themeDirectory.'admin-setupopenofficeorg.htmlf');
+		$template = $this->getThemeFragment('admin-setupopenofficeorg.htmlf');
 
 		$runAsCustomUser = '';
 		$toggleStatus = '';
@@ -419,7 +436,7 @@ class Themes
 
 			$customUser = getGlobalConfigItem('runOpenOfficeAsCustomUser');			
 
-			$runAsCustomUser = $this->getThemeFragment($this->themeDirectory.'admin-configureopenofficeorg-runasuser.htmlf');
+			$runAsCustomUser = $this->getThemeFragment('admin-configureopenofficeorg-runasuser.htmlf');
 			$runAsCustomUser = str_replace('{{username}}', $customUser, $runAsCustomUser);
 
 			$disallowXVFB = getGlobalConfigItem('disallowXVFB');
@@ -459,11 +476,11 @@ class Themes
 					$toggleStatus = $diagnostics.$toggleStatus;
 					}
 				}
-			$openOfficeServer = $this->getThemeFragment($this->themeDirectory.'admin-setupopenofficeorg-linux.htmlf');
+			$openOfficeServer = $this->getThemeFragment('admin-setupopenofficeorg-linux.htmlf');
 			}
 		else
 			{
-			$openOfficeServer = $this->getThemeFragment($this->themeDirectory.'admin-setupopenofficeorg-windows.htmlf');
+			$openOfficeServer = $this->getThemeFragment('admin-setupopenofficeorg-windows.htmlf');
 			}
 		$template = str_replace('{{openoffice-server}}', $openOfficeServer, $template);
 		$template = str_replace('{{toggle}}', $toggleStatus, $template);
@@ -475,7 +492,7 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 
-		$template = $this->getThemeFragment($this->themeDirectory.'admin-documentgeneration-content.htmlf');
+		$template = $this->getThemeFragment('admin-documentgeneration-content.htmlf');
 
 		if(isset($_REQUEST['disableDocumentGeneration']))
 			{
@@ -489,11 +506,11 @@ class Themes
 		$disallowDocumentGeneration = getGlobalConfigItem('doNotAllowDocumentGeneration');
 		if($disallowDocumentGeneration === null || $disallowDocumentGeneration == 'true')
 			{
-			$template = str_replace('{{toggle-document-generation}}', $this->getThemeFragment($this->themeDirectory.'admin-documentgeneration-disabled.htmlf'), $template);
+			$template = str_replace('{{toggle-document-generation}}', $this->getThemeFragment('admin-documentgeneration-disabled.htmlf'), $template);
 			}
 		else
 			{
-			$template = str_replace('{{toggle-document-generation}}', $this->getThemeFragment($this->themeDirectory.'admin-documentgeneration-enabled.htmlf'), $template);
+			$template = str_replace('{{toggle-document-generation}}', $this->getThemeFragment('admin-documentgeneration-enabled.htmlf'), $template);
 			}
 		return $template;
 		}
@@ -513,11 +530,11 @@ class Themes
 		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
 		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'true')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-allow-nonopendocument.htmlf');
+			return $this->getThemeFragment('admin-allow-nonopendocument.htmlf');
 			}
 		else
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-disallow-nonopendocument.htmlf');
+			return $this->getThemeFragment('admin-disallow-nonopendocument.htmlf');
 			}
 		}
 
@@ -529,7 +546,7 @@ class Themes
 			$converterTemplatePath = $this->themeDirectory.'sampleuse-converter-content.htmlf';
 			if(file_exists($converterTemplatePath))
 				{
-				$template = $this->getThemeFragment($this->themeDirectory.'admin-converter-content.htmlf');
+				$template = $this->getThemeFragment('admin-converter-content.htmlf');
 				$numberOfConvertersThatAreDisallowed = 0;
 				foreach($this->converters as $converterId => $converterName)
 					{
@@ -586,7 +603,7 @@ class Themes
 			}
 		else
 			{
-			return $this->getThemeFragment($this->themeDirectory.'sampleuse-msword-to-opendocument-converter~off.htmlf');
+			return $this->getThemeFragment('sampleuse-msword-to-opendocument-converter~off.htmlf');
 			}
 		}
 
@@ -595,11 +612,11 @@ class Themes
 		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
 		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'true')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'sampleuse-sampledocument-odt.htmlf');
+			return $this->getThemeFragment('sampleuse-sampledocument-odt.htmlf');
 			}
 		else
 			{
-			return $this->getThemeFragment($this->themeDirectory.'sampleuse-sampledocument-msword.htmlf');
+			return $this->getThemeFragment('sampleuse-sampledocument-msword.htmlf');
 			}
 		}
 
@@ -607,14 +624,14 @@ class Themes
 		{
 		if(!is_writable('writable'))
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-not-writable.htmlf');
+			return $this->getThemeFragment('admin-not-writable.htmlf');
 			}
 		else
 			{
 			include_once('security.php');
 			if(Security::getAdminPassword() === null)
 				{
-				return $this->getThemeFragment($this->themeDirectory.'admin-createpassword.htmlf');
+				return $this->getThemeFragment('admin-createpassword.htmlf');
 				}
 			}
 		}
@@ -627,11 +644,11 @@ class Themes
 		$disallowXVFB = getGlobalConfigItem('disallowXVFB');
 		if($disallowXVFB === null || $disallowXVFB === 'false')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-unix-only-use-xvfb~on.htmlf');
+			return $this->getThemeFragment('admin-unix-only-use-xvfb~on.htmlf');
 			}
 		else
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-unix-only-use-xvfb~off.htmlf');
+			return $this->getThemeFragment('admin-unix-only-use-xvfb~off.htmlf');
 			}
 		}
 
@@ -639,7 +656,7 @@ class Themes
 		{
 		if($this->allowedAdminAccess)
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-changepassword.htmlf');
+			return $this->getThemeFragment('admin-changepassword.htmlf');
 			}
 		}
 
@@ -650,7 +667,7 @@ class Themes
 			}
 		else
 			{
-			return $this->getThemeFragment($this->themeDirectory.'admin-options.htmlf');
+			return $this->getThemeFragment('admin-options.htmlf');
 			}
 		}
 
@@ -706,7 +723,7 @@ class Themes
 		$uploadLocations = getUploadLocations();
 		if(count($uploadLocations))
 			{
-			$uploadHtml = $this->getThemeFragment($this->themeDirectory.'conversionpreview-upload-results.htmlf');
+			$uploadHtml = $this->getThemeFragment('conversionpreview-upload-results.htmlf');
 			}
 		return $uploadHtml;
 		}
@@ -762,14 +779,14 @@ class Themes
 			}
 
 		$uploadLocations = getUploadLocations();
-		$uploadLocationsTemplate = $this->getThemeFragment($this->themeDirectory.'admin-configure-upload-locations.htmlf');
+		$uploadLocationsTemplate = $this->getThemeFragment('admin-configure-upload-locations.htmlf');
 		
 		$existingUploadLocationsHtml = '';
 
 		if(count($uploadLocations))
 			{
-			$existingUploadLocationsHtml = $this->getThemeFragment($this->themeDirectory.'admin-existing-upload-table.htmlf');
-			$existingUploadTemplateRow = $this->getThemeFragment($this->themeDirectory.'admin-existing-uploads.htmlf');
+			$existingUploadLocationsHtml = $this->getThemeFragment('admin-existing-upload-table.htmlf');
+			$existingUploadTemplateRow = $this->getThemeFragment('admin-existing-uploads.htmlf');
 
 			$existingUploadLocationsRows = '';
 			$uploadIndex = 0;
@@ -796,7 +813,7 @@ class Themes
 			}
 		else
 			{
-			$existingUploadLocationsHtml = $this->getThemeFragment($this->themeDirectory.'admin-existing-uploads-none.htmlf');
+			$existingUploadLocationsHtml = $this->getThemeFragment('admin-existing-uploads-none.htmlf');
 			}
 
 		$uploadsTemplate = str_replace('{{existing-uploads}}', $existingUploadLocationsHtml, $uploadLocationsTemplate);
@@ -941,7 +958,7 @@ class Themes
 			$customFilenameSection = $defaultCustomFilenameSection;
 			}
 
-		$template = $this->getThemeFragment($this->themeDirectory.'admin-configure-filenames.htmlf');
+		$template = $this->getThemeFragment('admin-configure-filenames.htmlf');
 		$template = str_replace('{{custom_filename_index}}', $customFilenameIndex, $template);
 		$template = str_replace('{{custom_filename_section}}', $customFilenameSection, $template);
 
@@ -973,7 +990,7 @@ class Themes
 		$disallowDocumentGeneration = getGlobalConfigItem('doNotAllowDocumentGeneration');
 		if($disallowDocumentGeneration == 'true')
 			{
-			return $this->getThemeFragment($this->themeDirectory.'generation-disabled.htmlf');
+			return $this->getThemeFragment('generation-disabled.htmlf');
 			}
 
 		if(isset($_REQUEST['step']))
@@ -982,7 +999,7 @@ class Themes
 				{
 				case '4':
 					if(!isset($_REQUEST['pages'])) webServiceError('There were no pages submitted. Please back up your browser and try again and ensure that your browser has JavaScript enabled.');
-					$template = $this->getThemeFragment($this->themeDirectory.'generation-step4.htmlf');
+					$template = $this->getThemeFragment('generation-step4.htmlf');
 					$hiddenFormChosenPages = Array();
 					$listItems = Array();
 					foreach($_REQUEST['pages'] as $page)
@@ -1004,7 +1021,7 @@ class Themes
 					return str_replace('{{generator-pipelines}}', implode('', $generatorPipelinesArray), $template);
 
 				case '3':
-					$template = $this->getThemeFragment($this->themeDirectory.'generation-step3.htmlf');
+					$template = $this->getThemeFragment('generation-step3.htmlf');
 					$listItems = Array();
 					foreach($_REQUEST['pages'] as $page)
 						{
@@ -1187,24 +1204,62 @@ class Themes
 						$itemId++;
 						}
 
-					$step2Template = $this->getThemeFragment($this->themeDirectory.'generation-step2.htmlf');
+					$step2Template = $this->getThemeFragment('generation-step2.htmlf');
 					$step2Template = str_replace('{{scrape-results}}', implode('', $links), $step2Template);
 					$step2Template = str_replace('{{scrape-url}}', $url, $step2Template);
 					return $step2Template;
 				default:
-					return $this->getThemeFragment($this->themeDirectory.'generation-step1.htmlf');
+					return $this->getThemeFragment('generation-step1.htmlf');
 				}
 			}
 		else
 			{
-			return $this->getThemeFragment($this->themeDirectory.'generation-step1.htmlf');
+			return $this->getThemeFragment('generation-step1.htmlf');
 			}
 		}
+
+	function chooseTheme()
+		{
+		if(!$this->allowedAdminAccess) return;
+		$themeDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR;
+		$themeDirectories = glob($themeDirectory.'*');
+		$themes = Array();
+
+		$chosenTheme = getGlobalConfigItem('theme');
+		if($chosenTheme == null)
+			{
+			$chosenTheme = 'docvert';
+			}
+
+		foreach($themeDirectories as $themeDirectory)
+			{
+			$themeName = basename($themeDirectory);
+			if($themeName != 'language')
+				{
+				$themes[] = $themeName;
+				}
+			}
+		$themeHtml = '';
+		foreach($themes as $theme)
+			{
+			$themeHtml .= '<option value="'.$theme.'"';
+			if($theme == $chosenTheme)
+				{
+				$themeHtml .= ' selected="selected"';
+				}
+			$themeHtml .= '>'.$theme.'</option>';
+			}
+
+		$pageTemplate = $this->getThemeFragment('admin-choose-theme.htmlf');
+		$pageTemplate = str_replace('{{list-of-themes}}', $themeHtml, $pageTemplate);
+		return $pageTemplate;
+		}
+
 
 	function chooseConverters()
 		{
 		if(!$this->allowedAdminAccess) return;
-		$template = $this->getThemeFragment($this->themeDirectory.'admin-converter-content.htmlf');
+		$template = $this->getThemeFragment('admin-converter-content.htmlf');
 
 		foreach($this->converters as $converterId => $converterName)
 			{
