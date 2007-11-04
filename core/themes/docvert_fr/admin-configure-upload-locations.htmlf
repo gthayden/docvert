@@ -39,7 +39,7 @@
 			<tr>
 				<td>
 					<label for="host">H&ocirc;te:</label><br />
-					<small style="font-size:xx-small">Par exemple: website.com</small>
+					<small style="font-size:xx-small">Par exemple: siteweb.com</small>
 				</td>
 				<td>
 					<input type="text" id="host" name="host" style="width:160px;" size="10" style="width:80px;"/><span class="hidden">,</span>
