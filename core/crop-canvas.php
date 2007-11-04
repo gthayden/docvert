@@ -597,6 +597,8 @@ class CropCanvas
             $match = array();
             if (preg_match('/([0-9\.]+)/', $gdinfo['GD Version'], $match)) {
                 $foo = explode('.', $match[0]);
+                if (empty($foo[1])) $foo[1] = 0;
+                if (empty($foo[2])) $foo[2] = 0;
                 $gdinfo['Version'] = array('major' => $foo[0], 'minor' => $foo[1], 'patch' => $foo[2]);
             }
         }
