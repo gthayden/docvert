@@ -7,42 +7,42 @@
 		<td>
 			<form enctype="multipart/form-data" action="web-service.php" method="post">
 				<fieldset id="upload">
-					<legend>Web Service sample use</legend>
+					<legend>&web-service-sample-use;</legend>
 					<fieldset>
-						<legend>File uploads</legend>
+						<legend>&file-uploads-label;</legend>
 						<input type="file" name="random file" class="uploadWidget"/><br />
 						<input type="file" name="random file2" class="uploadWidget"/><br />
 						<div id="additionalUploads"></div>
 						<span style="font-size:small">
-							(<a href="#" style="color:blue" onclick="addmore(); return false" title="Add more file uploads">add more</a>)
+							<a href="#" style="color:blue" onclick="addmore(); return false" title="Add more file uploads">&add-more-file-uploads;</a>
 						</span>
 					</fieldset>
 					<fieldset>
-						<legend>XML Pipeline</legend>
+						<legend>&xml-pipeline-label;</legend>
 						{{list-pipelines}}
-						<p style="font-size:xx-small">Note: <span class="autopipeline">Red</span> denotes single/multipage choice.</p>
+						<p style="font-size:xx-small">&note-red-denotes-something;</p>
 					</fieldset>
 					<fieldset id="breakUpOver" style="display:none">
-						<legend>Break Up Pages Over...</legend>
+						<legend>&autopipelines-label;</legend>
 						{{autopipelines}}
 						</fieldset>
 					<div class="buttonTray">
-						<input type="submit" value="Submit" class="submitButton"/>
+						<input type="submit" value="&submit-button;" class="submitButton"/>
 					</div>
 				</fieldset>
-				<h1 style="font-size:x-small;margin:5px 0px 0px 5px">Advanced settings</h1>
+				<h1 style="font-size:x-small;margin:5px 0px 0px 5px">&advanced-settings-title;</h1>
 				<table style="font-size:x-small; padding: 5px; margin:5px; border: inset 2px #ffffff; background:#efefef" cellpadding="2" cellspacing="0" border="0" id="advancedSettings">
 					{{msword-to-opendocument-converter}}
 
 					<tr>
 						<td valign="top">
-							<b>After conversion...</b>
+							<b>&after-conversion-title;</b>
 						</td>
 						<td valign="top">
-							<label for="afterconversion_preview"><input type="radio" value="preview" name="afterconversion" checked="checked" id="afterconversion_preview"/>&#160;Preview</label>
+							<label for="afterconversion_preview"><input type="radio" value="preview" name="afterconversion" checked="checked" id="afterconversion_preview"/>&#160;&preview-label;</label>
 						</td>
 						<td valign="top">
-							<label for="afterconversion_downloadZip"><input type="radio" value="downloadZip" name="afterconversion" id="afterconversion_downloadZip"/>&#160;Download as .ZIP</label>
+							<label for="afterconversion_downloadZip"><input type="radio" value="downloadZip" name="afterconversion" id="afterconversion_downloadZip"/>&#160;&download-as-zip-label;</label>
 						</td>
 					</tr>
 				</table>
@@ -53,10 +53,7 @@
 		</td>
 		<td id="noteToProgrammers" valign="top">
 			<p>
-				<em>Programmers,</em><br />
-				this HTML form sends files via HTTP POST,
-				so do the same in your software to use this web service,
-				and receive converted documents.
+				&note-to-programmers;
 			</p>
 		</td>
 	</tr>

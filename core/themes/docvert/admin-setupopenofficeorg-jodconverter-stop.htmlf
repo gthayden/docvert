@@ -1,3 +1,3 @@
 				<form method="post" action="admin.php" class="openofficeorg">
-					<p><input type="submit" id="startOpenOfficeOrgServerLinux" name="stopOpenOfficeOrgServerLinux" value="Stop JODConverter OpenOffice.org server"/></p>
+					<p><input type="submit" id="startOpenOfficeOrgServerLinux" name="stopOpenOfficeOrgServerLinux" value="&stop-jodconverter-server-button;"/></p>
 				</form>

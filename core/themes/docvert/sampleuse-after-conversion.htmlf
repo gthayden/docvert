@@ -1,4 +1,4 @@
-<b>After conversion...</b>
-	<input type="radio" value="preview" name="afterconversion" checked="checked" id="afterconversion_preview"/><label for="afterconversion_preview">&#160;Preview</label>
+<b>&after-conversion-label;</b>
+	<input type="radio" value="preview" name="afterconversion" checked="checked" id="afterconversion_preview"/><label for="afterconversion_preview">&#160;&after-conversion-preview;</label>
 	&nbsp;
-	<input type="radio" value="downloadZip" name="afterconversion" id="afterconversion_downloadZip"/><label for="afterconversion_downloadZip">&#160;Download as .ZIP</label>
+	<input type="radio" value="downloadZip" name="afterconversion" id="afterconversion_downloadZip"/><label for="afterconversion_downloadZip">&#160;&after-conversion-download-as-zip;</label>

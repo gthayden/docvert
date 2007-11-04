@@ -10,8 +10,7 @@
 		<tr>
 			<td valign="top">&example-custom-filenames;</td>
 			<td valign="top">
-				Eg, section#.html or page#.html<br />
-				<small>The <b>#</b> will be replaced with the chapter number</small>
+				&for-example-custom-filenames;
 			</td>
 		</tr>
 	</table>

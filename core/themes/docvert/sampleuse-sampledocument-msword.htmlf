@@ -1,7 +1,3 @@
-	<p style="clear:both"> 
-		This web service takes multiple word processor files (typically .doc) and converts them to HTML or any XML.
-	</p>
 
-	<p>
-		Here's a <a href="doc/sample/sample-document.doc" style="color:#00f"><i>Sample Document<span style="color:#33f">.doc</span></i><small>[30KB]</small></a> for you to test.
-	</p>
+		&docvert-intro-msword;
+

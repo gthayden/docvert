@@ -1,0 +1,3 @@
+			<p>In order to extract just the content from the site (rather than menus, header/footer, etc.) you'll need to choose a site-type.</p>
+			<p>If your site-type isn't mentioned here then you'll need a programmer to add a pipeline to <tt>"generator-pipeline"</tt>.</p>
+

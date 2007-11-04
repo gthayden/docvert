@@ -1,0 +1,1 @@
+ <a href="http://www.google.com/accounts/TOS" onclick="document.getElementById('googleTOS').style.display='block'; return false " style="color:#666633">terms of service that disallow document generation</a> (they'll call it "crawling" or "scraping") so be sure that you're generating documents from a site that's ok with it.

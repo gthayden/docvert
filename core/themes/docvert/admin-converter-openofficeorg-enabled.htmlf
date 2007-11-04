@@ -1,6 +1,6 @@
 <p>
 	<form method="post" action="" style="display:inline">
-		Currently OpenOffice.org is <span style="background:#99ff99">enabled</span>:
-		<input type="submit" name="converter-openofficeorg-disable" value="Disable OOo"/>
+		&currently-openofficeorg-is; &enabled-item;:
+		<input type="submit" name="converter-openofficeorg-disable" value="&disable-openofficeorg-button;"/>
 	</form>
 </p>

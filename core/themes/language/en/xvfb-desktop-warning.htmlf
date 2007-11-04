@@ -1,0 +1,3 @@
+		<span style="color: #330000;font-weight:bold">Note:</span>
+		Because XVFB is currently disabled OpenOffice.org
+		may open on your desktop during conversions.

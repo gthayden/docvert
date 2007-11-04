@@ -1277,28 +1277,20 @@ class Themes
 			$convertConfig = getGlobalConfigItem($doNotUseConverter);
 			if($convertConfig === null || $convertConfig == 'false')
 				{
-				$interfacePath = $this->themeDirectory.'admin-converter-'.$converterId.'-enabled.htmlf';
+				$interfacePath = 'admin-converter-'.$converterId.'-enabled.htmlf';
 				}
 			else
 				{
-				$interfacePath = $this->themeDirectory.'admin-converter-'.$converterId.'-disabled.htmlf';
+				$interfacePath = 'admin-converter-'.$converterId.'-disabled.htmlf';
 				}
 			$converterPlaceholder = '{{toggle-'.$converterId.'}}';
 			if(stripos($template, $converterPlaceholder) === false)
 				{
 				$template .=  '<br/><br />&#160; Cannot find placeholder of '.$converterPlaceholder.' and so cannot display an interface for '.$converterName.'<br/>';
 				}
-			else if(!file_exists($interfacePath))
-				{
-				$template = str_replace($converterPlaceholder, 'Cannot find interface file at '.$interfacePath.'<br /> ', $template);
-				}
-			else if(!is_readable($interfacePath))
-				{
-				$template = str_replace($converterPlaceholder, 'Interface file <tt>'.$interfacePath.'</tt> was not readable.', $template);
-				}
 			else
 				{
-				$template = str_replace($converterPlaceholder, file_get_contents($interfacePath), $template);
+				$template = str_replace($converterPlaceholder, $this->getThemeFragment($interfacePath), $template);
 				}
 			}
 		return $template;
@@ -1310,7 +1302,7 @@ function replaceLanguagePlaceholder($match)
 	$language = getGlobalConfigItem('language');
 	if($language == null)
 		{
-		$language = 'en';
+		$language = 'english';
 		}
 	$languageDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'language'.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR;
 	$placeholderPath = $languageDirectory.$match[1].'.htmlf';

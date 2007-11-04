@@ -1,11 +1,11 @@
 <div style="height:1px; clear:both;width:100%"> </div>
 <div style="float:right; margin-right:20px; width:300px; height:150px; ">
-	<a href="{{download-url}}" class="downloadZip">Download!<span style="font-size:x-small"><br />[ZIP, {{download-size}}]</span></a>
+	<a href="{{download-url}}" class="downloadZip">&download-link-text;</span></a>
 	{{upload-results}}
 </div>
 
-<h1 class="previewResults" style="margin-top:0px;padding-top:0px;">Preview conversion results...</h1>
-<a href="sample-use.php" class="backToSampleUse" >Back...</a><br />
+<h1 class="previewResults" style="margin-top:0px;padding-top:0px;">&preview-conversion-results-title;</h1>
+<a href="sample-use.php" class="backToSampleUse" >&back-link-text;</a><br />
 <div id="debugWriteLine" style="background:#eeeeee; border:solid 1px #cccccc; display:none; margin:1em 15em 1em 8em; text-align:left; padding:0.5em; color:black"></div>
 
 <div id="uploadDialog">
@@ -17,7 +17,7 @@
 			</tr>
 			<tr>
 				<td class="leftColumn">
-					Send it to...&nbsp;
+					&upload-location-send-it-to; &nbsp;
 				</td>
 				<td class="rightColumn" colspan="2">
 					<select name="uploadto" style="width:190px;">
@@ -27,7 +27,7 @@
 			</tr>
 			<tr> 
 				<td class="leftColumn">
-					Put inside folder&nbsp;<br /><span style="font-size:x-small">(optional)</span>
+					&upload-location-put-inside-folder;
 				</td>
 				<td class="rightColumn" colspan="2">
 					<input type="text" name="remoteDirectory" value="{{converted-document-names}}"/>
@@ -42,11 +42,11 @@
 			<tr>
 				<td></td>
 				<td align="left" class="leftColumn">
-					<input type="submit" value="Cancel" onclick="return closeUploadDialog();"/>
+					<input type="submit" value="&upload-location-cancel-button;" onclick="return closeUploadDialog();"/>
 				</td>
 				<td align="right" class="rightColumn">
 					<input type="hidden" name="id" value="{{upload-id}}"/>
-					<input type="submit" value="Send files"/>
+					<input type="submit" value="&upload-location-send-files-button;"/>
 				</td>
 			</tr>
 		</table>
@@ -59,7 +59,7 @@
 		<ul>
 			{{list-of-converted-documents}}
 			<div style="margin-top:4px;float:right;white-space:nowrap">
-				<a href="#edit-this-document" id="editDocumentLink" onclick="return editThisDocument(this)" class="editContent">Edit Document</a>
+				<a href="#edit-this-document" id="editDocumentLink" onclick="return editThisDocument(this)" class="editContent">&edit-document-link-text;</a>
 				<!--
 					&#160;
 					<a href="#edit-this-page" class="editContent" onclick="editThisPage()">Edit Page</a>

@@ -1,6 +1,6 @@
 
 <div id="content">
-	<p style="clear:both">Here you can build Word Processor Documents (<abbr title="OpenDocument Text">ODT</abbr>) from webpages.</p>
+	&document-generation-global-intro;
 	{{step}}
 </div>
 

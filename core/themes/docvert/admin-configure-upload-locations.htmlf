@@ -1,17 +1,15 @@
-<h2 style="margin-bottom:10px">Upload locations</h2>
-<p style="margin-top:0px">Docvert can upload the results of a conversion to your FTP/WebDAV server.</p>
+<h2 style="margin-bottom:10px">&upload-locations-title;</h2>
+<p style="margin-top:0px">&upload-locations-intro;</p>
 
 <p style="margin-left:20px;">
-	Because <em>Upload Locations</em> involve giving Docvert access to upload to your FTP/WebDAV server
-	we suggest considering the security implications.
-	Give Docvert an FTP/WebDAV account restricted to a directory, with minimum privileges and disk quota.
+	&upload-location-security-warning;
 </p>
 
 <div style="margin:10px;">
 {{existing-uploads}}
 </div>
 
-<h3 style="margin: 30px 0px 5px 30px">Add new upload location</h3>
+<h3 style="margin: 30px 0px 5px 30px">&upload-locations-add-title;</h3>
 
 {{protocol-message}}
 
@@ -20,63 +18,63 @@
 		<table>
 			<tr>
 				<td>
-					<label for="uploadname">Name:</label><br />
-					<small style="font-size:xx-small">Any description</small>
+					<label for="uploadname">&upload-location-description-label;</label><br />
+					<small style="font-size:xx-small">&upload-location-description-extra;</small>
 				</td>
 				<td>
-					<input type="text" name="name" id="uploadname" style="width:160px"/><span class="hidden">,</span>
+					<input type="text" name="name" id="uploadname" style="width:160px"/>
 				</td>
 			</tr>
 			<tr style="background:#dddddd">
-				<td><label for="protocol">Protocol:</label></td>
+				<td><label for="protocol">&upload-location-protocol-label;</label></td>
 				<td>
 					<select name="protocol" id="protocol">
 						{{allow-ftp}}
 						{{allow-webdav}}
-					</select><span class="hidden">,</span>
+					</select>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<label for="host">Host:</label><br />
-					<small style="font-size:xx-small">Eg, website.com</small>
+					<label for="host">&upload-location-host-label;</label><br />
+					<small style="font-size:xx-small">&upload-location-host-extra;</small>
 				</td>
 				<td>
-					<input type="text" id="host" name="host" style="width:160px;" size="10" style="width:80px;"/><span class="hidden">,</span>
+					<input type="text" id="host" name="host" style="width:160px;" size="10" style="width:80px;"/>
 				</td>
 			</tr>
 			<tr style="background:#dddddd">
 				<td>
-					Port:
+					&upload-location-port-label;
 				</td>
 				<td>
-					<label for="defaultPort" onclick="toggleCustomPort()">default <input type="checkbox" id="defaultPort" name="defaultPort" checked="checked" onclick="toggleCustomPort()"/></label>				
+					<label for="defaultPort" onclick="toggleCustomPort()">&upload-location-port-default-label; <input type="checkbox" id="defaultPort" name="defaultPort" checked="checked" onclick="toggleCustomPort()"/></label>
 					<span id="customPortContainer" style="display:none;white-space:nowrap">
-						<label for="customPort">custom port:</label>
-						<input type="text" size="3" name="customPort" style="width:30px" id="customPort"><span class="hidden">,</span>
+						<label for="customPort">&upload-location-custom-port-label;</label>
+						<input type="text" size="3" name="customPort" style="width:30px" id="customPort">
 					</span>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<label for="username">Username:</label>
+					<label for="username">&upload-location-username-label;</label>
 				</td>
 				<td>
-					<input type="text" id="username" name="username" style="width:160px" style="width:80px;"/><span class="hidden">,</span>
+					<input type="text" id="username" name="username" style="width:160px" style="width:80px;"/>
 				</td>
 			</tr>
 			<tr style="background:#dddddd">
 				<td>
-					<label for="password">Password:</label>
+					<label for="password">&upload-location-password-label;</label>
 				</td>
 				<td>
-					<input type="password" id="uploadpassword" style="width:160px" name="uploadpassword" style="width:80px;"/><span class="hidden">,</span>
+					<input type="password" id="uploadpassword" style="width:160px" name="uploadpassword" style="width:80px;"/>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<label for="basedirectory">Remote directory:</label><br />
-					<small style="font-size:xx-small">Uploads will be put in here.</small>
+					<label for="basedirectory">&upload-location-remote-directory-label;</label><br />
+					<small style="font-size:xx-small">&upload-location-remote-directory-extra;</small>
 				</td>
 				<td>
 					<input type="text" id="basedirectory" name="basedirectory" style="width:160px;" value=""/>
@@ -84,7 +82,7 @@
 			</tr>
 			<tr style="background:#cccccc">
 				<td colspan="2" align="right" style="padding:10px 5px 5px 5px">
-					<input type="submit" value="Add upload location"/>
+					<input type="submit" value="&upload-location-submit-button;"/>
 				</td>
 			</tr>
 		</table>
