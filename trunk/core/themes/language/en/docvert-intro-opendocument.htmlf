@@ -1,0 +1,6 @@
+	<p style="clear:both"> 
+		This web service takes multiple OpenDocument files and converts them to HTML or any XML.
+	</p>
+	<p>
+		Here's a <a href="doc/sample/sample-document.odt" style="color:#00f"><i>Sample Document<span style="color:#33f">.odt</span></i><small>[30KB]</small></a> for you to test.
+	</p>

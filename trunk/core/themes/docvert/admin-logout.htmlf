@@ -1,1 +1,1 @@
-	<form method="post" class="logout"><input type="submit" name="logout" id="logout" value="Logout"/></form>
+	<form method="post" class="logout"><input type="submit" name="logout" id="logout" value="&logout-button;"/></form>

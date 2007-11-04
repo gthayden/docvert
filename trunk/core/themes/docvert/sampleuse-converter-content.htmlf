@@ -1,6 +1,6 @@
 					<tr>
 						<td valign="top">
-							<b>To <abbr title="OpenDocument">ODF</abbr> Converter</b>
+							<b>&to-opendocument-converter;</b>
 						</td>
 						<td valign="top" colspan="2">
 							{{converters}}

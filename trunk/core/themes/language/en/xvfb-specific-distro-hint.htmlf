@@ -1,0 +1,1 @@
+In Ubuntu 6.06, XVFB is known not to work. If you have problems disable XVFB here.

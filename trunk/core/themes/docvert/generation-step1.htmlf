@@ -1,19 +1,19 @@
 	<form method="post">
 		<fieldset style="width:90%" id="generator">
-			<legend>Step 1: Choose a start page</legend>
+			<legend>&document-generator-step1-title;</legend>
 			<input type="hidden" name="step" value="2"/>
 			<table width="100%">
 				<tr>
-					<td style="width:2em"><abbr title="Uniform Resource Locator">URL:</abbr></td>
+					<td style="width:2em">&url;:</td>
 					<td><input type="text" name="url" value="" style="width:100%;padding:0.5em"/></td>
-					<td style="width:3em"><input type="submit" value="Next" style="padding:0.5em"/></td>
+					<td style="width:3em"><input type="submit" value="&document-generator-next-button;" style="padding:0.5em"/></td>
 				</tr>
 			</table>
-			<p style="color:#666666;font-size:small">When given the <abbr title="Uniform Resource Locator">URL</abbr> of a slow server it may take up to a minute to process.</p>
+			<p style="color:#666666;font-size:small">&document-generator-slow-server-warning;</p>
 		</fieldset>
 	</form>
 	<div style="background:#ffffcc;border:solid 2px #eeeebb;padding:0.5em;margin:1em; width:400px">
-		<p style="color:#666633;margin:0px;font-size:small"><b>Legal note:</b> Some sites have <a href="http://www.google.com/accounts/TOS" onclick="document.getElementById('googleTOS').style.display='block'; return false " style="color:#666633">terms of service that disallow document generation</a> (they'll call it "crawling" or "scraping") so be sure that you're generating documents from a site that's ok with it.</p>
+		<p style="color:#666633;margin:0px;font-size:small"> &document-generator-legal-intro;</p>
 		<div id="googleTOS" style="display:none;border-right: solid 2px #999999; border-bottom: solid 2px #999999; margin:1em 0.5em 0.3em 0.5em">
 			<div style="border: solid 1px #cccccc;background:#ffffff;padding:0.5em;font-size:small;">
 				<span style="font-size:xx-large;padding:5px;font-style:italic;font-family:purisa, serif;float:left">"</span>

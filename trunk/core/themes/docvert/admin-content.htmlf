@@ -1,4 +1,5 @@
 <div id="adminContent">
+
 	{{logout}}
 
 	{{login}}

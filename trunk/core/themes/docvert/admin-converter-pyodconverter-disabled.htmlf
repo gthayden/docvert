@@ -1,6 +1,6 @@
 <p>
 	<form method="post" action="" style="display:inline">
-		Currently PYODConverter is <span style="background:#ff9999">disabled</span>:
-		<input type="submit" name="converter-pyodconverter-enable" value="Enable PYODConverter"/>
+		&currently-pyodconverter-is; &disabled-item;:
+		<input type="submit" name="converter-pyodconverter-enable" value="&enable-pyodconverter-button;"/>
 	</form>
 </p>

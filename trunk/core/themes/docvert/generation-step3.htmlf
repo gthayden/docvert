@@ -341,20 +341,18 @@ function inarray(v,a) {
 </script>
 	<form method="post" onsubmit="selectall('pages[]');">
 		<fieldset style="width:90%;" id="generator">
-			<legend>Step 3: Choose page order</legend>
+			<legend>&document-generator-step3-title;</legend>
 			<input type="submit" value="Next" style="float:right;padding:0.5em;margin-bottom:0.5em"/>
-			<p>Choose the page order in the document.</p>
-			<p><span style="font-size:small"><span style="font-weight:bold;">Tip:</span> Hold down SHIFT or Apple/CTRL to select multiple pages at once.</p>
+			&document-generator-step3-intro;
 			<input type="hidden" name="step" value="4"/>
-
-			<input type="button" style="width:100%" onclick="up('pages[]');return false" value="&#x2b06; Move Up &#x2b06;"/>
+			<input type="button" style="width:100%" onclick="up('pages[]');return false" value="&#x2b06; &document-generator-step4-move-up; &#x2b06;"/>
 			<select size="10" class="sortableList" id="pages[]" name="pages[]" style="width:100%;" multiple="multiple">
 				{{chosen-scrape-urls}}
 			</select>
-			<input type="button" style="width:100%" onclick="down('pages[]');return false" value="&#x2b07; Move Down &#x2b07;"/>
-			<button style="padding:0.5em" onclick="var url = prompt('Add URL','http://'); additem('pages[]',url,url) ;return false"><img src="core/themes/docvert/add-item.gif" alt="" style="vertical-align:middle;"/> Add URL</button>
+			<input type="button" style="width:100%" onclick="down('pages[]');return false" value="&#x2b07; &document-generator-step4-move-down; &#x2b07;"/>
+			<button style="padding:0.5em" onclick="var url = prompt('&document-generator-step3-add-url;','http://'); additem('pages[]',url,url) ;return false"><img src="core/themes/docvert/add-item.gif" alt="" style="vertical-align:middle;"/> &document-generator-step3-add-url;</button>
 			&nbsp; &nbsp; &nbsp;
-			<button style="padding:0.5em" onclick="removeitem('pages[]',true); return false"><img src="core/themes/docvert/remove-item.gif" alt="" style="vertical-align:middle;"/> Remove URL</button>
+			<button style="padding:0.5em" onclick="removeitem('pages[]',true); return false"><img src="core/themes/docvert/remove-item.gif" alt="" style="vertical-align:middle;"/> &document-generator-step3-remove-url;</button>
 		</fieldset>
 	</form>
 

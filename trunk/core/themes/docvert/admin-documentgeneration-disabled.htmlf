@@ -1,1 +1,1 @@
-		<form method="post" style="margin-left:20px;"><input type="submit" name="enableDocumentGeneration" value="Enable Document Generation"></form>
+		<form method="post" style="margin-left:20px;"><input type="submit" name="enableDocumentGeneration" value="&enable-document-generation-button;"></form>

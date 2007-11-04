@@ -1,13 +1,13 @@
 	<form method="post">
 		<fieldset style="width:90%" id="generator">
 			<input type="hidden" name="step" value="3"/>
-			<legend>Step 2: Choose the pages </legend>
-			<input type="submit" value="Next" style="float:right;padding:0.5em"/>
-			<p>Choose the pages that you want in the document (don't worry, choosing page order comes later).</p>
+			<legend>&document-generator-step2-title;</legend>
+			<input type="submit" value="&document-generator-next-button;" style="float:right;padding:0.5em"/>
+			&document-generator-step2-intro;
 			<ul class="listOfPossiblePageUrls">
 				{{scrape-results}}
 			</ul>
-			<input type="submit" value="Next" style="float:right;padding:0.5em"/>
+			<input type="submit" value="&document-generator-next-button;" style="float:right;padding:0.5em"/>
 		</fieldset>
 	</form>
 

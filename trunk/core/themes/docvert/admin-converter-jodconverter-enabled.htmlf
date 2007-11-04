@@ -1,6 +1,6 @@
 <p>
 	<form method="post" action="" style="display:inline">
-		Currently JODConverter is <span style="background:#99ff99">enabled</span>:
-		<input type="submit" name="converter-jodconverter-disable" value="Disable JODConverter"/>
+		&currently-jodconverter-is; &enabled-item;:
+		<input type="submit" name="converter-jodconverter-disable" value="&disable-jodconverter-button;"/>
 	</form>
 </p>

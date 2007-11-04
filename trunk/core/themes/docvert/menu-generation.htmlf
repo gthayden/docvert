@@ -1,3 +1,3 @@
-<li><a href="sample-use.php">Document Conversion</a></li>
-<li class="currentTab">Document Generation</li>
-<li><a href="admin.php">Admin</a></li>
+<li><a href="sample-use.php">&menu-document-conversion;</a></li>
+<li class="currentTab">&menu-document-generation;</li>
+<li><a href="admin.php">&menu-admin;</a></li>

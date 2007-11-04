@@ -1,4 +1,4 @@
-<h2>Use XVFB?</h2>
-<p>In Ubuntu 6.06, XVFB is known not to work. If you have problems disable XVFB here.</p>
-<form method="post" action=""><p><input id="disablexvfb" name="disablexvfb" type="submit" value="Disable XVFB"/></p></form>
+<h2>&use-xvfb-title;</h2>
+<p>&xvfb-specific-distro-hint;</p>
+<form method="post" action=""><p><input id="disablexvfb" name="disablexvfb" type="submit" value="&disable-xvfb-button;"/></p></form>
  

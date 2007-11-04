@@ -1,0 +1,4 @@
+	Because <em>Upload Locations</em> involve giving Docvert access to upload to your FTP/WebDAV server
+	we suggest considering the security implications.
+	Give Docvert an FTP/WebDAV account restricted to a directory, with minimum privileges and disk quota.
+

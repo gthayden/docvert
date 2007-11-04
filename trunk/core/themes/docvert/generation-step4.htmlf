@@ -2,9 +2,8 @@
 		<fieldset style="width:90%;margin-bottom:0px"  id="generator">
 			{{hidden-form-chosen-pages}}
 			<input type="hidden" name="step" value="5"/>
-			<legend>Step 4: Choose site type</legend>
-			<p>In order to extract just the content from the site (rather than menus, header/footer, etc.) you'll need to choose a site-type.</p>
-			<p>If your site-type isn't mentioned here then you'll need a programmer to add a pipeline to <tt>"generator-pipeline"</tt>.</p>
+			<legend>&document-generate-step4-title;</legend>
+			&document-generate-step4-intro;
 			<table width="100%">
 				<tr>
 					<td>
@@ -13,12 +12,12 @@
 						</select>
 					</td>
 					<td style="width:2em;">
-						<input type="submit" value="Generate Document (ODT)" style="float:right;padding:0.5em">
+						<input type="submit" value="&generate-opendocument-button;" style="float:right;padding:0.5em">
 					</td>
 				</tr>
 				<tr>
 					<td valign="top">
-						<p style="color:#666666;font-size:small;margin:0px">Generating a document may take up to a minute.</p>
+						<p style="color:#666666;font-size:small;margin:0px">&document-generation-time-warning;</p>
 					</td>
 				</tr>
 			</table>
@@ -26,10 +25,7 @@
 		<div style="float:right;width:200px;margin-right:130px;">
 			<p class="arrowLeft" style="margin:0px;display:inline;">&nbsp; &nbsp;&uarr;<br /></p>
 			<p id="noteToProgrammers" style="margin:0px;display:inline;">
-				<em>Programmers,</em><br />
-				this HTML form sends files via HTTP POST,
-				so do the same in your software to use this web service,
-				and receive Documents (ODT)
+				&note-to-programmers-document-generation;
 			</p>
 		</div>
 		<div style="clear:both;width:100%">&nbsp;</div>

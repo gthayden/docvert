@@ -1,6 +1,6 @@
 <p>
 	<form method="post" action="" style="display:inline">
-		Currently Abiword is <span style="background:#99ff99">enabled</span>:
-		<input type="submit" name="converter-abiword-disable" value="Disable Abiword"/>
+		&currently-abiword-is; &enabled-item;:
+		<input type="submit" name="converter-abiword-disable" value="&disable-abiword;"/>
 	</form>
 </p>
