@@ -1,0 +1,12 @@
+<div style="width:100%;clear:both">
+	<h2>&choose-language-title;</h2>
+	<form method="post">
+		<p>
+			&choose-a-language-form-label;:
+			<select name="chooseLanguage">
+				{{list-of-languages}}
+			</select>
+			<input type="submit" name="saveLanguage" value="&set-language-button-text;"/>
+		</p>
+	</form>
+</div>
