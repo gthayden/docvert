@@ -67,6 +67,10 @@ class Themes
 					{
 					setGlobalConfigItem('theme', $_POST['chooseTheme']);
 					}
+				if(isset($_POST['chooseLanguage']))
+					{
+					setGlobalConfigItem('language', $_POST['chooseLanguage']);
+					}
 
 				elseif(isset($_POST['logout']))
 					{
@@ -112,6 +116,7 @@ class Themes
 				$htmlTemplate = str_replace('{{login}}', $this->login(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{logout}}', $this->logout(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{change-password}}', $this->changePassword(), $htmlTemplate);
+				$htmlTemplate = str_replace('{{choose-language}}', $this->chooseLanguage(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{choose-theme}}', $this->chooseTheme(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{choose-converters}}', $this->chooseConverters(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{unix-only-use-xvfb}}', $this->unixOnly_useXVFB(), $htmlTemplate);
@@ -543,68 +548,58 @@ class Themes
 		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
 		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'false')
 			{
-			$converterTemplatePath = $this->themeDirectory.'sampleuse-converter-content.htmlf';
-			if(file_exists($converterTemplatePath))
+			$template = $this->getThemeFragment('sampleuse-converter-content.htmlf');
+			$numberOfConvertersThatAreDisallowed = 0;
+			foreach($this->converters as $converterId => $converterName)
 				{
-				$template = $this->getThemeFragment('admin-converter-content.htmlf');
-				$numberOfConvertersThatAreDisallowed = 0;
-				foreach($this->converters as $converterId => $converterName)
+				$doNotUseConverter = 'doNotUseConverter'.$converterId;
+				$doNotUseConverterConfig = getGlobalConfigItem($doNotUseConverter);
+				if($doNotUseConverterConfig == 'true')
 					{
-					$doNotUseConverter = 'doNotUseConverter'.$converterId;
-					$doNotUseConverterConfig = getGlobalConfigItem($doNotUseConverter);
-					if($doNotUseConverterConfig == 'true')
-						{
-						$numberOfConvertersThatAreDisallowed++;
-						}
+					$numberOfConvertersThatAreDisallowed++;
 					}
-
-				if( $numberOfConvertersThatAreDisallowed+1 == count($this->converters) )
-					{
-					// There's only one choice, so don't bother asking the user
-					return '';
-					}
-
-				$template = file_get_contents($converterTemplatePath);
-				$templateConverter = '';
-
-				$optionTemplatePath = $this->themeDirectory.'sampleuse-converter-option.htmlf';
-				$optionTemplate = file_get_contents($optionTemplatePath);
-
-				$converterIndex = 0;
-				foreach($this->converters as $converterId => $converterName)
-					{
-					$doNotUseConverter = 'doNotUseConverter'.$converterId;
-					$doNotUseConverterConfig = getGlobalConfigItem($doNotUseConverter);
-					if($doNotUseConverterConfig === null || $doNotUseConverterConfig == 'false')
-						{
-						$option = $optionTemplate;
-						$checkedContent = '';
-						if($converterIndex == 0)
-							{
-							$checkedContent = ' checked="checked" ';
-							}
-						$option = str_replace('{{checked}}', $checkedContent, $option);
-						$option = str_replace('{{converterName}}', $converterName, $option);
-						$option = str_replace('{{converterId}}', $converterId, $option);
-						$option = str_replace('{{converterIdHash}}', 'id'.md5($converterId), $option);
-						$option = str_replace('{{converterIdLowercase}}', strtolower($converterId), $option);
-						$templateConverter .= $option;
-						$converterIndex++;
-						}
-
-					}
-				$template = str_replace('{{converters}}', $templateConverter, $template);
-				return $template;
 				}
-			else
+
+			if( $numberOfConvertersThatAreDisallowed+1 == count($this->converters) )
 				{
-				return 'ERROR: Outdated theme. File did not exist at '.$converterOptionsPath;
+				// There's only one choice, so don't bother asking the user
+				return '';
 				}
+
+			$optionTemplate = $this->getThemeFragment('sampleuse-converter-option.htmlf');
+			$templateConverter = '';
+			$converterIndex = 0;
+			foreach($this->converters as $converterId => $converterName)
+				{
+				$doNotUseConverter = 'doNotUseConverter'.$converterId;
+				$doNotUseConverterConfig = getGlobalConfigItem($doNotUseConverter);
+				if($doNotUseConverterConfig === null || $doNotUseConverterConfig == 'false')
+					{
+					$option = $optionTemplate;
+					$checkedContent = '';
+					if($converterIndex == 0)
+						{
+						$checkedContent = ' checked="checked" ';
+						}
+					$option = str_replace('{{checked}}', $checkedContent, $option);
+					$option = str_replace('{{converterName}}', $converterName, $option);
+					$option = str_replace('{{converterId}}', $converterId, $option);
+					$option = str_replace('{{converterIdHash}}', 'id'.md5($converterId), $option);
+					$option = str_replace('{{converterIdLowercase}}', strtolower($converterId), $option);
+					$templateConverter .= $option;
+					$converterIndex++;
+					}
+				}
+
+			$template = str_replace('{{converters}}', $templateConverter, $template);
+
+			return $template;
 			}
 		else
 			{
 			return $this->getThemeFragment('sampleuse-msword-to-opendocument-converter~off.htmlf');
 			}
+
 		}
 
 	function sampleDocument()
@@ -1254,6 +1249,42 @@ class Themes
 		$pageTemplate = str_replace('{{list-of-themes}}', $themeHtml, $pageTemplate);
 		return $pageTemplate;
 		}
+
+
+
+	function chooseLanguage()
+		{
+		if(!$this->allowedAdminAccess) return;
+		$languageDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'language'.DIRECTORY_SEPARATOR;
+		$languageDirectories = glob($languageDirectory.'*');
+		$languages = Array();
+
+		$chosenLanguage = getGlobalConfigItem('language');
+		if($chosenLanguage == null)
+			{
+			$chosenLanguage = 'english';
+			}
+
+		foreach($languageDirectories as $languageDirectory)
+			{
+			$languages[] = basename($languageDirectory);
+			}
+		$languageHtml = '';
+		foreach($languages as $language)
+			{
+			$languageHtml .= '<option value="'.$language.'"';
+			if($language == $chosenLanguage)
+				{
+				$languageHtml .= ' selected="selected"';
+				}
+			$languageHtml .= '>'.$language.'</option>';
+			}
+
+		$pageTemplate = $this->getThemeFragment('admin-choose-language.htmlf');
+		$pageTemplate = str_replace('{{list-of-languages}}', $languageHtml, $pageTemplate);
+		return $pageTemplate;
+		}
+
 
 
 	function chooseConverters()

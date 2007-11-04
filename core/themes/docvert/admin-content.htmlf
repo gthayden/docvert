@@ -6,6 +6,8 @@
 
 	{{create-password}}
 
+	{{choose-language}}
+
 	{{setup-openofficeorg}}
 
 	{{non-opendocument-uploads}}
