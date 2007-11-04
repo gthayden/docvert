@@ -12,4 +12,5 @@ else
 	xvfbRun="/usr/bin/xvfb-run"
 fi
 
+cd /tmp
 ${xvfbRun} /usr/lib/openoffice/program/soffice -writer -norestore "${XDisplayToUse}" "${docvertMacrosDocumentPath}" macro://macros/Standard.convert.toOasisOpenDocumentFormat\(${inputDocumentUrl},${outputDocumentUrl}\)
