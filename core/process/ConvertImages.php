@@ -72,7 +72,7 @@ class ConvertImages extends PipelineProcess
 		$cropCanvasClassPath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'crop-canvas.php';
 		//die($cropCanvasClassPath);
 		include_once($cropCanvasClassPath);
-		$canvas =& new CropCanvas();
+		$canvas = new CropCanvas();
 		$canvas->loadImage($path);
 		/*
 			cropByAuto() takes a value from 1-255.
