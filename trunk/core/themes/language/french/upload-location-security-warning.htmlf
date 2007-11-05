@@ -1,0 +1,3 @@
+        L'option <em>Emplacements d'envoi</em> oblige de donner &agrave; Docvert l'acc&egrave; &agrave; votre serveur FTP/WebDAV.
+        Nous sugg&eacute;rons donc de bien consid&eacute;rer les implications pour la s&eacute;curit&eacute;.
+        Donner &agrave; Docvert un compte FTP/WebDAV limit&eacute; &agrave; un seul dossier, avec les privil&egrave;ges et quotas minimum.
