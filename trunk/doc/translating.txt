@@ -1,0 +1,12 @@
+Creating a new translation for Docvert
+======================================
+
+Translating Docvert involves the following:
+
+1- Creating a new language package (core/themes/language/)
+
+2- Creating DOC and ODT sample documents (doc/sample/)
+
+3- Adding abbreviations for kilobytes, megabytes, etc. (core/webpage.php) 
+
+4- Providing translated documentation (doc/*.txt)
