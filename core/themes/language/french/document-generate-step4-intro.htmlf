@@ -1,0 +1,2 @@
+                        <p>Pour extraire seulement le contenu du site (au lieu des menus, ent&ecirc;tes/pieds de page, etc.) vous devrez choisir un type de site.</p>
+                        <p>Si votre type de site n'est pas mentionn&eacute; ici, vous aurez besoin d'un programmeur pour ajouter une pipeline dans <tt>"generator-pipeline"</tt>.</p>
