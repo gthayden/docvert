@@ -1,6 +1,0 @@
-				<h3 style="margin-bottom:0px;">Ex&eacute;cuter en tant que</h3>
-				<form method="post">
-					<p style="margin:0.5em 30px;font-size:small">Ex&eacute;cuter OpenOffice.org en tant que l'utilisateur <input type="text" name="runasuser" id="runasuser" value="{{username}}"/><input type="submit" name="setcustomuser" id="setcustomuser" value="Fixer l'utilisateur"/></p>
-					<p style="margin:0.5em 30px;font-size:small">(l'utilisateur par d&eacute;faut est <tt>root</tt>)</p>
-				</form>
-

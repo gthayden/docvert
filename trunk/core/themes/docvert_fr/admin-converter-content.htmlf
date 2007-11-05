@@ -1,8 +1,0 @@
-				<h2>Choisir les convertisseurs</h2>
-				<p>Lors de la conversion de fichiers dans un format autre que OpenDocument, vous aurez besoin d'un de ces convertisseurs.</p>
-				<div style="margin-left:20px">
-					{{toggle-openofficeorg}}
-					{{toggle-abiword}}
-					{{toggle-jodconverter}}
-					{{toggle-pyodconverter}}
-				</div>
