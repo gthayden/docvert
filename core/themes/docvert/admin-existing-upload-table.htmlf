@@ -1,4 +1,4 @@
-<h3 style="margin:0px 0px 5px 30px">Existing upload locations</h3>
+<h3 style="margin:0px 0px 5px 30px">&existing-upload-locations-title;</h3>
 <table id="existingUploads" style="margin-left:30px;border: solid 2px #dddddd">
 	<tr>
 		<th>&upload-locations-table-heading-name;</th>

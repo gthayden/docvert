@@ -1,6 +1,0 @@
-<p>
-	<form method="post" action="" style="display:inline">
-		PYODConverter est pr&eacute;sentement <span style="background:#99ff99">activ&eacute;</span>:
-		<input type="submit" name="converter-pyodconverter-disable" value="D&eacute;sactiver PYODConverter"/>
-	</form>
-</p>

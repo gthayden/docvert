@@ -342,7 +342,7 @@ function inarray(v,a) {
 	<form method="post" onsubmit="selectall('pages[]');">
 		<fieldset style="width:90%;" id="generator">
 			<legend>&document-generator-step3-title;</legend>
-			<input type="submit" value="Next" style="float:right;padding:0.5em;margin-bottom:0.5em"/>
+			<input type="submit" value="&document-generator-next-button;" style="float:right;padding:0.5em;margin-bottom:0.5em"/>
 			&document-generator-step3-intro;
 			<input type="hidden" name="step" value="4"/>
 			<input type="button" style="width:100%" onclick="up('pages[]');return false" value="&#x2b06; &document-generator-step4-move-up; &#x2b06;"/>

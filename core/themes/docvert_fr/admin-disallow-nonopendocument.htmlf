@@ -1,4 +1,0 @@
-<h2>Envoi de documents dans d'autres formats que OpenDocument ?</h2>
-<form method="post">
-	<p><input type="submit" name="disablenonopendocument" id="disablenonopendocument" value="D&eacute;sactiver les envois non-opendocument"/></p>
-</form>
