@@ -1,0 +1,7 @@
+        <p style="clear:both"> ^M
+                Ce site web prend plusieurs fichiers de traitement de texte (normallement .doc) et les convertit en HTML ou XML.^M
+        </p>
+^M
+        <p>^M
+                Voici un <a href="doc/sample/specimen-de-document.doc" style="color:#00f"><i>sp&eacute;cimen-de-document<span style="color:#33f">.doc</span></i><small>[30KB]</small></a> pour vos tests.^M
+        </p>
