@@ -1348,7 +1348,7 @@ function replaceLanguagePlaceholder($match)
 		{
 		return trim(file_get_contents($placeholderPath));
 		}
-	return $match[0];		
+	return $match[0];
 	}
 
 function languageToISO639($language)

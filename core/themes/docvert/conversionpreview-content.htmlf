@@ -60,10 +60,6 @@
 			{{list-of-converted-documents}}
 			<div style="margin-top:4px;float:right;white-space:nowrap">
 				<a href="#edit-this-document" id="editDocumentLink" onclick="return editThisDocument(this)" class="editContent">&edit-document-link-text;</a>
-				<!--
-					&#160;
-					<a href="#edit-this-page" class="editContent" onclick="editThisPage()">Edit Page</a>
-				-->
 			</div>
 		</ul>
 	</div>
