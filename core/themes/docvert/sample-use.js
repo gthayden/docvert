@@ -320,14 +320,6 @@ function setEditorContent(instanceName, contentFrameDocument, content)
 			{
 			fckInstance.SetHTML(content);
 			}
-		else
-			{
-			alert("Unable to find richtext editor instance '" + instanceName + "'");
-			}
-		}
-	else
-		{
-		alert("Unable to find EditorAPI on Window object.");
 		}
 	}
 
@@ -352,24 +344,8 @@ function onSubmitUpdateContent()
 					passBackForm.submit();
 					alert("submitted");
 					}
-				else
-					{
-					alert("#contentValue was not found.");
-					}
-				}
-			else
-				{
-				alert("Unable to find richtext editor instance '" + instanceName + "'");
 				}
 			}
-		else
-			{
-			alert("Unable to find richtext EditorAPI on Window object.");
-			}
-		}
-	else
-		{
-		alert("#previewIFrame was not found");
 		}
 	return false;
 	}
