@@ -72,12 +72,11 @@ class Themes
 					setGlobalConfigItem('language', $_POST['chooseLanguage']);
 					}
 
-				elseif(isset($_POST['logout']))
+				if(isset($_POST['logout']))
 					{
-					//print 'logout';
 					$_SESSION['docvert_p'] = '';
 					}
-				else
+				else //they have security access
 					{
 					$this->allowedAdminAccess = true;
 					}
@@ -85,7 +84,6 @@ class Themes
 			}
 		elseif(isset($_POST['createpassword']))
 			{
-			//print 'createpassword';
 			Security::setAdminPassword($_POST['createpassword']);
 			$_SESSION['docvert_p'] = trim($_POST['createpassword']);
 			$this->allowedAdminAccess = true;
@@ -1348,10 +1346,18 @@ function replaceLanguagePlaceholder($match)
 	$placeholderPath = $languageDirectory.$match[1].'.htmlf';
 	if(file_exists($placeholderPath))
 		{
-		return file_get_contents($placeholderPath);
+		return trim(file_get_contents($placeholderPath));
 		}
 	return $match[0];		
 	}
 
+function languageToISO639($language)
+	{
+	$languages = Array(
+		"english"=>"en",
+		"french"=>"fr"
+		);
+	return $languages[$language];
+	}
 
 ?>
