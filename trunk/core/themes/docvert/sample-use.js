@@ -284,17 +284,6 @@ function toggleCustomPort()
 	}
 
 
-var editorTemplate = '';
-editorTemplate += '<form method="post" action="../../../save-changes.php" id="{{id}}passBackForm">';
-editorTemplate += '	<input type="hidden" id="previewPath" name="previewPath" value="{{previewPath}}" style="display:none"/>';
-editorTemplate += '	<input type="hidden" id="{{id}}passBack" name="{{id}}passBack" value="{{previewPath}}" style="display:none"/>';
-editorTemplate += '</form>';
-editorTemplate += '<input type="submit" style="width:100%" value="Save Changes" onclick="return parent.parent.onSubmitUpdateContent()"/>';
-editorTemplate += '<input type="hidden" id="{{id}}" name="{{id}}" value="Please wait, loading..." style="display:none"/>';
-editorTemplate += '<input type="hidden" id="{{id}}___Config" name="{{id}}" value="" style="display:none"/>';
-editorTemplate += '<iframe id="{{id}}__Frame" src="../../../core/lib/fckeditor/editor/fckeditor.html?InstanceName={{id}}&amp;ToolBar=Basic" frameborder="0" scrolling="no" style="width:100%;height:{{height}}"></iframe>';
-editorTemplate += '<input type="submit" style="width:100%" value="Save Changes" onclick="return parent.parent.onSubmitUpdateContent()"/>';
-
 function editThisDocument(sender)
 	{
 	sender.style.visibility = "hidden";
@@ -308,33 +297,6 @@ function editThisDocument(sender)
 	}
 
 
-function editThisPage()
-	{
-	var theIframe = document.getElementById("previewIFrame");
-	var iframeDocument = theIframe.contentDocument;
-	var contentFrameDocument = iframeDocument.getElementById("contentFrame").contentDocument;
-	var contentDiv = contentFrameDocument.getElementById("editcontent");
-
-	if(contentFrameDocument && contentDiv)
-		{
-		var editorHeight = contentDiv.clientHeight;
-		var contentHtml = contentDiv.innerHTML;
-
-		var instanceName = "contentValue";
-		contentTemplate = editorTemplate;
-		contentTemplate = reallyReplace(contentTemplate, "{{id}}", instanceName);
-		contentTemplate = reallyReplace(contentTemplate, "{{height}}", editorHeight + "px");
-		contentTemplate = reallyReplace(contentTemplate, "{{previewPath}}", contentFrameDocument.location);
-
-		contentDiv.innerHTML = contentTemplate;
-
-		setTimeout( function(){ setEditorContent(instanceName, contentFrameDocument, contentHtml); }, 1000);
-		}
-	else
-		{
-		alert("This pipeline does not allow editing (there is no div#editcontent)");
-		}
-	}
 
 function reallyReplace(subject, searchString, replaceString)
 	{

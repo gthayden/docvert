@@ -8,7 +8,7 @@ Purpose: make some file that live editor needs.
 
 **/
 
-
+include_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'webpage.php');
 
 class GeneratePostConversionEditorFiles extends PipelineProcess 
 	{
@@ -24,6 +24,8 @@ class GeneratePostConversionEditorFiles extends PipelineProcess
 
 		$editorTemplatePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'fckeditor'.DIRECTORY_SEPARATOR.'editor-template.html';
 		$editorTemplate = file_get_contents($editorTemplatePath);
+		$editorTemplate = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $editorTemplate);
+
 		include_once('DocBookToXHTML.php');
 		$toHtmlObject = new DocBookToXHTML($this->elementAttributes, $this->pipelineDirectory, $this->contentDirectory, $this->docvertTransformDirectory, $this->loopDepth, $this->depthArray, $this->previewDirectory, $this->pipelineSettings);
 		$html = $toHtmlObject->process($currentXml);
