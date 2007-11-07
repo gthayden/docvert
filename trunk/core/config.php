@@ -39,7 +39,7 @@ function initializeIniFile($path)
 	{
 	$header = '; Docvert web service configuration.'."\n".'; Project homepage at <http://docvert.org>';
 	file_put_contents($path, $header);
-	chmod($path, 0600) //security!
+	chmod($path, 0600); //security!
 	}
 
 function setConfigItem($configPath, $key, $value)
@@ -59,7 +59,7 @@ function setConfigItem($configPath, $key, $value)
 		$iniFilePointer = fopen($configPath, 'a');
 		fwrite($iniFilePointer, "\n".$newConfigItemLine);
 		fclose($iniFilePointer);
-		chmod($iniFilePointer, 0600) //security!
+		chmod($iniFilePointer, 0600); //security!
 		return;
 		}
 	$iniLines = file($configPath);
@@ -77,7 +77,7 @@ function setConfigItem($configPath, $key, $value)
 			}
 		}
 	file_put_contents($configPath, implode('', $newIniLines));
-	chmod($configPath, 0600) //security!
+	chmod($configPath, 0600); //security!
 	}
 
 function getConfigItem($configPath, $key)
