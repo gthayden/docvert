@@ -59,7 +59,7 @@ function setConfigItem($configPath, $key, $value)
 		$iniFilePointer = fopen($configPath, 'a');
 		fwrite($iniFilePointer, "\n".$newConfigItemLine);
 		fclose($iniFilePointer);
-		chmod($iniFilePointer, 0600); //security!
+		chmod($configPath, 0600); //security!
 		return;
 		}
 	$iniLines = file($configPath);
