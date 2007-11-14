@@ -1,0 +1,7 @@
+<h1>No files uploaded</h1>
+<p>This web service takes HTTP POSTs of binary MSWord, OpenDocument, and other word processing files but none were given.</p>
+<p>If you did provide a file here are some things to check...</p>
+<ul>
+	<li>If you uploaded a large file check your php.ini configuration for <tt>upload_max_filesize</tt> and ensure it\'s large enough.</li>
+	<li>Check local file permissions to see whether your browser could upload the file.</li>
+</ul>

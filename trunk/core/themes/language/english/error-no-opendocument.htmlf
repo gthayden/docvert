@@ -1,0 +1,3 @@
+<h1>Only OpenDocument Files Allowed</h1>
+<p>This installation has been configured to only allow OpenDocument uploads. This means that although MSWord is typically supported in Docvert, this particular server has chosen not to support it.</p>
+<p>Supporting MS Word requires additional software that this server may not have.</p>
