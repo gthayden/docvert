@@ -1360,4 +1360,85 @@ function languageToISO639($language)
 	return $languages[$language];
 	}
 
+function displayLocalisedErrorPage($message, $errorNumber, $errorData)
+	{
+	
+	if(!headers_sent())
+		{
+		header('HTTP/1.1 '.$errorNumber);
+		header('Status: '.$errorNumber);
+		}
+	$pageType = 'unknown';
+	if(substr($errorNumber, 0, 1) == '2')
+		{
+		$title = '&error-ok;';
+		$pageType = 'good';
+		}
+	else
+		{
+		$title = '&error-error;';
+		$pageType = 'bad';
+		}
+	if(!defined('DOCVERT_CLIENT_TYPE'))
+		{
+		$errorMessage = '&error-programming-error-docvert-client-type;';
+		$errorMessage = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $errorMessage);
+		die($errorMessage);
+		}
+	switch(DOCVERT_CLIENT_TYPE)
+		{
+		case 'web':
+			$head = '<style type="text/css">body{font-family:sans-serif;} h1{font-size:large;} h2{font-size:medium} h3{font-size:small} .windowTitle{color:white;margin:0px;padding:5px;font-size:small} .bad {background:#ffeeee; border:solid 2px red} .bad .windowTitle {background:red} .good {background:#eeffee;border: solid 2px #bbccbb} .good .windowTitle {background:#006600} .footer {margin-top:0px;padding:4px;font-size:small} .bad .footer {background:#ffcccc} .bad .footer .divider {color:#ffcccc} .good .footer {background:#ccffcc} .good .footer .divider {color:#ccffccc} .standardAdvice {margin:30px 0px 0px 0px; padding: 0px 0px 10px 15px;} </style>';
+			$body = '<div class="'.$pageType.'">'."\n";
+			$body .= '    <h1 class="windowTitle">Docvert: '.$title.' '.$errorNumber.'</h1>'."\n";
+			$body .= '    <div style="padding:10px">'."\n";
+			$body .= '	'.$message."\n";
+			$body .= '    </div>'."\n";
+			$body .= '    &error-footer;'."\n";
+			$body .= '</div>'."\n";
+			$template = getXHTMLTemplate();
+			$template = str_replace('{{title}}', $title, $template);
+			$template = str_replace('{{head}}', $head, $template);
+			$template = str_replace('{{body}}', $body, $template);
+			$template = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $template);
+			if($errorData)
+				{
+				foreach($errorData as $key => $value)
+					{	
+					$template = str_replace('&dynamic-'.$key.';', $value, $template);
+					}	
+				}
+			die($template);
+			break;
+		case 'command line':
+			$endOfBlockElements = array('</p>', '</h1>', '</h2>', '</h3>', '</h4>', '</h5>', '</h6>', '</li>', '</blockquote>');
+			$message = str_replace($endOfBlockElements, "\n", $message);
+			$message = preg_replace('/<.*?>/s','',$message);
+			$message = str_replace('&lt;','<', $message);
+			$message = str_replace('&gt;','>', $message);
+			$message = str_replace('&amp;','&', $message);
+			$message .= "\n";
+			$message = trim($message)."\n";
+			$message = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $message);
+			if($errorData)
+				{
+				foreach($errorData as $key => $value)
+					{	
+					$message = str_replace('&dynamic-'.$key.';', $value, $message);
+					}	
+				}
+
+			if($pageType == 'bad')
+				{
+				file_put_contents("php://stderr", $message);
+				}
+			else
+				{
+				print $message;
+				}
+			die();
+			break;
+		}
+	}
+
 ?>

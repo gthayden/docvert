@@ -1,6 +1,6 @@
 <?php
 
-$appDir = dirname($_SERVER["SCRIPT_FILENAME"]).DIRECTORY_SEPARATOR;
+$appDir = dirname(__file__).DIRECTORY_SEPARATOR;
 define('DOCVERT_DIR', $appDir);
 define('DOCVERT_CLIENT_TYPE', 'web');
 

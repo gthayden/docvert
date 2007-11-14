@@ -81,7 +81,8 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 			$zipsInPreviewDirectory = glob($previewDirectory.DIRECTORY_SEPARATOR.'*.zip');
 			if(count($zipsInPreviewDirectory) != 1)
 				{
-				webServiceError('Docvert internal error: ZIP file was not rebuilt. I found '.count($zipsInPreviewDirectory).' ZIP files in "'.$previewDirectory.'" '.implode());
+				$errorData = Array('zipsInPreviewDirectory' => count($zipsInPreviewDirectory), 'previewDirectory' => $previewDirectory);
+				webServiceError('&docvert-internal-error-no-zip-file;', 500, $errorData);
 				}
 			$returnZipPath = $zipsInPreviewDirectory[0];
 			}
@@ -103,7 +104,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 				}
 			else
 				{
-				webServiceError('Cannot run afterconversion=<b>saveZip</b> from non "command line" clients, sorry!');
+				webServiceError('&error-after-conversion-flag;');
 				}
 			}
 		elseif($afterConversion == 'downloadZip')
@@ -121,7 +122,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 			}
 		else
 			{
-			webServiceError('afterConversion was "'.revealXml($afterConversion).'"');
+			webServiceError('&error-unsupported-after-conversion;', 500, Array('after-conversion'=>revealXml($afterConversion)) );
 			}
 		}
 	elseif($setupOpenOfficeOrg)
@@ -140,7 +141,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 	 	*
 		 * So I'm doing a "400 Bad Request" in the meantime.
 		*/
-		webServiceError('<h1>No files uploaded</h1><p>This web service takes HTTP POSTs of binary MSWord, OpenDocument, and other word processing files but none were given.</p><p>If you did provide a file here are some things to check...</p><ul><li>If you uploaded a large file check your php.ini configuration for <tt>upload_max_filesize</tt> and ensure it\'s large enough.</li><li>Check local file permissions to see whether your browser could upload the file.</li></ul>', '400 Bad Request');
+		webServiceError('&error-no-files-uploaded;', '400 Bad Request');
 		}
 	}
 
@@ -157,7 +158,7 @@ function ensureClientType()
 		case 'command line':
 			break;
 		default:
-			webServiceError('clientType must be either "web" or "command line"');
+			webServiceError('&error-client-type-must-be;');
 		}
 	}
 
@@ -178,7 +179,7 @@ function thereWasAFileGiven($files, $pipeline)
 		}
 	if($validUpload == true && $pipeline == false)
 		{
-		webServiceError('A form field of \'pipeline\' is required.');
+		webServiceError('&error-a-pipeline-form-field-is-required;');
 		}
 	return $validUpload;
 	}
@@ -201,7 +202,7 @@ function ensureMakeDirectory($makeInsideDirectory, $directoryName)
 			}
 		if($variation >= 10)
 			{
-			webServiceError('Problem creating directory at '.$directoryToMake.' after '.$variation.' attempts.');
+			webServiceError('&problem-creating-directory', 500, Array('directoryToMake'=>$directoryToMake, 'numberOfAttempts'=>$variation) );
 			}
 		}
 	while (@!mkdir($directoryToMake, 0777));
@@ -265,7 +266,7 @@ function isAnOasisOpenDocument($fileUploadArray)
 		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
 		if($disallowNonOpenDocumentUploads == 'true')
 			{
-			webServiceError('<h1>Only OpenDocument Files Allowed</h1><p>This installation has been configured to only allow OpenDocument uploads. This means that although MSWord is typically supported in Docvert, this particular server has chosen not to support it.</p><p>Supporting MS Word requires additional software that this server doesn\'t have.</p>');
+			webServiceError('&error-no-opendocument;');
 			}
 		}
 	return $isAnOasisOpenDocument;
@@ -1305,68 +1306,6 @@ function phpErrorHandler($errorLevel, $message, $file, $line)
 		}
 	}
 
-function webServiceError($message, $errorNumber = 500)
-	{
-	if(!headers_sent())
-		{
-		header('HTTP/1.1 '.$errorNumber);
-		header('Status: '.$errorNumber);
-		}
-	$pageType = 'unknown';
-	if(substr($errorNumber, 0, 1) == '2')
-		{
-		$title = 'OK';
-		$pageType = 'good';
-		}
-	else
-		{
-		$title = 'Error';
-		$pageType = 'bad';
-		}
-	if(!defined('DOCVERT_CLIENT_TYPE'))
-		{
-		die('Programming error: DOCVERT_CLIENT_TYPE has not been set. (error occured inside webServiceError() )');
-		}
-	switch(DOCVERT_CLIENT_TYPE)
-		{
-		case 'web':
-			$head = '<style type="text/css">body{font-family:sans-serif;} h1{font-size:large;} h2{font-size:medium} h3{font-size:small} .windowTitle{color:white;margin:0px;padding:5px;font-size:small} .bad {background:#ffeeee; border:solid 2px red} .bad .windowTitle {background:red} .good {background:#eeffee;border: solid 2px #bbccbb} .good .windowTitle {background:#006600} .footer {margin-top:0px;padding:4px;font-size:small} .bad .footer {background:#ffcccc} .bad .footer .divider {color:#ffcccc} .good .footer {background:#ccffcc} .good .footer .divider {color:#ccffccc} .standardAdvice {margin:30px 0px 0px 0px; padding: 0px 0px 10px 15px;} </style>';
-			$body = '<div class="'.$pageType.'">'."\n";
-			$body .= '    <h1 class="windowTitle">Docvert: '.$title.' '.$errorNumber.'</h1>'."\n";
-			$body .= '    <div style="padding:10px">'."\n";
-			$body .= '	'.$message."\n";
-			$body .= '    </div>'."\n";
-			$body .= '    <p class="standardAdvice">&bull; Read <a href="doc/install.txt">install.txt</a> and <a href="doc/troubleshooting.txt">troubleshooting.txt</a> for general tips.</p>'."\n";
-			$body .= '    <div class="footer"><a href="sample-use.php">Back...</a> &nbsp;<span class="divider">|</span>&nbsp; <a href="http://docvert.org/">Docvert Homepage On The Web</a></div>'."\n";
-			$body .= '</div>'."\n";
-			$template = getXHTMLTemplate();
-			$template = str_replace('{{title}}', $title, $template);
-			$template = str_replace('{{head}}', $head, $template);
-			$template = str_replace('{{body}}', $body, $template);
-			die($template);
-			break;
-		case 'command line':
-			$endOfBlockElements = array('</p>', '</h1>', '</h2>', '</h3>', '</h4>', '</h5>', '</h6>', '</li>', '</blockquote>');
-			$message = str_replace($endOfBlockElements, "\n", $message);
-			$message = preg_replace('/<.*?>/s','',$message);
-			$message = str_replace('&lt;','<', $message);
-			$message = str_replace('&gt;','>', $message);
-			$message = str_replace('&amp;','&', $message);
-			$message .= "\n";
-			$message = trim($message)."\n";
-			if($pageType == 'bad')
-				{
-				file_put_contents("php://stderr", $message);
-				}
-			else
-				{
-				print $message;
-				}
-			die();
-			break;
-		}
-	}
-
 function getXHTMLTemplate()
 	{
 	$template = null;
@@ -1909,5 +1848,13 @@ function generateDocument($pages, $generatorPipeline)
 	header('Content-type: application/vnd.oasis.opendocument.text');
 	readfile($openDocumentPath);
 	}
+
+
+function webServiceError($message, $errorNumber = 500, $errorData = null)
+	{
+	include_once('webpage.php');
+	displayLocalisedErrorPage($message, $errorNumber, $errorData);
+	}
+
 
 ?>
