@@ -1,0 +1,1 @@
+<p>Hopefully it worked and you were able to configure OpenOffice.org to use Docvert's trusted-macros directory as per the <a href="doc/install.txt">install.txt</a>.</p><p>If not, it's likely that OpenOffice.org has crashed and so you'll need to look at the process list and kill any existing OpenOffice.org processes.</p>

@@ -1,0 +1,1 @@
+Internal error in Docvert. <tt>extractUsefulOasisOpenDocumentFiles(...)</tt> was called with an empty path.

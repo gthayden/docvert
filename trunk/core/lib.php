@@ -278,7 +278,7 @@ function isAnOasisOpenDocument($fileUploadArray)
  */
 function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion = false)
 	{
-	if(!file_exists($inputDocumentPath) && !$mockConversion) webServiceError(500, 'In makeOasisOpenDocument(...) the inputDocumentPath points to a non-existant file.');
+	if(!file_exists($inputDocumentPath) && !$mockConversion) webServiceError('&error-non-existant-non-opendocument-file;');
 	$inputDocumentPath = convertPathSlashesForCurrentOperatingSystem($inputDocumentPath);
 	$docvertCommandPath = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR;
 	
@@ -293,7 +293,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		}
 	if($outputDocumentPath == '.odt' && !$mockConversion)
 		{
-		webServiceError('Unable to determinate output filename. Please try again.', 500);
+		webServiceError('&error-unable-to-determine-output-filename;', 500);
 		}
 
 	$commandTemplateVariable = array
@@ -340,7 +340,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 
 	if($doNotUseConverter == 'true')
 		{
-		webServiceError('The chosen converter "'.$converter.'" has been disabled by the Docvert administrator.');
+		webServiceError('&error-disabled-converter;', 500, Array('converter' => $converter) );
 		}
 
 	$operatingSystemFamily = getOperatingSystemFamily();
@@ -398,7 +398,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			$commandTemplateVariable['jodConverterJar'] = dirname(__FILE__).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'jodconverter'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'jodconverter-2.1.1.jar';
 			if(!file_exists($commandTemplateVariable['jodConverterJar']))
 				{
-				webServiceError('The JAR doesn\'t exist at '.$commandTemplateVariable['jodConverterJar']);
+				webServiceError('&error-jodconverter-not-found;', 500, Array('jodConverterPath' => $commandTemplateVariable['jodConverterJar']));
 				}
 			$commandTemplateVariable['inputDocumentUrl'] = convertLocalPathToOpenOfficeOrgUrl($commandTemplateVariable['inputDocumentPath']);
 			$commandTemplateVariable['outputDocumentUrl'] = convertLocalPathToOpenOfficeOrgUrl($commandTemplateVariable['outputDocumentPath']);
@@ -409,7 +409,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			$commandTemplateVariable['pyodConverterPath'] = dirname(__FILE__).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'pyodconverter'.DIRECTORY_SEPARATOR.'pyodconverter.py';
 			if(!file_exists($commandTemplateVariable['pyodConverterPath']))
 				{
-				webServiceError('The python file doesn\'t exist at '.$commandTemplateVariable['pyodConverterPath']);
+				webServiceError('&error-jodconverter-not-found;', 500, Array('pyodConverterPath' => $commandTemplateVariable['pyodConverterPath']));
 				}
 			//$commandTemplateVariable['inputDocumentPath'] = basename($commandTemplateVariable['inputDocumentPath']);
 			//$commandTemplateVariable['outputDocumentPath'] = basename($commandTemplateVariable['outputDocumentPath']);
@@ -425,13 +425,13 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			else
 				{
 				$additionalError = ' Was empty.';
-				}
-			webServiceError('As part of the HTTP POST you must supply "converter=(openofficeorg|abiword|jodconverter)". '.$additionalError);
+				};
+			webServiceError('&error-converter-not-chosen;', 500, Array('additionalError' => $additionalError));
 			break;
 		}
 	if(isset($commandTemplateVariable['scriptPath']) && !file_exists($commandTemplateVariable['scriptPath']))
 		{
-		webServiceError('The script path doesn\'t exist at '.$commandTemplateVariable['scriptPath']);
+		webServiceError('&error-script-path-does-not-exist-at;', 500, Array('scriptPath' => $commandTemplateVariable['scriptPath']));
 		}
 
 	$command = $commandTemplate;
@@ -456,24 +456,21 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 
 	if(!file_exists($commandTemplateVariable['outputDocumentPath']) && !$mockConversion)
 		{
-		$errorMessage = '<p>Unable to generate an OpenDocument file from your upload.</p>';
-		$errorMessage .= '<p>The command I tried to run was:</p>';
-		$errorMessage .= '<blockquote><tt>'.revealXml($command).'</tt></blockquote>';
-		$errorMessage .= '<p>In response to that command, the following was returned</p>';
-		$errorMessage .= '<blockquote><tt>'.revealXml($output).'</tt></blockquote>';
-		$errorMessage .= suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable, true);
+		$errorMessage = '&error-unable-to-generate-opendocument;';
+		$suggestedFixes = suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable, true);
+		$notExecutable = '';
 		if(isset($commandTemplateVariable['scriptPath']) && !is_executable($commandTemplateVariable['scriptPath']))
 			{
 			if($operatingSystemFamily == 'Windows')
 				{
-				$errorMessage .= '<p>It appears that the conversion script isn\'t executable, but as you\'re running Windows I can\'t be sure of that. This may be a <a href="http://en.wikipedia.org/wiki/Red_herring">red herring</a> but check whether the script is executable to the web server user. The script can be found at,</p><blockquote><tt>'.revealXml($commandTemplateVariable['scriptPath']).'</tt></blockquote>';
+				$notExecutable = '&error-conversion-script-windows-not-executable;';
 				}
 			elseif($operatingSystemFamily == 'Unix')
 				{
-				$errorMessage .= '<p>The conversion script isn\'t executable, so change its permissions (Eg. on Unix/Linux "chmod" it and ensure the web server user has access). The script can be found at, <blockquote><tt>'.revealXml($commandTemplateVariable['scriptPath']).'</tt></blockquote></p>';
+				$notExecutable = '&error-conversion-script-unix-not-executable;';
 				}
 			}
-		webServiceError($errorMessage);
+		webServiceError($errorMessage, 500, Array('commandToRun'=>revealXml($command), 'responseToCommand'=>revealXml($output), 'suggestedFixes'=>$suggestedFixes, 'notExecutable'=>$notExecutable));
 		}
 	else
 		{
@@ -502,14 +499,14 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 		{
 		if(DIRECTORY_SEPARATOR == '/' && isset($commandTemplateVariable['useXVFB']) && $commandTemplateVariable['useXVFB'] == false) //Unix
 			{
-			$suggestedFixes .= '<p>As you\'re using XVFB the problem may be that OpenOffice.org doesn\'t like it. Try disabling XVFB on the admin page to see if that fixes this.</p>';
+			$suggestedFixes .= '&error-suggested-fix-disable-xvfb;';
 			}
 		}
 	if(trim($output))
 		{
 		if(stripos($output, 'password') !== false)
 			{
-			$suggestedFixes .= '<p>As it\'s asking for a password there\'s a <tt>sudo</tt> problem so read <a href="doc/install.txt">install.txt</a> about "<tt>visudo</tt>"</p>';
+			$suggestedFixes .= '&error-suggested-fix-sudo-problem;';
 			}
 		if(stripos($output, 'the system cannot find the path specified') !== false)
 			{
@@ -517,67 +514,66 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				{
 				$commandTemplateVariable['scriptPath'] = '';
 				}
-			$suggestedFixes .= '<p>As it\'s saying it cannot find the path this probably means your <tt>'.basename(revealXml($commandTemplateVariable['scriptPath'])).'</tt> isn\'t pointing at an application. If so, try the install docs...</p>';
+			$suggestedFixes .= '&error-misconfigured-conversion-script;';
 			}
 		if(stripos($output, 'command not found') !== false)
 			{
 			if(stripos($output, 'oowriter') !== false)
 				{
-				$suggestedFixes .= '<p>As it\'s saying it can\'t find oowriter this means either that OpenOffice.org 2 is not installed, or that the script isn\'t pointing to the location of OpenOffice.org.</p>';
+				$suggestedFixes .= '&error-oowriter-not-found;';
 				}
 			if(stripos($output, 'xvfb-run') !== false)
 				{
-				$suggestedFixes .= '<p>As it\'s saying it can\'t find <b>xvfb-run</b> this means either that it\'s not installed, or that the script <tt>'.basename(revealXml($commandTemplateVariable['scriptPath'])).'</tt> isn\'t pointing at the file.</p>';
+				$suggestedFixes .= '&error-xvfb-run-not-found;';
 				}
 			else
 				{
-				$suggestedFixes .= '<p>As it\'s saying it can\'t find that command it means that this command is not installed, or that the script isn\'t pointing to the command.</p>';
+				$suggestedFixes .= '&error-command-not-found;';
 				}
 			}
 		if(stripos($output, 'X11') !== false || stripos($output, 'refused by server Xlib') !== false )
 			{
-			$runAsUser = 'root';
-			$runAsCustomUserConfigurationPath = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR.'use-custom-user.php';
-
-			if(file_exists($runAsCustomUserConfigurationPath))
+	
+			include_once('config.php');
+			$runAsUser = getGlobalConfigItem('runOpenOfficeAsCustomUser');
+			if($runAtUser == null)
 				{
-				include($runAsCustomUserConfigurationPath);
-				$runAsUser = trim($customUser);
+				$runAsUser = 'root';
 				}
 
-			$suggestedFixes .= '<p>As it\'s complaining about "X11" the problem might be that the "'.revealXml($runAsUser).'" user can\'t access your desktop, so allow them by using <tt style="font-weight:bold">xhost</tt>. If that\'s the problem you can allow '.$runAsUser.' access to your desktop by typing this command: <blockquote><tt>sudo xhost local:'.$runAsUser.'</tt></blockquote></p>';
+			$suggestedFixes .= '&error-can-not-run-as-user-1; "'.revealXml($runAsUser).'" &error-can-not-run-as-user-2; <blockquote><tt>sudo xhost local:'.$runAsUser.'</tt></blockquote>';
 			}
 
 		if(stripos($output, 'no passwd entry for'))
 			{
-			$suggestedFixes .= '<p>As it\'s complaining about the lack of a password entry, this probably means that you haven\'t configured visudo for this user. Read the <a href="doc/install.txt">install.txt</a> about this.</p>';
+			$suggestedFixes .= '&error-no-password-entry;';
 			}
 
 		if(stripos($output, 'xvfb-run: not found') !== false)
 			{
-			$suggestedFixes .= '<p>Did you install XVFB? See <a href="doc/install.txt">install.txt</a> for install instructions or disable XVFB from the admin page.';
+			$suggestedFixes .= '&error-xvfb-not-found;';
 			}
 
 		if(strpos($output, 'CRITICAL') !== false)
 			{
-			$suggestedFixes .= '<p>A critical error... in capital letters even. Looks like that software which was external to Docvert crashed (Eg. a problem in that piece of software).</p>';
+			$suggestedFixes .= '&error-critical-error-capital-letters;';
 			}
 
 		if(stripos($output, 'wmf2gd: not found') !== false)
 			{
-			$suggestedFixes .= '<p>...so install the wmf libraries as per <a href="doc/install.txt">install.txt</a>.</p>';
+			$suggestedFixes .= '&error-wmf2gd-not-found;';
 			}
 		if(stripos($output, 'Terminated DISPLAY') !== false)
 			{
-			$suggestedFixes .= '<p>The X server was killed (hopefully by you...if not it might have been an over eager cleanup process).</p>';
+			$suggestedFixes .= '&error-terminated-display;';
 			}
 		if(stripos($output, 'locale') !== false) //never been the cause of errors for me
 			{
-			$suggestedFixes .= '<p><i>Note:</i> Although it\'s also complaining about locale support that particular problem hasn\'t been the actual cause of errors for me.</p>';
+			$suggestedFixes .= '&error-locale-error;';
 			}
 		if( (stripos($output, 'connection failed') !== false && stripos($output, 'running and listening') !== false) || stripos($output, 'failed to connect to OpenOffice.org') )
 			{
-			$suggestedFixes .= '<p>This error message probably means that PyODConverter or JODConverter is complaining about OpenOffice.org not running. If so, start OpenOffice.org in listening mode by using this command,</p><blockquote><tt>soffice -accept="socket,port=8100;urp;"</tt></blockquote><p>Or this to do the same but not show OpenOffice.org on the desktop,</p><blockquote><tt>soffice -headless -accept="socket,port=8100;urp;"</tt></blockquote>';
+			$suggestedFixes .= '&error-pyod-or-jod-converter-not-running;<blockquote><tt>soffice -headless -accept="socket,port=8100;urp;"</tt></blockquote>';
 			}
 		if( (stripos($output, 'jodconverter') !== false || stripos($output, 'pyodconverter') !== false) && ( (stripos($output, 'URL seems to be an unsupported one') !== false || stripos($output, 'ErrorCodeIOException') !== false) ) )
 			{
@@ -587,16 +583,16 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				$temporaryDirectoryMessage = dirname($commandTemplateVariable['outputDocumentPath']);
 				$temporaryDirectoryMessage = ' ("'.$temporaryDirectoryMessage.'") ';
 				}
-			$suggestedFixes .= '<p>PyODConverter/JODConverter or OpenOffice.org seems to be having some problems... it may be that OpenOffice is unable to save to the temporary directory '.revealXml($temporaryDirectoryMessage).'.</p><p>If so, be sure that the user you started OpenOffice as had write access to that temporary directory.</p><p>Regardless, the problem seems to be occuring outside Docvert so try getting PyODConverter/JODConverter running from the command line first.</p><p><small>(But if PyODConverter/JODConverter is running correctly then let me know because then Docvert must be at fault)</small></p>';
+			$suggestedFixes .= '&error-pyod-or-jod-converter-bad-url;';
 			}
 		if(stripos($output, 'jodconverter') !== false && stripos($output, 'inputFile doesn\'t exist') !== false)
 			{
-			$suggestedFixes .= '<p>OpenOffice.org appears to think the file doesn\'t exist but it does. The inputPath is probably malformed. Please post about this entier error message to the mailing list.';
+			$suggestedFixes .= '&error-pyod-or-jod-converter-file-not-found;';
 			}
 		}
 	if(ini_get('safe_mode'))
 		{
-		$suggestedFixes .= '<p>Note: PHP\'s Safe Mode is enabled and this may restrict Docvert from using this command. You can either disable Safe Mode, or add Docvert\'s command directory to safe_mode_exec_dir in your php.ini.</p>';
+		$suggestedFixes .= '&error-safe-mode;';
 		}
 	return $suggestedFixes;
 	}
@@ -612,26 +608,25 @@ function setupOpenOfficeOrg()
 	$adminPassword = Security::getAdminPassword();
 	if($adminPassword === null)
 		{
-		webServiceError('Refusing to start OpenOffice.org because a password hasn\'t been set. See install.txt for details on how to do this.', 300);
+		webServiceError('&error-refusing-to-start-ooo-password;', 300);
 		}
 	else
 		{
 		session_start();
-		if($_SESSION['docvert_p'] != $adminPassword) webServiceError('Refusing to start OpenOffice.org due to incorrect password. Login on the admin page and try again.', 300); 
+		if($_SESSION['docvert_p'] != $adminPassword) webServiceError('&error-refusing-to-start-ooo-lack-of-password;', 300); 
 		}
 	$output = makeOasisOpenDocument(null, 'openofficeorg', true);
 	$body = null;
-	$body .= '<h1>Docvert tried to start OpenOffice.org on your desktop</h1>';
+	$body .= '&setup-openofficeorg-title;';
 	if(trim($output) != '')
 		{
-		$body .= '<p>...but this appears to have failed. This is what was returned:</p><blockquote><tt>'.$output.'</tt></blockquote>';
+		$body .= '&setup-openofficeorg-failed;<blockquote><tt>'.$output.'</tt></blockquote>';
 		$body .= suggestFixesToCommandLineErrorMessage($output, null, false);
 		webServiceError($body);
 		}
 	else
 		{
-		$body .= '<p>Hopefully it worked and you were able to configure OpenOffice.org to use Docvert\'s trusted-macros directory as per the <a href="doc/install.txt">install.txt</a>.</p><p>If not, it\'s likely that OpenOffice.org has crashed and so you\'ll need to look at the process list and kill any existing OpenOffice.org processes.</p>';
-		//'<p>Here\'s the output (if any) from OpenOffice.org,</p><blockquote><tt>'.$output.'</tt></blockquote>';
+		$body .= '&setup-openofficeorg-success;';
 		webServiceError($body, 200);
 		}
 	}
@@ -658,7 +653,7 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 	{
 	if(!trim($oasisOpenDocumentPath))
 		{
-		webServiceError('Internal error in Docvert. <tt>extractUsefulOasisOpenDocumentFiles(...)</tt> was called with an empty path. Value was "'.$oasisOpenDocumentPath.'"');
+		webServiceError('&error-oasis-path;');
 		}
 	include_once(DOCVERT_DIR.'core/lib/pclzip-2-6/pclzip.lib.php');
 	$unknownImageIndex = 1;
@@ -667,7 +662,7 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 	$odfObjects = array();
 	if (($archivedFiles = $archive->listContent()) == 0)
 		{
-		webServiceError('Error unzipping Oasis OpenDocument: '.$archive->errorInfo(true));
+		webServiceError('&error-unzipping-archive; '.$archive->errorInfo(true));
 		}
 	foreach ($archivedFiles as $archivedFile)
 		{
@@ -681,20 +676,15 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 				$newPath = $documentDirectory.'docvert-'.basename($archivedFile['filename']);
 				if(!file_exists($oldPath))
 					{
-					webServiceError('Source path does not exist at "'.$oldPath.'"');
-					}
-				if(!rename($oldPath, $newPath))
-					{
-					//if(file_exists($oldPath) || !file_exists($newPath))
-					webServiceError('Unable to rename '.$oldPath.' to '.$newPath.' despite the target directory existing.');
+					webServiceError('&error-source-path-does-not-exist; "'.$oldPath.'"');
 					}
 				if(!file_exists(dirname($newPath)))
 					{
-					webServiceError('Destination directory does not exist at "'.dirname($newPath).'"');
+					webServiceError('&error-destination-directory-not-found;"'.dirname($newPath).'"');
 					}
 				if(!file_exists($newPath))
 					{
-					webServiceError('Destination path file does not exist at "'.$newPath.'"');
+					webServiceError('&error-destination-path-not-exist; '.$newPath.'"');
 					}
 				}
 			elseif(stringStartsWith(strtolower($archivedFile['filename']), 'objectreplacements'))
@@ -702,9 +692,10 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 				$oldPath = $documentDirectory.basename($archivedFile['filename']);
 				if(!function_exists('getimagesize'))
 					{
-					$errorMessage = '<div class="error"><p>The file contains embedded ODF Objects (similar in purpose to OLE Objects) but I\'m unable to detect the data type because your PHP doesn\'t have getimagesize(). You should add the GD extension to your PHP to fix this.</p></div>';
+					$template = '<div class="error"><p>&error-openoffice-objects;</p></div>';
+					$template = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $template);
 					$testResultsPath = $documentDirectory.'test.html';
-					file_put_contents($testResultsPath, $errorMessage, FILE_APPEND);
+					file_put_contents($testResultsPath, $template, FILE_APPEND);
 					}
 				else
 					{
@@ -726,10 +717,6 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 						//die('File extension: "'.$fileExtension.':'.$imageTypes[$imageTypeIndex].'" ['.$imageMetadata[1].']');
 						}
 					$newPath = $documentDirectory.'image'.$unknownImageIndex.'.'.$fileExtension;
-					if(!rename($oldPath, $newPath))
-						{
-						webServiceError('Unable to rename '.$oldPath.' to '.$newPath.' despite the target directory existing.');
-						}
 					$unknownImageIndex++;
 					$odfObjects[] = array($archivedFile['filename'], basename($newPath), $fileExtension);
 					}
@@ -797,7 +784,7 @@ function getTemporaryDirectoryInsideDirectory($makeInsideDirectory, $prefix = 'd
 		$exitAfterXLoops++;
 		if($exitAfterXLoops >= 10)
 			{
-			webServiceError('Problem creating directory at '.$temporaryDirectory.' and so after '.$exitAfterXLoops.' attempts I gave up.');
+			webServiceError('&error-unable-to-make-directory;', 500, Array('temporaryPath'=>$temporaryDirectory, 'exitAfterXLoops'=>$exitAfterXLoops));
 			}
 		}
 	while(@!mkdir($temporaryDirectory, 0777));
@@ -813,12 +800,12 @@ function getTemporaryFile()
 
 function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDirectory, $skipAheadToDocbook=false)
 	{
-	if(!trim($contentPath)) webServiceError('No content.xml file given.');
+	if(!trim($contentPath)) webServiceError('&error-no-content-xml-found;');
 	if(!file_exists($contentPath)) webServiceError('Unable to find '.basename($contentPath).' file in "'.dirname($contentPath).'"');
 	$contentDirectory = dirname($contentPath);
 	$pipelineDirectory = DOCVERT_DIR.'pipeline'.DIRECTORY_SEPARATOR.$pipelineToUse.DIRECTORY_SEPARATOR;
 	$pipelinePath = $pipelineDirectory.'pipeline.xml';
-	if(!file_exists($pipelinePath)) webServiceError('Couldn\'t find the '.$pipelineToUse.'\'s pipeline.xml definition file at '.$pipelinePath.'. If the file is there check permissions, and if the problem persists note that some web servers cache permissions so you might need to bounce the web server to make it notice your permission changes.');
+	if(!file_exists($pipelinePath)) webServiceError('&error-no-pipeline-found;', 500, Array('pipelinePath'=>$pipelinePath));
 	$pipelineString = file_get_contents($pipelinePath);
 	$pipelineString = removeXmlDeclaration($pipelineString);
 	$pipelineString = trim($pipelineString);
@@ -844,28 +831,28 @@ function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDire
 
 		if(strpos($chosenAutoPipeline, '.') === true || strpos($chosenAutoPipeline, '/') === true || strpos($chosenAutoPipeline, '\\') === true)
 			{				
-			webServiceError('The <tt>autopipeline</tt> variable must not contain full-stops "." or slashes "/" and "\\". It was "'.$chosenAutoPipeline.'"', '400 Bad Request');
+			webServiceError('&error-pipeline-error;', 400, Array('chosenAutoPipeline'=>$chosenAutoPipeline));
 			}
 
 		$autoPipelinePath = $autoPipelinesDirectory.$chosenAutoPipeline.'.xml';
 
 		if(!trim($chosenAutoPipeline))
 			{
-			webServiceError('For <tt>&lt;autopipeline&gt;s</tt> the <tt>\'autotemplate\'</tt> variable must be given as part of the HTTP POST. It was empty.', '400 Bad Request');
+			webServiceError('error-autopipeline-empty;', 400);
 			}
 		elseif(!file_exists($autoPipelinePath))
 			{
 			$autoPipelinePath = $autoPipelinesDirectory.$chosenAutoPipeline.'.default.xml';
 			if(!file_exists($autoPipelinePath))
 				{
-				webServiceError('An autotemplate for the autoTemplate level of "'.$chosenAutoPipeline.'" isn\'t supported in this version of Docvert. Programmers may create a pipeline and save it to <tt>"'.$autoPipelinePath.'.xml"</tt> in order to support this.', '400 Bad Request'.$autoPipelinePath);
+				webServiceError('&error-autopipeline-not-found; '.$chosenAutoPipeline, 400);
 				}
 			}
 
 		$pipelineString = file_get_contents($autoPipelinePath);
 		if(stripos($pipelineString, '{{custom-stages}}') === false)
 			{
-			webServiceError('Auto pipeline does not contain {{custom-stages}} placeholder at '.$autoPipelinePath.'. Contents are <blockquote>'.revealXml($pipelineString).'</blockquote>');
+			webServiceError('&error-autopipeline-missing-placeholder; '.$autoPipelinePath);
 			}
 		$pipelineString = str_replace('{{custom-stages}}', $autoPipelineString, $pipelineString);
 		}
@@ -942,7 +929,7 @@ function processAPipelineLevel(&$pipelineStages, $currentXml, $pipelineDirectory
 		if(substr($key, 0, 2) != '__')
 			{
 			$elementAttributes = &$pipelineStage['__attributes'];
-			if(!is_array($elementAttributes)) webServiceError('Internal error, this should not happen. No attributes found on node.');
+			if(!is_array($elementAttributes)) webServiceError('&error-non-array;');
 			$foreachIndex++;
 			if($elementAttributes['process'] == 'Loop')
 				{
@@ -957,7 +944,7 @@ function processAPipelineLevel(&$pipelineStages, $currentXml, $pipelineDirectory
 						$xpathCount = processDepthTemplate($xpathCountTemplate, $depthArray);
 						if(strstr($xpathCount, '{') || strstr($xpathCount, 'YouHaveAPipelineError-WrongDepthError'))
 							{
-							webServiceError('In the pipeline definition there\'s a {../LoopIndex} variable that steps up too far, beyond any parent loop.');
+							webServiceError('&error-stepindex-parent;');
 							}
 						$xsltString = file_get_contents(DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'transform'.DIRECTORY_SEPARATOR.'count-nodes.xsl-fragment');
 						$xsltString = str_replace('{{xpathCount}}',$xpathCount,$xsltString);
@@ -976,12 +963,12 @@ function processAPipelineLevel(&$pipelineStages, $currentXml, $pipelineDirectory
 						}
 					else
 						{
-						webServiceError('Although a pipeline loop contains a numberOfTimes attribute the value needs a "substring:", "xpathCount:", or "number:" prefix.');
+						webServiceError('&error-pipeline-number-of-times;');
 						}
 					}
 				else
 					{
-					webServiceError('Loops in pipelines need a numberOfTimes attribute.');
+					webServiceError('&error-pipeline-needs-number-of-times-attribute;');
 					}
 				for($loopIndex = 1; $loopIndex <= $numberOfLoops; $loopIndex++)
 					{
@@ -1009,7 +996,7 @@ function processAPipelineLevel(&$pipelineStages, $currentXml, $pipelineDirectory
 */
 function processAPipelineStage($elementAttributes, $currentXml, $pipelineDirectory, $contentDirectory, $loopDepth, $depthArray, $previewDirectory, $pipelineSettings)
 	{
-	if(!array_key_exists('process',$elementAttributes)) webServiceError('All pipeline stages must have a process attribute.');
+	if(!array_key_exists('process',$elementAttributes)) webServiceError('&error-all-pipeline-stages-need-process;');
 	$processPath = DOCVERT_DIR.'core/process/'.$elementAttributes['process'].'.php';
 	if(file_exists($processPath))
 		{
@@ -1023,12 +1010,12 @@ function processAPipelineStage($elementAttributes, $currentXml, $pipelineDirecto
 			}
 		else
 			{
-			webServiceError('A pipeline stage requires <b>'.$elementAttributes['process'].'</b> and although <tt>'.$elementAttributes['process'].'.php</tt> exists it doesn\'t implement a class by this name (classes are case sensitive).');
+			webServiceError('&error-pipeline-stage-not-found;', 500, Array('processName'=> $elementAttributes['process']));
 			}
 		}
 	else
 		{
-		webServiceError('A pipeline stage requires <b>'.$elementAttributes['process'].'</b> but <tt>'.$elementAttributes['process'].'.php</tt> was not found (specifically was not found at '.$processPath.').');
+		webServiceError('&error-pipeline-file-not-found;', 500, Array('processName'=> $elementAttributes['process'], 'processPath'=>$processPath));
 		}
 	return $currentXml;
 	}
@@ -1111,7 +1098,7 @@ function zipFiles($path, $zipFilePath)
 	$returnCode = $archive->create($path, PCLZIP_OPT_REMOVE_PATH, $baseDirectoryToRemoveForZipping);
 	if($returnCode == 0)
 		{
-		webServiceError('Problem zipping files: '.$archive->errorInfo(true));
+		webServiceError('&error-problem-zipping-files; '.$archive->errorInfo(true));
 		}
 	return $zipFilePath;
 	}
@@ -1191,7 +1178,7 @@ function silentlyAppendLineToLog($messageLine, $logType)
 		case 'security':
 			break;
 		default:
-			webServiceError(500, 'Invalid call to silentlyAppendLineToLog(...) with $logType="'.$logType.'"');
+			webServiceError('&error-generic; silentlyAppendLineToLog(...)');
 		}
 	$temporaryFile = tempnam('xxx', 'docvert');
 	$temporaryDirectoryPath = dirname($temporaryFile);
@@ -1302,7 +1289,7 @@ function phpErrorHandler($errorLevel, $message, $file, $line)
 		(stripos($message, 'fsockopen') === false && stripos($message, 'Name or service not known') === false)
 	)
 		{
-		webServiceError('<h1>Unhandled Internal Error (<abbr title="Error Level">#</abbr>'.$errorLevel.')</h1><p>"'.$message.'"</p><p>In <tt>'.$file.'</tt> &nbsp; line: <tt>'.$line.'</tt></p>');
+		webServiceError('<h1>&error-unhandled-error; (<abbr title="&error-level;">#</abbr>'.$errorLevel.')</h1><p>"'.$message.'"</p><p>In <tt>'.$file.'</tt> &nbsp; : <tt>'.$line.'</tt></p>');
 		}
 	}
 
@@ -1710,7 +1697,7 @@ function getUrlConnectionPart($url)
 	$originalUrlParts = parse_url($url);
 	if(!isset($originalUrlParts['scheme']))
 		{
-		webServiceError('Not a valid URL either because<ol><li>it has no protocol (it didn\'t start with "http://")</li><li>The domain part was incomplete or malformed</li></ol>');
+		webServiceError('&error-invalid-uri;');
 		}
 
 	$websiteBase = $originalUrlParts['scheme'].'://';
@@ -1744,7 +1731,7 @@ function getUrlDomainAndPortPart($url)
 		}
 	if(!isset($originalUrlParts['host']))
 		{
-		webServiceError('Error in getUrlDomainAndPortPart() accessing "'.$url.'". Url parts were '.print_r($originalUrlParts, true).' . Backtrace was '.nl2br(print_r(debug_backtrace(), true)));
+		webServiceError('&error-in-url-parsing;', 500, Array('url'=>$url, 'parts'=>print_r($originalUrlParts, true), 'backtrace'=>nl2br(print_r(debug_backtrace(), true))));
 		}
 	return Array($originalUrlParts['host'], $port);
 	}
@@ -1769,7 +1756,7 @@ function generateDocument($pages, $generatorPipeline)
 	{
 	if(preg_match('/.\\//s', $generatorPipeline))
 		{
-		webServiceError('The generatorPipeline contained disallowed characters (either a slash or a dot)');
+		webServiceError('&error-disallowed-characters;');
 		}
 	
 	$userAgent = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:bignumber) Docvert';
@@ -1781,7 +1768,7 @@ function generateDocument($pages, $generatorPipeline)
 	$disallowDocumentGeneration = getGlobalConfigItem('doNotAllowDocumentGeneration');
 	if($disallowDocumentGeneration == 'true')
 		{
-		webServiceError('Document Generation is currently disabled on this install of Docvert.');
+		webServiceError('&document-generation-disabled;');
 		}
 
 	$pageXml = '<c:document xmlns="http://www.w3.org/1999/xhtml" xmlns:c="container">'."\n";
@@ -1793,7 +1780,7 @@ function generateDocument($pages, $generatorPipeline)
 
 	if(!class_exists('tidy'))
 		{
-		webServiceError('Generating webpages requires the PHP module "htmltidy". It is not currently installed. See the <a href="doc/install.txt">install.txt</a> for software requirements.');
+		webServiceError('&tidy-is-not-installed;');
 		}
 
 	$tidy = new tidy;
@@ -1834,7 +1821,7 @@ function generateDocument($pages, $generatorPipeline)
 	$pipelinePath = $pipelineDirectory.'pipeline.xml';
 	if(!file_exists($pipelinePath))
 		{
-		webServiceError('Generation pipeline not found at '.$pipelinePath);
+		webServiceError('&generation-pipeline-not-found; '.$pipelinePath);
 		}
 	$pipelineString = file_get_contents($pipelinePath);
 	$pipelineString = substr($pipelineString, strpos($pipelineString, '<pipeline>') + 10);

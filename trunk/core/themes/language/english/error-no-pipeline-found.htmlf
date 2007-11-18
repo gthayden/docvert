@@ -1,0 +1,1 @@
+Couldn't find the pipeline.xml definition file at &dynamic-pipelinePath; If the file is there check permissions, and if the problem persists note that some web servers cache permissions so you might need to bounce the web server to make it notice your permission changes.

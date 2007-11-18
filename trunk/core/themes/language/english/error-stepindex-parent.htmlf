@@ -1,0 +1,1 @@
+In the pipeline definition there's a {../LoopIndex} variable that steps up too far, beyond any parent loop.

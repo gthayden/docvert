@@ -1,0 +1,1 @@
+The file contains embedded ODF Objects (similar in purpose to OLE Objects) but I'm unable to detect the data type because your PHP doesn't have getimagesize(). You should add the GD extension to your PHP to fix this.

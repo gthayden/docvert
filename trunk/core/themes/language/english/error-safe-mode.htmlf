@@ -1,0 +1,1 @@
+<p>Note: PHP\'s Safe Mode is enabled and this may restrict Docvert from using this command. You can either disable Safe Mode, or add Docvert\'s command directory to safe_mode_exec_dir in your php.ini.</p>
