@@ -1,0 +1,6 @@
+<p>Unable to generate an OpenDocument file from your upload.</p>
+<p>The command I tried to run was:</p>
+<blockquote><tt>&dynamic-commandToRun;</tt></blockquote>
+<p>In response to that command, the following was returned</p>
+<blockquote><tt>&dynamic-responseToCommand;</tt></blockquote>
+&suggestedFixes;

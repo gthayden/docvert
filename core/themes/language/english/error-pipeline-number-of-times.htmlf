@@ -1,0 +1,1 @@
+Although a pipeline loop contains a numberOfTimes attribute the value needs a "substring:", "xpathCount:", or "number:" prefix.

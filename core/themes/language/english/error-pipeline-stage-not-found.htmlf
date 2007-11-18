@@ -1,0 +1,1 @@
+A pipeline stage requires <b>&dynamic-processName;</b> and although <tt>&dynamic-processName;.php</tt> exists it doesn't implement a class by this name (classes are case sensitive).

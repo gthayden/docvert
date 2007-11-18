@@ -1,0 +1,1 @@
+<p>As it's saying it can't find <b>xvfb-run</b> this means either that it's not installed, or that the script isn't pointing at the file.</p>
