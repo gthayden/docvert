@@ -36,7 +36,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 		{
 		$pipeline = 'fake:'.$forcedPipeline;
 		}
-
+/*
 	print_r($files);
 	print "<hr/>\n";
 	print_r($converter);
@@ -52,7 +52,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 	print_r($outputZip);
 	print "<hr/>\n";
 	print_r($justShowPreviewDirectory);
-	die();
+*/
 
 
 	ensureClientType();
