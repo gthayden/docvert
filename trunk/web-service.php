@@ -24,7 +24,7 @@ ob_start();
 $appDir = dirname(__FILE__).DIRECTORY_SEPARATOR;
 define('DOCVERT_DIR', $appDir);
 define('DOCVERT_CLIENT_TYPE', 'web');
-include('core/lib.php');
+include('core'.DIRECTORY_SEPARATOR.'lib.php');
 set_time_limit(120);
 $files = $_FILES;
 $files = null;

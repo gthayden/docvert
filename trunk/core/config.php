@@ -67,7 +67,7 @@ function setConfigItem($configPath, $key, $value)
 	$replaceExistingLine = False;
 	foreach($iniLines as $iniLine)
 		{
-		if(stringStartsWith($iniLine, $key) && containsString($iniLine, $currentValue))
+		if(stringStartsWith($iniLine, $key) && ($currentValue == null || containsString($iniLine, $currentValue)))
 			{
 			$newIniLines[] = $newConfigItemLine."\n";
 			}

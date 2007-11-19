@@ -67,6 +67,15 @@ class Themes
 					{
 					setGlobalConfigItem('theme', $_POST['chooseTheme']);
 					}
+				if(isset($_POST['forcePipeline']))
+					{
+					setGlobalConfigItem('forcePipeline', $_POST['forcePipeline']);
+					}
+				if(isset($_POST['freelyChoosePipelinesButton']))
+					{
+					setGlobalConfigItem('forcePipeline', '');
+					}
+
 				if(isset($_POST['chooseLanguage']))
 					{
 					setGlobalConfigItem('language', $_POST['chooseLanguage']);
@@ -104,11 +113,11 @@ class Themes
 		switch($this->page)
 			{
 			case 'sample-use':
-				$htmlTemplate = str_replace('{{list-pipelines}}', $this->drawPipelines(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{autopipelines}}', $this->drawAutoPipelines(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{msword-to-opendocument-converter}}', $this->mswordToOpenDocumentConverter(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{after-conversion}}', $this->afterConversion(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{sample-document}}', $this->sampleDocument(), $htmlTemplate);
+				$htmlTemplate = str_replace('{{choose-pipeline}}', $this->choosePipelines(), $htmlTemplate);
 				break;
 			case 'admin':
 				$htmlTemplate = str_replace('{{login}}', $this->login(), $htmlTemplate);
@@ -124,6 +133,7 @@ class Themes
 				$htmlTemplate = str_replace('{{create-password}}', $this->createPassword(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{allow-webdav}}', $this->allowWebdavUploads(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{allow-ftp}}', $this->allowFtpUploads(), $htmlTemplate);
+				$htmlTemplate = str_replace('{{force-pipeline}}', $this->forcePipeline(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{configure-filenames}}', $this->configureFilenames(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{protocol-message}}', $this->protocolMessage(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{document-generation}}', $this->documentGeneration(), $htmlTemplate);
@@ -385,8 +395,10 @@ class Themes
 		}
 
 
-	function drawPipelines()
+	function choosePipelines()
 		{
+
+
 		$pipelinesString = null;
 		$pipelinesString .= '<select name="pipeline" id="pipeline" onchange="checkForAutoPipeline(this);" onblur="checkForAutoPipeline(this);">'."\n";
 		$directoryHandler = dir('pipeline');
@@ -411,7 +423,19 @@ class Themes
 			}
 		$pipelinesString .= '<option value="regularpipeline:none" class="regularpipeline">none (just return .ODT)</option>'."\n";
 		$pipelinesString .= '</select>'."\n";
-		return $pipelinesString;
+		$forcedPipeline = getGlobalConfigItem('forcePipeline');
+		$template = $this->getThemeFragment('choose-pipelines.htmlf');
+		$template = str_replace('{{list-pipelines}}', $pipelinesString, $template);
+		if($forcedPipeline == null)
+			{
+			$template = str_replace('{{forcePipeline}}', '', $template);
+			}
+		else
+			{
+			$template = str_replace('{{forcePipeline}}', 'style="display:none"', $template);
+			}
+
+		return $template;
 		}
 	
 	function login()
@@ -1292,7 +1316,37 @@ class Themes
 		return $pageTemplate;
 		}
 
-
+	function forcePipeline()
+		{
+		if(!$this->allowedAdminAccess) return;
+		$template = $this->getThemeFragment('admin-force-pipeline.htmlf');
+		$pipelinesDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'pipeline'.DIRECTORY_SEPARATOR;
+		$pipelines = glob($pipelinesDirectory.'*');
+		$optionsHtmlString = '';
+		$forcedPipeline = getGlobalConfigItem('forcePipeline');
+		foreach($pipelines as $pipeline)
+			{
+			$optionsHtmlString .= '<option value="'.basename($pipeline).'" ';
+			if(basename($pipeline) == $forcedPipeline)
+				{
+				$optionsHtmlString .= ' selected="selected" ';
+				}
+			$optionsHtmlString .= '>'.basename($pipeline).'</option>';
+			}
+		$template = str_replace('{{pipelines}}', $optionsHtmlString, $template);
+		$forcePipeline = getGlobalConfigItem('forcePipeline');
+		if($forcePipeline == null)
+			{
+			$template = str_replace('{{forcePipelineEnabled}}', '', $template);
+			$template = str_replace('{{freelyChoosePipelinesEnabled}}', 'disabled="disabled" style="background:#99ff99;border:none"', $template);
+			}
+		else
+			{
+			$template = str_replace('{{forcePipelineEnabled}}', ' style="background:#99ff99;color:black"', $template);
+			$template = str_replace('{{freelyChoosePipelinesEnabled}}', ' ', $template);
+			}
+		return $template;
+		}
 
 	function chooseConverters()
 		{

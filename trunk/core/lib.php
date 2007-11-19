@@ -583,7 +583,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				$temporaryDirectoryMessage = dirname($commandTemplateVariable['outputDocumentPath']);
 				$temporaryDirectoryMessage = ' ("'.$temporaryDirectoryMessage.'") ';
 				}
-			$suggestedFixes .= '&error-pyod-or-jod-converter-bad-url;';
+			$suggestedFixes .= '&error-pyod-or-jod-converter-bad-url; '.$temporaryDirectory;
 			}
 		if(stripos($output, 'jodconverter') !== false && stripos($output, 'inputFile doesn\'t exist') !== false)
 			{

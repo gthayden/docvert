@@ -17,11 +17,7 @@
 							<a href="#" style="color:blue" onclick="addmore(); return false" title="&add-more-file-uploads;">&add-more-file-uploads;</a>
 						</span>
 					</fieldset>
-					<fieldset>
-						<legend>&xml-pipeline-label;</legend>
-						{{list-pipelines}}
-						<p style="font-size:xx-small">&note-red-denotes-something;</p>
-					</fieldset>
+					{{choose-pipeline}}
 					<fieldset id="breakUpOver" style="display:none">
 						<legend>&autopipelines-label;</legend>
 						{{autopipelines}}

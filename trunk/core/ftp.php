@@ -46,7 +46,7 @@ function getFtpConnection($host, $username, $password, $port)
 	$connectionId = ftp_connect($host);
 	if(!@ftp_login($connectionId, $username, $password))
 		{
-		webServiceError('FTP error. Unable to connect to "'.$host.'" with username "'.$username.'"');
+		webServiceError('&error-ftp-authentication;', 500, Array('username'=>$username, 'host'=>$host));
 		}
 	return $connectionId;
 	}
@@ -59,7 +59,7 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 	$destinationPath = str_replace(" ", "-", $destinationPath);
 	if(!ftp_mkdir($connectionId, $destinationPath))
 		{
-		$errorMessage .= "Unable to create directory at ".$destinationPath." (it may already exist) \n";
+		$errorMessage .= "&error-ftp-unable-to-create-directory; ".$destinationPath."\n";
 		}
 	ftp_site($connectionId, 'CHMOD 0777 '.$destinationPath);
 	ftp_chdir($connectionId, $destinationPath);
@@ -78,7 +78,7 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 					chdir($sourcePath);
 					if(!ftp_cdup($connectionId))
 						{
-						$errorMessage .= "Unable to ftp_cdup.\n";
+						$errorMessage .= "&error-unable-ftp-cd-up;";
 						}
 					}
 				else
@@ -88,7 +88,7 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 						$fp = fopen($file,"r");
 						if(!ftp_fput($connectionId, str_replace(" ", "_", $file), $fp, FTP_BINARY))
 							{
-							$errorMessage .= "Unable to ftp_fput().\n";
+							$errorMessage .= "&error-unable-ftp-fput;";
 							}
 						ftp_site($connectionId, 'CHMOD 0755 '.str_replace(" ", "_", $file));
 						}

@@ -1,1 +1,14 @@
-<p>PyODConverter/JODConverter or OpenOffice.org seems to be having some problems... it may be that OpenOffice is unable to save to the temporary directory '.revealXml($temporaryDirectoryMessage).'.</p><p>If so, be sure that the user you started OpenOffice as had write access to that temporary directory.</p><p>Regardless, the problem seems to be occuring outside Docvert so try getting PyODConverter/JODConverter running from the command line first.</p><p><small>(But if PyODConverter/JODConverter is running correctly then let me know because then Docvert must be at fault)</small></p>
+<p>PyODConverter/JODConverter or OpenOffice.org seems to be having some problems...
+ it may be that OpenOffice is unable to save to the temporary directory.</p>
+
+<p>If so, be sure that the user you started OpenOffice as had write access to that
+ temporary directory.</p>
+
+<p>Regardless, the problem seems to be occuring outside Docvert so try
+ getting PyODConverter/JODConverter running from the command line
+ first.</p>
+
+<p><small>(But if PyODConverter/JODConverter is running correctly then let
+me know because then Docvert must be at fault)</small></p>
+
+Temporary directory was 

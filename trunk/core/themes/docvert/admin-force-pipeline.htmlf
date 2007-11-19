@@ -1,0 +1,10 @@
+<h2>&force-pipeline-title;</h2>
+
+<form method="post">
+	<select name="forcePipeline">
+		{{pipelines}}
+	</select>
+	<input type="submit" name="forcePipelineButton" value="&force-pipeline-button-text;" {{forcePipelineEnabled}}/>
+	&or;
+	<input type="submit" name="freelyChoosePipelinesButton" value="&freely-choose-pipelines-button-text;" {{freelyChoosePipelinesEnabled}}/>
+</form>

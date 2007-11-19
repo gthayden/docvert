@@ -9,17 +9,17 @@ p {font-size:x-small;}
 </head>
 <body>
 <?php
-$appDir = dirname($_SERVER["SCRIPT_FILENAME"]).DIRECTORY_SEPARATOR;
+$appDir = dirname(__file__).DIRECTORY_SEPARATOR;
 define('DOCVERT_DIR', $appDir);
 define('DOCVERT_CLIENT_TYPE', 'web');
-include_once('core/lib.php');
-include_once('core/ftp.php');
-include_once('core/http.php');
-include_once('core/upload-locations.php');
+include_once('core'.DIRECTORY_SEPARATOR.'lib.php');
+include_once('core'.DIRECTORY_SEPARATOR.'ftp.php');
+include_once('core'.DIRECTORY_SEPARATOR.'http.php');
+include_once('core'.DIRECTORY_SEPARATOR.'upload-locations.php');
 
 if(isset($_POST['uploadto']) && isset($_POST['id']))
 	{
-	$previewId = $_POST['id'];
+	$previewId = sanitiseStringToAlphaNumeric($_POST['id']);
 
 	$uploadId = $_POST['uploadto'];
 	$remoteDirectory = '';
@@ -37,12 +37,12 @@ if(isset($_POST['uploadto']) && isset($_POST['id']))
 	$previewDirectory = realpath('writable'.DIRECTORY_SEPARATOR.$previewId);
 	if(!file_exists($previewDirectory))
 		{
-		die('No preview directory at "'.$previewDirectory.'". The directory may have been cleaned away.');
+		webServiceError('&error-upload-no-preview-directory;', 500, Array('previewDirectory'=>$previewDirectory) );
 		}
 	$errorHtml = uploadToUploadLocation($uploadLocation, $previewDirectory, $remoteDirectory);
 	if(!$errorHtml)
 		{
-		print "<h1>Upload successful</h1><p>No errors reported.</p>";
+		webServiceError('&upload-successful;', 200);
 		}
 	else	
 		{
@@ -52,7 +52,7 @@ if(isset($_POST['uploadto']) && isset($_POST['id']))
 	}
 else
 	{
-	webServiceError('upload-results.php needs post variables of "uploadto", "remoteDirectory", and "id".<hr /> Was: '.print_r($_POST, True));
+	webServiceError('&error-upload-value-needs;', 500, Array('actualValue'=> print_r($_POST, True)) );
 	}
 
 
@@ -76,7 +76,7 @@ function uploadToUploadLocation($uploadLocation, $previewDirectory, $remoteDirec
 			return copyViaWebDAVRecursively($uploadLocation, $previewDirectory, $remoteDirectory);
 			break;
 		default:
-			die('Unknown protocol '.$uploadLocation['protocol']);
+			webServiceError('&error-unknown-protocol; '.$uploadLocation['protocol']);
 			break;
 		}
 	}

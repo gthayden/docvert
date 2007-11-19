@@ -1,0 +1,1 @@
+upload-results.php needs post variables of "uploadto", "remoteDirectory", and "id".<hr /> Was: &dynamic-actualValue;

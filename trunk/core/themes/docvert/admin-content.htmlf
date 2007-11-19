@@ -20,6 +20,8 @@
 
 	{{configure-upload-locations}}
 
+	{{force-pipeline}}
+
 	{{configure-filenames}}
 
 	{{change-password}}
