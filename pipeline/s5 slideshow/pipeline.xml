@@ -2,6 +2,7 @@
 <pipeline>
 	<stage process="TransformOpenDocumentToDocBook"/>
 	<!-- <stage process="ValidateAgainstSchema" withFile="docbook.rng"/> -->
+	<stage process="GeneratePostConversionEditorFiles"/>
 	<stage process="DocBookToXHTML"/>
 	<stage process="Transform" withFile="mytheme.xsl"/>
 	<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
