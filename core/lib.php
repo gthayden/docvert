@@ -803,6 +803,11 @@ function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDire
 	if(!trim($contentPath)) webServiceError('&error-no-content-xml-found;');
 	if(!file_exists($contentPath)) webServiceError('Unable to find '.basename($contentPath).' file in "'.dirname($contentPath).'"');
 	$contentDirectory = dirname($contentPath);
+	$forcedPipeline = getGlobalConfigItem('forcePipeline');
+	if($forcedPipeline != null)
+		{
+		$pipelineToUse = $forcedPipeline;
+		}
 	$pipelineDirectory = DOCVERT_DIR.'pipeline'.DIRECTORY_SEPARATOR.$pipelineToUse.DIRECTORY_SEPARATOR;
 	$pipelinePath = $pipelineDirectory.'pipeline.xml';
 	if(!file_exists($pipelinePath)) webServiceError('&error-no-pipeline-found;', 500, Array('pipelinePath'=>$pipelinePath));
@@ -810,7 +815,8 @@ function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDire
 	$pipelineString = removeXmlDeclaration($pipelineString);
 	$pipelineString = trim($pipelineString);
 	
-	
+
+
 	if(strpos($pipelineString, '<autopipeline') !== false)
 		{
 		$autoPipelineString = substr($pipelineString, strpos($pipelineString, '<autopipeline>') + 14);
