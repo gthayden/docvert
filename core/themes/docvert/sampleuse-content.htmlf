@@ -11,7 +11,6 @@
 					<fieldset>
 						<legend>&file-uploads-label;</legend>
 						<input type="file" name="random file" class="uploadWidget"/><br />
-						<input type="file" name="random file2" class="uploadWidget"/><br />
 						<div id="additionalUploads"></div>
 						<span style="font-size:small">
 							<a href="#" style="color:blue" onclick="addmore(); return false" title="&add-more-file-uploads;">&add-more-file-uploads;</a>

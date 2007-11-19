@@ -397,8 +397,6 @@ class Themes
 
 	function choosePipelines()
 		{
-
-
 		$pipelinesString = null;
 		$pipelinesString .= '<select name="pipeline" id="pipeline" onchange="checkForAutoPipeline(this);" onblur="checkForAutoPipeline(this);">'."\n";
 		$directoryHandler = dir('pipeline');

@@ -16,6 +16,8 @@ class GeneratePostConversionEditorFiles extends PipelineProcess
 	public function process($currentXml)
 		{
 
+		die("sdfsdsdfsdf");
+
 		if(!file_exists($this->generatePath('docvert--all-docbook.xml')))
 			{
 			$editableDocbook = xsltTransform($currentXml, $this->docvertTransformDirectory.'docbook-to-docbook-with-placeholders.xsl');
@@ -28,6 +30,7 @@ class GeneratePostConversionEditorFiles extends PipelineProcess
 
 		include_once('DocBookToXHTML.php');
 		$toHtmlObject = new DocBookToXHTML($this->elementAttributes, $this->pipelineDirectory, $this->contentDirectory, $this->docvertTransformDirectory, $this->loopDepth, $this->depthArray, $this->previewDirectory, $this->pipelineSettings);
+		print $this->pipelineDirectory;
 		$html = $toHtmlObject->process($currentXml);
 
 		$documentTitlePattern = "/<title[^>]*?>(.*?)<\\/title>/sm";
@@ -80,6 +83,7 @@ class GeneratePostConversionEditorFiles extends PipelineProcess
 	function saveFile($path, $data)
 		{
 		$destinationPath = $this->generatePath($path);
+		print '['.$destinationPath.']';
 		file_put_contents($destinationPath, $data);
 		}
 

@@ -31,7 +31,30 @@ date_default_timezone_set('UTC');
 
 function processConversion($files, $converter, $pipeline, $autoPipeline, $afterConversion, $setupOpenOfficeOrg, $outputZip, $justShowPreviewDirectory=null)
 	{
-	
+	$forcedPipeline = getGlobalConfigItem('forcePipeline');
+	if($forcedPipeline != null)
+		{
+		$pipeline = 'fake:'.$forcedPipeline;
+		}
+
+	print_r($files);
+	print "<hr/>\n";
+	print_r($converter);
+	print "<hr/>\n";
+	print_r($pipeline);
+	print "<hr/>\n";
+	print_r($autoPipeline);
+	print "<hr/>\n";
+	print_r($afterConversion);
+	print "<hr/>\n";
+	print_r($setupOpenOfficeOrg);
+	print "<hr/>\n";
+	print_r($outputZip);
+	print "<hr/>\n";
+	print_r($justShowPreviewDirectory);
+	die();
+
+
 	ensureClientType();
 	if(thereWasAFileGiven($files, $pipeline) || $justShowPreviewDirectory)
 		{
@@ -678,13 +701,14 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 					{
 					webServiceError('&error-source-path-does-not-exist; "'.$oldPath.'"');
 					}
+				rename($oldPath, $newPath);
 				if(!file_exists(dirname($newPath)))
 					{
 					webServiceError('&error-destination-directory-not-found;"'.dirname($newPath).'"');
 					}
 				if(!file_exists($newPath))
 					{
-					webServiceError('&error-destination-path-not-exist; '.$newPath.'"');
+					webServiceError('&error-destination-path-not-exist; "'.$newPath.'"');
 					}
 				}
 			elseif(stringStartsWith(strtolower($archivedFile['filename']), 'objectreplacements'))
@@ -803,11 +827,6 @@ function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDire
 	if(!trim($contentPath)) webServiceError('&error-no-content-xml-found;');
 	if(!file_exists($contentPath)) webServiceError('Unable to find '.basename($contentPath).' file in "'.dirname($contentPath).'"');
 	$contentDirectory = dirname($contentPath);
-	$forcedPipeline = getGlobalConfigItem('forcePipeline');
-	if($forcedPipeline != null)
-		{
-		$pipelineToUse = $forcedPipeline;
-		}
 	$pipelineDirectory = DOCVERT_DIR.'pipeline'.DIRECTORY_SEPARATOR.$pipelineToUse.DIRECTORY_SEPARATOR;
 	$pipelinePath = $pipelineDirectory.'pipeline.xml';
 	if(!file_exists($pipelinePath)) webServiceError('&error-no-pipeline-found;', 500, Array('pipelinePath'=>$pipelinePath));
