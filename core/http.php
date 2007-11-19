@@ -37,7 +37,7 @@ function copyViaWebDAVRecursively($uploadLocation, $previewPath, $remoteDirector
 		case '301':
 			break;
 		default:
-			$errorMessage .= "Error #".$httpCode.": Problem creating directory at ".$uploadLocation['baseDirectory'];
+			$errorMessage .= "&error-error-label; ".$httpCode.": &error-problem-creating-directory-at; ".$uploadLocation['baseDirectory'];
 		}
 
 	$errorMessage .= copyFileViaWebDav($sourcePath, $destinationPath, $host, $port, $username, $password, $proxyUsername, $proxyPassword);
@@ -66,7 +66,7 @@ function copyFileViaWebDav($sourcePath, $destinationPath, $host, $port, $usernam
 		case '301':
 			break;
 		default:
-			$errorMessage .= "Error #".$httpCode.": Problem creating directory at ".$destinationPath;
+			$errorMessage .= "&error-error-label; ".$httpCode.": &error-problem-creating-directory-at; ".$destinationPath;
 		}
 		
 	
@@ -100,7 +100,7 @@ function copyFileViaWebDav($sourcePath, $destinationPath, $host, $port, $usernam
 							case '204':
 								break;
 							default:
-								$errorMessage .= "Error #".$httpCode.": Problem creating file at ".$currentDestinationPath;
+								$errorMessage .= "Error #".$httpCode.": &error-problem-creating-file-at; ".$currentDestinationPath;
 							}
 						}
 					}
@@ -287,7 +287,7 @@ function pullpage($method, $host, $port, $usepath, $username, $password, $proxyU
 	if($output)
 		{
 		$divisionPosition = strpos($output,$divisionString);
-		if(!$divisionPosition) webServiceError("Couldn't find the line between http header and content so I can't continue. Output was:<blockquote><tt>".revealXml($output).'</tt></blockquote>');
+		if(!$divisionPosition) webServiceError("&error-http-segment;", 500, Array('output'=>revealXml($output)));
 		$httpHeader = substr($output,0,$divisionPosition);
 		$httpHeader = explode("\n",$httpHeader);
 		$httpBody = substr($output,$divisionPosition + strlen($divisionString));
@@ -380,7 +380,7 @@ function followUrlRedirects($url, $maximumNumberOfOfRedirects=false)
 			}
 		if($numberOfRedirectsRemaining <= 0)
 			{
-			webServiceError("Maximum number of HTTP redirects exceeded. Try copying a URL from your browser after it's finished redirecting. I (Docvert) was redirected through...<ol><li>".implode("</li><li>", $redirectPath)."</li></ol>");
+			webServiceError("&error-maximum-number-of-redirects-followed;", 500, Array('redirectPaths'=>implode("</li><li>", $redirectPath)));
 			}
 		$numberOfRedirectsRemaining--;
 		}

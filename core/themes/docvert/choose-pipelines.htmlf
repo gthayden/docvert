@@ -1,0 +1,5 @@
+					<fieldset {{forcePipeline}}>
+						<legend>&xml-pipeline-label;</legend>
+						{{list-pipelines}}
+						<p style="font-size:xx-small">&note-red-denotes-something;</p>
+					</fieldset>

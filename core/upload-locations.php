@@ -19,6 +19,7 @@ function getUploadLocations()
 function getUploadLocation($uploadId)
 	{
 	//todo sanitise $name
+	$uploadId = sanitiseStringToAlphaNumeric($uploadId);
 	$uploadLocationPath = getConfigDirectory().'upload-'.$uploadId.'.conf';
 	if(!file_exists($uploadLocationPath)) return null;
 	return parse_ini_file($uploadLocationPath);
@@ -26,6 +27,7 @@ function getUploadLocation($uploadId)
 
 function addUploadLocation($name, $protocol, $host, $port, $username, $password, $baseDirectory)
 	{
+	$name = sanitiseStringToAlphaNumeric($name);
 	//todo sanitise $name
 	$configDirectory = getConfigDirectory();
 	$uploadLocationPath = $configDirectory.'upload-'.$name.'.conf';
@@ -48,8 +50,12 @@ function addUploadLocation($name, $protocol, $host, $port, $username, $password,
 function deleteUploadLocation($uploadId)
 	{
 	//todo sanitise $nam
+	$uploadId = sanitiseStringToAlphaNumeric($uploadId);
 	$uploadLocationPath = getConfigDirectory().'upload-'.$uploadId.'.conf';
-	unlink($uploadLocationPath);
+	if(file_exists($uploadLocationPath))
+		{
+		unlink($uploadLocationPath);
+		}
 	}
 
 ?>
