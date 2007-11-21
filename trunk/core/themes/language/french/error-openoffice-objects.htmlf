@@ -1,0 +1,1 @@
+Le fichier contient des object ODF incorpor&eacute;s (similaires aux objets OLE) mais Docvert est incapable de les d&eacute;tecter puisque la fonction PHP getimagesize() n'est pas disponible. Veuillez installer l'extension GD &agrave; votre installation PHP.

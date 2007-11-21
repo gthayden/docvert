@@ -1,0 +1,15 @@
+<p>PyODConverter/JODConverter ou OpenOffice.org semble avoir un probl&egrave;me...
+ il se peut qu'OpenOffice soit incapable d'enregistrer dans le dossier temporaire.</p>
+
+<p>Si c'est le cas, assurez-vous que l'utilisateur responsable de l'ouverture d'OpenOffice
+ a les droits en &eacute;criture sur ce dossier temporaire.</p>
+
+<p>Le probl&egrave;me semble provenir de l'ext&eacute;rieur de Docvert, il est donc
+ recommand&eacute; d'essayer d'utiliser PyODConverter/JODConverter directement sur
+ la ligne de commande.</p>
+
+<p><small>(Cependant, si PyODConverter/JODConverter fonctionne correctement, veuillez
+ rapporter ce probl&egrave;me puisque c'est probablement une erreur dans Docvert.)
+</small></p>
+
+Le dossier temporaire est 

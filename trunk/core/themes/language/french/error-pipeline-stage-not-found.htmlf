@@ -1,0 +1,1 @@
+Un stade de pipeline requiert <b>&dynamic-processName;</b> m&ecirc;me si le fichier <tt>&dynamic-processName;.php</tt> existe, il n'impl&eacute;mente pas de classe de ce nom (les noms de classes sont sensibles &agrave; la casse).

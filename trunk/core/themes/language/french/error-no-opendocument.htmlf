@@ -1,0 +1,3 @@
+<h1>Seuls les fichiers OpenDocument sont permis</h1>
+<p>Cette installation de Docvert est configur&eacute;e pour n'accepter que les envois de fichiers au format OpenDocument.  M&ecirc;me si les fichiers au format MSWord sont normalement support&eacute;s par Docvert, ce serveur a &eacute;t&eacute; configur&eacute; pour les refuser.</p>
+<p>Le support pour les fichiers MSWord requiert des logiciels additionels qui peuvent ne pas &ecirc;tre install&eacute;s sur ce serveur.</p>

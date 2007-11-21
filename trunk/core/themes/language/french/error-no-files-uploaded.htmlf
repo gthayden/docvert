@@ -1,0 +1,7 @@
+<h1>Aucuns fichiers envoy&eacute;</h1>
+<p>Ce service Web accepte des commandes HTTP POST de type binaire MSWord, OpenDocument et autres fichiers de traitement de texte, mais aucun n'ont &eacute;t&eacute; envoy&eacute;s.</p>
+<p>Si vous avez bel et bien envoy&eacute; un fichier, voici une liste de choses &agrave; v&eacute;rifier:</p>
+<ul>
+	<li>Si vous avez envoy&eacute; un gros fichier, v&eacute;rifiez votre fichier de configuration php.ini et assurez-vous que la valeur de <tt>upload_max_filesize</tt> est suffisante.</li>
+	<li>V&eacute;rifiez les permissions sur vos fichiers locaux pour vous assurez que votre fureteur puisse envoyer les fichiers en question.</li>
+</ul>

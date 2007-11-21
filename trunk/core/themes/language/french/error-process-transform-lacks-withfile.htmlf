@@ -1,0 +1,1 @@
+Le stade de transformation d'une pipeline ne fournit pas de fichier XSLT.  Il devrait contenir un attribut "withFile" avec un nom de fichier relatif au dossier de la pipeline.
