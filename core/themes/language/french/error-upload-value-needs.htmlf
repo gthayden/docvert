@@ -1,0 +1,1 @@
+upload-results.php requiert les variables HTTP POST "uploadto", "remoteDirectory" et "id".<hr /> Commande : &dynamic-actualValue;

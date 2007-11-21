@@ -1,0 +1,1 @@
+Tel que mentionn&eacute; dans le message d'erreur, le probl&eacute;me se situe dans l'autentification. V&eacute;rifiez que vous avez configur&eacute; <tt>sudo</tt> correctement. Voir le fichier <a href="doc/install.txt">install.txt</a> pour de plus amples informations sur "<tt>visudo</tt>"</p>

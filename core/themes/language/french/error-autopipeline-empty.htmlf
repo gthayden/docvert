@@ -1,0 +1,1 @@
+Pour <tt>&lt;autopipeline&gt;s</tt>, la variable <tt>\'autotemplate\'</tt> doit &ecirc;tre pr&eacute;sente dans la commande HTTP POST. Elle &eacute;tait vide.

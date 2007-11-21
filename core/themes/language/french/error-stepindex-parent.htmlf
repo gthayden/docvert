@@ -1,0 +1,1 @@
+Dans la d&eacute;finition de la pipeline, il y a une variable {../LoopIndex} qui d&eacute;passe les limites de la boucle de son parent.

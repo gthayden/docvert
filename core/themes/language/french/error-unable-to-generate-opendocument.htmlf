@@ -1,0 +1,6 @@
+<p>Impossible de g&eacute;n&eacute;rer un fichier au format OpenDocument &agrave; partir de votre envoi.</p>
+<p>La commande ex&eacute;cut&eacute;e est :</p>
+<blockquote><tt>&dynamic-commandToRun;</tt></blockquote>
+<p>Les informations suivantes ont &eacute;t&eacute retourn&eacute;es :</p>
+<blockquote><tt>&dynamic-responseToCommand;</tt></blockquote>
+&suggestedFixes;
