@@ -1,0 +1,14 @@
+Was not given these required parameters:
+	&dynamic-commandLineFiles;
+	&dynamic-commandLineConverter;
+	&dynamic-commandLinePipeline;
+	&dynamic-commandLineOutputZip;
+Here's the syntax you'll need to use:
+	--input-files=paths seperated by commas (URL encoded, aside from the comma)
+	--output-zip=path (URL encoded)
+	--pipeline=name of pipeline (URL encoded)
+	--converter=(openofficeorg | abiword)
+For autopipelines this is also required:
+	--autopipeline=name of autopipeline (URL encoded)
+Example:
+	/var/www/docvert/bin/odt2html --input-files=fullpath1,fullpath2 --output-zip=/home/marco/result.zip --pipeline=s5%20slideshow --converter=openofficeorg 

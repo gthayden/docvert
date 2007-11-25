@@ -28,10 +28,10 @@ class TransformOpenDocumentToDocBook extends PipelineProcess
 				//displayXmlString($currentXml);
 				break;
 			case 'OpenOffice1.x':
-				webServiceError('I was unable to convert to DocBook as I was given the older OpenOffice format rather than OpenDocument. This was likely caused by the version of OpenOffice.org that you\'re running. Be sure that you\'re using OOo 1.9 or later and that convert-using-openoffice.org script (as mentioned in the install) is configured and pointing at the latest version. If the problem persists please submit a bug report with the version of OOo, your pipeline file, the script, and anything else you think might cause it.');
+				webServiceError('&error-process-transformopendocumenttodocbook-openofficefile;');
 				break;
 			default:
-				webServiceError('Docvert was given a non OpenDocument 1.0 file to process. The detected format was of "'.$documentType. '". Ask on the mailing list about supporting this file format.');
+				webServiceError('&error-process-transformopendocumenttodocbook-unsupported-file;', 500, Array('documentType'=>$documentType) );
 				break;
 			}
 		return $currentXml;

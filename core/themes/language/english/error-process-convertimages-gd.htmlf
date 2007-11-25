@@ -1,0 +1,2 @@
+<p>Unable to convert images as your PHP doesn't have the GD library. See <a href="http://php.net/gd">http://php.net/gd</a> for install instructions.</p>
+<p>In the meantime, remove the &lt;stage process="ConvertImages" ... /&gt; from your pipeline.xml file.</p>

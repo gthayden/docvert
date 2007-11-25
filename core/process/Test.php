@@ -2,6 +2,9 @@
 
 class Test extends PipelineProcess
 	{
+	/*
+	Provides unit tests that assert document structure with XSLT.
+	*/
 
 	function process($currentXml)
 		{
@@ -11,7 +14,7 @@ class Test extends PipelineProcess
 
 	function performTest(&$currentXml)
 		{
-		if(!array_key_exists('withFile', $this->elementAttributes)) webServiceError('A pipeline\'s test stage doesn\'t name an XSLT file. It should have a withFile attribute containing a filename relative to the pipeline directory.');
+		if(!array_key_exists('withFile', $this->elementAttributes)) webServiceError('&error-process-test-withfile;');
 		$xslPath = null;
 		if(stripos($this->elementAttributes['withFile'], 'internal://') !== FALSE)
 			{
@@ -21,7 +24,7 @@ class Test extends PipelineProcess
 			{
 			$xslPath = $this->pipelineDirectory.$this->elementAttributes['withFile'];
 			}
-		if(!file_exists($xslPath)) webServiceError('A pipeline\'s transform stage refers to an XSL file that doesn\'t exist. There is no file (or I don\'t have permissions to read it) at: <tt>'.$xslPath.'</tt>');
+		if(!file_exists($xslPath)) webServiceError('&error-process-test-missing-xsl;', 500, Array('xslPath'=>$xslPath) );
 		$xslAttributes = array
 			(
 			'loopdepth' => $this->loopDepth,

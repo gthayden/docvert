@@ -49,10 +49,6 @@ function replaceCustomFilenamePlaceholders($filename, $depthArray)
 			//die($custom_filename_section );
 			$filename = str_replace('{customSection}', $custom_filename_section, $filename);
 			}
-		else
-			{
-			webServiceError("There's a custom filename that's unrecognised: ".$filename);
-			}
 		}
 	return $filename;
 	}

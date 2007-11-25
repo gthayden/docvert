@@ -40,7 +40,7 @@ class DownloadImagesAndSetLinks extends PipelineProcess
 					}
 				}
 			$missingImagePlaceholderImagePath = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'404image.gif';
-			if(!file_exists($missingImagePlaceholderImagePath)) webServiceError('Can\'t find the missing image placeholder at '.$fourOhFourImagePath);
+			if(!file_exists($missingImagePlaceholderImagePath)) webServiceError('&dynamic-error-process-downloadimagesandsetlinks-missing-placeholder;', 500, Array('fourOhFourImagePath'=>$fourOhFourImagePath) );
 			$fullUrl = html_entity_decode($fullUrl);
 			switch($urlType)
 				{
@@ -58,7 +58,7 @@ class DownloadImagesAndSetLinks extends PipelineProcess
 						mkdir($picturesDirectory);
 						}
 
-					if(!function_exists('imagecreatefromstring')) webServiceError('<p>Unable to load images into OpenDocument file as your PHP doesn\'t have the GD library. See <a href="http://php.net/gd">http://php.net/gd</a> for install instructions.</p>');
+					if(!function_exists('imagecreatefromstring')) webServiceError('&error-process-downloadimagesandsetlinks-missing-gd;');
 					$imageResource = imagecreatefromstring($imageData);
 					if(!$imageResource) //when there is an image but it's an unknown format / corrupt then we replace it with a placeholder
 						{

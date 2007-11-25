@@ -9,7 +9,7 @@ class IncludeDependentFiles extends PipelineProcess
 	
 	public function process($currentXml)
 		{
-		if(!array_key_exists('withFiles', $this->elementAttributes)) webServiceError('A pipeline\'s IncludeDependentFiles stage doesn\'t name the files to copy. It should have a withFiles attribute containing a command separated list of filenames (wildcards permitted).');
+		if(!array_key_exists('withFiles', $this->elementAttributes)) webServiceError('&error-process-includedependentfiles-withfiles;');
 		$pathsToCopy = explode(',', $this->elementAttributes['withFiles']);
 		foreach($pathsToCopy as $pathToCopy)
 			{

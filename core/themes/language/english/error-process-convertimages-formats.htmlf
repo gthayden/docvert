@@ -1,0 +1,1 @@
+A pipeline's ConvertImages needs a formats attribute. This should look like "wmf2png, wmf2svg" and so on.

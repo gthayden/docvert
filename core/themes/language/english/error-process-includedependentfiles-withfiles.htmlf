@@ -1,0 +1,2 @@
+A pipeline's IncludeDependentFiles stage doesn't name the files to copy.
+It should have a withFiles attribute containing a command separated list of filenames (wildcards permitted).

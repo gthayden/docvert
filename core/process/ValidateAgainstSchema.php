@@ -1,11 +1,11 @@
 <?php
 
-/** 
-Validates against Schemas supported by Trang.
-***/
 
 class ValidateAgainstSchema extends PipelineProcess 
 	{
+	/*
+	Validates against Schemas supported by Trang.
+	*/
 	
 	public function process($currentXml)
 		{
@@ -25,9 +25,9 @@ class ValidateAgainstSchema extends PipelineProcess
 			$commandTemplateVariable['schemaScriptPath'] = $docvertRootPath.'core'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'unix-specific'.DIRECTORY_SEPARATOR.'validate-against-schema.sh';
 			}
 		$commandTemplateVariable['schemaPath'] = $docvertRootPath.'core'.DIRECTORY_SEPARATOR.'schemas'.DIRECTORY_SEPARATOR.$this->elementAttributes['withFile'];
-		if(!file_exists($commandTemplateVariable['schemaScriptPath'])) webServiceError('Unable to find the script at <tt>'.$commandTemplateVariable['schemaScriptPath'].'</tt>');
-		if(!is_executable($commandTemplateVariable['schemaScriptPath'])) webServiceError('Although the <tt>'.basename($commandTemplateVariable['schemaScriptPath']).'</tt> is present it\'s not set as executable (permissions problem). Set this script as executable.');
-		if(!file_exists($commandTemplateVariable['schemaPath'])) webServiceError('The schema was not found at <tt>'.$commandTemplateVariable['schemaPath'].'</tt>');
+		if(!file_exists($commandTemplateVariable['schemaScriptPath'])) webServiceError('&error-process-validateagainstschema-script-path;', 500, Array('path'=>basename($commandTemplateVariable['schemaScriptPath'])) );
+		if(!is_executable($commandTemplateVariable['schemaScriptPath'])) webServiceError('$error-process-validateagainstschema-path-not-executable;', 500, Array('path'=>basename($commandTemplateVariable['schemaScriptPath'])));
+		if(!file_exists($commandTemplateVariable['schemaPath'])) webServiceError('&error-process-validateagainstschema-schema-path;', 500, Array('path'=>$commandTemplateVariable['schemaPath']));
 
 		$commandTemplateVariable['pathToValidate'] = getTemporaryFile();
 		file_put_contents($commandTemplateVariable['pathToValidate'], $currentXml);
@@ -54,7 +54,7 @@ class ValidateAgainstSchema extends PipelineProcess
 		$possibleError = suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable, false);
 		if($possibleError)
 			{
-			webServiceError('<p>Use of ValidateAgainstSchema failed when running the command</p><blockquote><tt>'.$command.'</tt></blockquote><p>This was returned...</p><blockquote><tt>'.$output.'</tt></blockquote>'.$possibleError);
+			webServiceError('&error-process-validateagainst-schema-failed;', 500, Array('command'=>$command, 'output'=>$output, 'possibleError'=>$possibleError)) );
 			}
 		if(trim($output))
 			{

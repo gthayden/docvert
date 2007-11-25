@@ -9,9 +9,8 @@ class ConvertImages extends PipelineProcess
 	
 	public function process($currentXml)
 		{
-		if(!array_key_exists('formats', $this->elementAttributes)) webServiceError('A pipeline\'s ConvertImages needs a formats attribute. This should look like "wmf2png, wmf2svg" and so on.');
-		if(!array_key_exists('deleteOriginals', $this->elementAttributes)) webServiceError('A pipeline\'s ConvertImages needs a deleteOriginals attribute with a value of either "true" or "false".');
-		if(array_key_exists('deleteOrigionals', $this->elementAttributes)) webServiceError('A pipeline\'s ConvertImages has a misspelled deleteOriginals attribute as "deleteOrigionals". So yeah.... fix that.');
+		if(!array_key_exists('formats', $this->elementAttributes)) webServiceError('&error-process-convertimages-formats;');
+		if(!array_key_exists('deleteOriginals', $this->elementAttributes)) webServiceError('&error-process-convertimages-deleteoriginals-required;');
 
 		$jpegQuality = null;
 		if(isset($this->elementAttributes['jpegQuality']))
@@ -75,10 +74,9 @@ class ConvertImages extends PipelineProcess
 		$canvas = new CropCanvas();
 		$canvas->loadImage($path);
 		/*
-			cropByAuto() takes a value from 1-255.
-			20 seems to work well, but this might
-			need tweaking. TODO.
-			-- Matthew Cruickshank
+		TODO: cropByAuto() takes a value from 1-255.
+		20 seems to work well, but this might
+		need tweaking.
 		*/
 		$autoCropThreshold = 20;
 		if(isset($this->elementAttributes['autoCropThreshold']))
@@ -92,7 +90,7 @@ class ConvertImages extends PipelineProcess
 
 	function convertImageFormat($fromFormat, $toFormat, $insideDirectory, $deleteOriginals, &$currentXml, $jpegQuality)
 		{
-		if(!function_exists('imagecreatefromstring')) webServiceError('<p>Unable to convert images as your PHP doesn\'t have the GD library. See <a href="http://php.net/gd">http://php.net/gd</a> for install instructions.</p><p>In the meantime, remove the &lt;stage process="ConvertImages" ... /&gt; from your pipeline.xml file.</p>');
+		if(!function_exists('imagecreatefromstring')) webServiceError('&error-process-convertimages-gd;');
 		$operatingSystemFamily = getOperatingSystemFamily();
 		$imagePathMask = $insideDirectory.DIRECTORY_SEPARATOR.'*.'.$fromFormat;
 		$fromImagePaths = glob($imagePathMask);
@@ -147,8 +145,7 @@ class ConvertImages extends PipelineProcess
 							$wmf2gdResult = shellCommand($command);
 							if(!file_exists($gdImagePath))
 								{
-								silentlyAppendLineToLog('Unable to create .gd file. Command was "'.$command.'". Result was: ' .$wmf2gdResult, 'error');
-								webServiceError('Unable to create a .gd file from a WMF/EMF file. Command was <blockquote><tt>'.$command.'</tt></blockquote>Results were<blockquote><tt>'.$wmf2gdResult.'</tt></blockquote>');
+								webServiceError('&error-process-convertimages-nofile;', 500, Array('command'=>$command, 'output'=>$wmf2gdResult) );
 								}
 							$gdImageContents = file_get_contents($gdImagePath);
 							$imageResource = imagecreatefromstring($gdImageContents);
@@ -158,7 +155,7 @@ class ConvertImages extends PipelineProcess
 						case 'vector':
 							if($toFormat != 'svg')
 								{
-								webServiceError('Cannot convert vectors to any format other than SVG right now (sorry chum).');
+								webServiceError('&error-process-convertimages-onlysvg;');
 								}
 							if($operatingSystemFamily == 'Windows')
 								{
@@ -173,18 +170,17 @@ class ConvertImages extends PipelineProcess
 							$wmf2svgResult = shellCommand($command);
 							if(!file_exists($toImagePath))
 								{
-								silentlyAppendLineToLog('Unable to create an SVG file from WMF/EMF. Command was " '.$command.' ". Result was: ' .$wmf2svgResult, 'error');
-								webServiceError('Unable to create an SVG file from WMF/EMF. Command was "'.$command.'". Result was <tt>"'.$wmf2svgResult.'"</tt>');
+								webServiceError('&error-process-convertimages-nosvg;', 500, Array('command'=>$command , 'output'=>$wmf2svgResult) );
 								}
 							$this->fixSvgDocument($toImagePath, $insideDirectory);
 							break;
 						}
 					break;
 				case 'svg':
-					webServiceError('Unable to convert from SVG to anything yet.');
+					webServiceError('&error-process-convertimages-unable-to-convert-svg;');
 					break;
 				default:
-					webServiceError('Unable to convert from "'.$fromFormat.'" to anything yet.');
+					webServiceError('&error-process-convertimages-unable-to-convert-from-x;', 500, Array('fromFormat'=>$fromFormat) );
 					break;
 				}
 
@@ -232,7 +228,7 @@ class ConvertImages extends PipelineProcess
 		{
 		switch($toFormat)
 			{
-			// these imagegif function calls are builtin. See http://php.net/imagegif for example.
+			// these imagegif function calls are builtin. See http://php.net/imagegif , for example.
 			case 'gif':
 				//TODO: ensure GIF transparency is maintained. See notes on php.net/imagegif
 				imagegif($imageResource, $toImagePath);
@@ -249,10 +245,10 @@ class ConvertImages extends PipelineProcess
 				imagexbm($imageResource, $toImagePath);
 				break;
 			case 'xpm':
-				webServiceError('Converting images to XPM isn\'t supported.');
+				webServiceError('&error-process-convertimages-no-xpm;');
 				break;
 			default:
-				webServiceError('Image format of '.$toFormat.' is not supported.');
+				webServiceError('&error-process-convertimages-unsupported-image;', 500, Array('toFormat'=>$toFormat) );
 			}
 		}
 
@@ -276,7 +272,7 @@ class ConvertImages extends PipelineProcess
 				$imageType = 'vector';
 				break;
 			default:
-				webServiceError('Unrecognised file extension of '.$fileExtension);
+				webServiceError('&error-process-convertimages-unrecognised-file-extension;', 500, Array('fileExtension'=>$fileExtension) );
 				break;
 			}
 		return $imageType;

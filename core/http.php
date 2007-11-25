@@ -159,7 +159,7 @@ function pullpage($method, $host, $port, $usepath, $username, $password, $proxyU
 			$request['head'] .= httpLine($method.' '.$protocol.'://'.$host.$usepath.' HTTP/1.1');
 			break;
 		default:
-			webServiceError('Unknown HTTP method: '.$method);
+			webServiceError('&error-http-unknown-method;', 500, ('method'=>$method));
 		}
 	$request['head'] .= httpLine('User-Agent: '.$userAgent);
 	$request['head'] .= httpLine('Accept: */*');
@@ -211,7 +211,7 @@ function pullpage($method, $host, $port, $usepath, $username, $password, $proxyU
 		{
 		if(count($binaryArray) != 1)
 			{
-			webServiceError("With method PUT was given binaryArray with length=".count($binaryArray));
+			webServiceError("&error-http-put-multiple-files", 500, Array('numberOfFiles'=>count($binaryArray));
 			}
 		$request['head'] .= httpLine('Content-type: application/octet-stream');
 		$request['body'] = $binaryArray[0];
