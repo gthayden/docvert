@@ -493,7 +493,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				$notExecutable = '&error-conversion-script-unix-not-executable;';
 				}
 			}
-		webServiceError($errorMessage, 500, Array('commandToRun'=>revealXml($command), 'responseToCommand'=>revealXml($output), 'suggestedFixes'=>$suggestedFixes, 'notExecutable'=>$notExecutable));
+		webServiceError($errorMessage, 500, Array('commandToRun'=>$command, 'responseToCommand'=>$output, 'suggestedFixes'=>$suggestedFixes, 'notExecutable'=>$notExecutable));
 		}
 	else
 		{
@@ -564,7 +564,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				$runAsUser = 'root';
 				}
 
-			$suggestedFixes .= '&error-can-not-run-as-user-1; "'.revealXml($runAsUser).'" &error-can-not-run-as-user-2; <blockquote><tt>sudo xhost local:'.$runAsUser.'</tt></blockquote>';
+			$suggestedFixes .= '&error-can-not-run-as-user-1; "'.revealXml($runAsUser).'" &error-can-not-run-as-user-2; <blockquote><tt>sudo xhost local:'.revealXml($runAsUser).'</tt></blockquote>';
 			}
 
 		if(stripos($output, 'no passwd entry for'))
@@ -606,7 +606,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				$temporaryDirectoryMessage = dirname($commandTemplateVariable['outputDocumentPath']);
 				$temporaryDirectoryMessage = ' ("'.$temporaryDirectoryMessage.'") ';
 				}
-			$suggestedFixes .= '&error-pyod-or-jod-converter-bad-url; '.$temporaryDirectory;
+			$suggestedFixes .= '&error-pyod-or-jod-converter-bad-url; '.revealXml($temporaryDirectory);
 			}
 		if(stripos($output, 'jodconverter') !== false && stripos($output, 'inputFile doesn\'t exist') !== false)
 			{
@@ -643,7 +643,7 @@ function setupOpenOfficeOrg()
 	$body .= '&setup-openofficeorg-title;';
 	if(trim($output) != '')
 		{
-		$body .= '&setup-openofficeorg-failed;<blockquote><tt>'.$output.'</tt></blockquote>';
+		$body .= '&setup-openofficeorg-failed;<blockquote><tt>'.revealXml($output).'</tt></blockquote>';
 		$body .= suggestFixesToCommandLineErrorMessage($output, null, false);
 		webServiceError($body);
 		}
@@ -685,7 +685,7 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 	$odfObjects = array();
 	if (($archivedFiles = $archive->listContent()) == 0)
 		{
-		webServiceError('&error-unzipping-archive; '.$archive->errorInfo(true));
+		webServiceError('&error-unzipping-archive; '.revealXml($archive->errorInfo(true)));
 		}
 	foreach ($archivedFiles as $archivedFile)
 		{
@@ -699,16 +699,16 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 				$newPath = $documentDirectory.'docvert-'.basename($archivedFile['filename']);
 				if(!file_exists($oldPath))
 					{
-					webServiceError('&error-source-path-does-not-exist; "'.$oldPath.'"');
+					webServiceError('&error-source-path-does-not-exist; "'.revealXml($oldPath).'"');
 					}
 				rename($oldPath, $newPath);
 				if(!file_exists(dirname($newPath)))
 					{
-					webServiceError('&error-destination-directory-not-found;"'.dirname($newPath).'"');
+					webServiceError('&error-destination-directory-not-found;"'.revealXml(dirname($newPath)).'"');
 					}
 				if(!file_exists($newPath))
 					{
-					webServiceError('&error-destination-path-not-exist; "'.$newPath.'"');
+					webServiceError('&error-destination-path-not-exist; "'.revealXml($newPath).'"');
 					}
 				}
 			elseif(stringStartsWith(strtolower($archivedFile['filename']), 'objectreplacements'))
@@ -825,7 +825,7 @@ function getTemporaryFile()
 function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDirectory, $skipAheadToDocbook=false)
 	{
 	if(!trim($contentPath)) webServiceError('&error-no-content-xml-found;');
-	if(!file_exists($contentPath)) webServiceError('Unable to find '.basename($contentPath).' file in "'.dirname($contentPath).'"');
+	if(!file_exists($contentPath)) webServiceError('Unable to find '.revealXml(basename($contentPath)).' file in "'.revealXml(dirname($contentPath)).'"');
 	$contentDirectory = dirname($contentPath);
 	$pipelineDirectory = DOCVERT_DIR.'pipeline'.DIRECTORY_SEPARATOR.$pipelineToUse.DIRECTORY_SEPARATOR;
 	$pipelinePath = $pipelineDirectory.'pipeline.xml';
@@ -870,14 +870,14 @@ function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDire
 			$autoPipelinePath = $autoPipelinesDirectory.$chosenAutoPipeline.'.default.xml';
 			if(!file_exists($autoPipelinePath))
 				{
-				webServiceError('&error-autopipeline-not-found; '.$chosenAutoPipeline, 400);
+				webServiceError('&error-autopipeline-not-found; '.revealXml($chosenAutoPipeline), 400);
 				}
 			}
 
 		$pipelineString = file_get_contents($autoPipelinePath);
 		if(stripos($pipelineString, '{{custom-stages}}') === false)
 			{
-			webServiceError('&error-autopipeline-missing-placeholder; '.$autoPipelinePath);
+			webServiceError('&error-autopipeline-missing-placeholder; '.revealXml($autoPipelinePath));
 			}
 		$pipelineString = str_replace('{{custom-stages}}', $autoPipelineString, $pipelineString);
 		}
@@ -1123,7 +1123,7 @@ function zipFiles($path, $zipFilePath)
 	$returnCode = $archive->create($path, PCLZIP_OPT_REMOVE_PATH, $baseDirectoryToRemoveForZipping);
 	if($returnCode == 0)
 		{
-		webServiceError('&error-problem-zipping-files; '.$archive->errorInfo(true));
+		webServiceError('&error-problem-zipping-files; '.revealXml($archive->errorInfo(true)));
 		}
 	return $zipFilePath;
 	}
@@ -1203,7 +1203,7 @@ function silentlyAppendLineToLog($messageLine, $logType)
 		case 'security':
 			break;
 		default:
-			webServiceError('&error-generic; silentlyAppendLineToLog(...)');
+			webServiceError('&error-generic; silentlyAppendLineToLog(logType='.revealXml($logType).')');
 		}
 	$temporaryFile = tempnam('xxx', 'docvert');
 	$temporaryDirectoryPath = dirname($temporaryFile);
@@ -1314,7 +1314,7 @@ function phpErrorHandler($errorLevel, $message, $file, $line)
 		(stripos($message, 'fsockopen') === false && stripos($message, 'Name or service not known') === false)
 	)
 		{
-		webServiceError('<h1>&error-unhandled-error; (<abbr title="&error-level;">#</abbr>'.$errorLevel.')</h1><p>"'.$message.'"</p><p>In <tt>'.$file.'</tt> &nbsp; : <tt>'.$line.'</tt></p>');
+		webServiceError('<h1>&error-unhandled-error; (<abbr title="&error-level;">#</abbr>'.revealXml($errorLevel).')</h1><p>"'.revealXml($message).'"</p><p>In <tt>'.revealXml($file).'</tt> &nbsp; : <tt>'.revealXml($line).'</tt></p>');
 		}
 	}
 
@@ -1331,7 +1331,7 @@ function getXHTMLTemplate()
 	$template .= '{{body}}'."\n";
 	$template .= '</body>'."\n";
 	$template .= '</html>';
-	//whitespace to make the page over 4KB because IE won't display custom error messages unless they're larger than 4-5KB.
+	//whitespace to make the page over 4KB because IE won't display custom error messages unless they're larger than 4KB.
 	for($whitespaceLoop = 0; $whitespaceLoop < 10; $whitespaceLoop++)
 		{
 		$template .= '															 '."\r\n";
@@ -1846,7 +1846,7 @@ function generateDocument($pages, $generatorPipeline)
 	$pipelinePath = $pipelineDirectory.'pipeline.xml';
 	if(!file_exists($pipelinePath))
 		{
-		webServiceError('&generation-pipeline-not-found; '.$pipelinePath);
+		webServiceError('&generation-pipeline-not-found; '.revealXml($pipelinePath));
 		}
 	$pipelineString = file_get_contents($pipelinePath);
 	$pipelineString = substr($pipelineString, strpos($pipelineString, '<pipeline>') + 10);
