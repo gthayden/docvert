@@ -31,7 +31,7 @@ if(isset($_POST['uploadto']) && isset($_POST['id']))
 	$uploadLocation = getUploadLocation($uploadId);
 	if($uploadLocation === null)
 		{
-		webServiceError('This upload location does not exist.');
+		webServiceError('&error-upload-location-does-not-exist;');
 		}
 
 	$previewDirectory = realpath('writable'.DIRECTORY_SEPARATOR.$previewId);
