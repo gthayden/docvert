@@ -86,6 +86,10 @@ if(!$files || !$converter || !$pipeline || !$outputZip || $extraParameters)
 	{
 	$commandLineHelp = "\n".$extraParameters;
 	$commandLineHelp .= '&error-command-line-help;';
+	$errorPlaceholders['commandLineFiles'] = '';
+	$errorPlaceholders['commandLineConverter'] = '';
+	$errorPlaceholders['commandLinePipeline'] = '';
+	$errorPlaceholders['commandLineOutputZip'] = '';
 	if(!$files) $errorPlaceholders['commandLineFiles'] = ' --files ';
 	if(!$converter) $errorPlaceholders['commandLineConverter'] = ' --converter';
 	if(!$pipeline) $errorPlaceholders['commandLinePipeline'] = ' --pipeline';
