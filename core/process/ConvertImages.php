@@ -23,7 +23,7 @@ class ConvertImages extends PipelineProcess
 			}
 		if($jpegQuality <= 0 || $jpegQuality >= 100)
 			{
-			webServiceError('JPEG quality setting must be between 0 (worst) and 100 (best). Default is 75.');
+			webServiceError('&error-process-convertimages-jpegquality;');
 			}
 
 		if(!isset($this->elementAttributes['jpegQuality'])) $this->elementAttributes['jpegQuality'] = 75;
@@ -68,7 +68,7 @@ class ConvertImages extends PipelineProcess
 
 	function autoCropImage($path)
 		{
-		$cropCanvasClassPath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'crop-canvas.php';
+		$cropCanvasClassPath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'crop-canvas'.DIRECTORY_SEPARATOR.'crop-canvas.php';
 		//die($cropCanvasClassPath);
 		include_once($cropCanvasClassPath);
 		$canvas = new CropCanvas();
@@ -104,7 +104,7 @@ class ConvertImages extends PipelineProcess
 			switch($fromFormat)
 				{
 				case 'bmp':
-					webServiceError('Cannot convert bmp image.');
+					webServiceError('&error-process-convertimages-convert-bmp;');
 					break;
 				case 'gif':
 				case 'jpg':
@@ -145,7 +145,7 @@ class ConvertImages extends PipelineProcess
 							$wmf2gdResult = shellCommand($command);
 							if(!file_exists($gdImagePath))
 								{
-								webServiceError('&error-process-convertimages-nofile;', 500, Array('command'=>$command, 'output'=>$wmf2gdResult) );
+								webServiceError('&error-process-convertimages-nofile;', 500, Array('command'=>$command, 'output'=>$wmf2gdResult));
 								}
 							$gdImageContents = file_get_contents($gdImagePath);
 							$imageResource = imagecreatefromstring($gdImageContents);
