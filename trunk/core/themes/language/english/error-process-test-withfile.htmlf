@@ -1,0 +1,1 @@
+A pipeline's test stage doesn't name an XSLT file. It should have a withFile attribute containing a filename relative to the pipeline directory.

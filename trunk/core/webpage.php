@@ -173,13 +173,13 @@ class Themes
 		chmod($previewDirectory, 0777);
 		$destinationZipPath = $previewDirectory.DIRECTORY_SEPARATOR.basename($sourceZipPath);
 		$this->destinationZip = $destinationZipPath;
-		if(!moveFile($sourceZipPath, $destinationZipPath)) webServiceError('Unable to move "'.$sourceZipPath.'" to "'.$destinationZipPath.'"');
+		if(!moveFile($sourceZipPath, $destinationZipPath)) webServiceError('&error-webpage-unable-to-move;', 500, Array('source'=>$sourceZipPath, 'destination'=>$destinationZipPath) );
 		chmod($destinationZipPath, 0777);
 		include_once('./core/lib/pclzip-2-6/pclzip.lib.php');
 		$archive = new PclZip($destinationZipPath);
 		if (($archivedFiles = $archive->listContent()) == 0)
 			{
-			webServiceError('Error unzipping conversion zip file: '.$archive->errorInfo(true));
+			webServiceError('&error-webpage-unzipping-files;', 500, Array('errorMessage'=>$archive->errorInfo(true)));
 			}
 		foreach ($archivedFiles as $archivedFile)
 			{
@@ -198,7 +198,7 @@ class Themes
 		{
 		if(!file_exists($sourceZipPath))
 			{
-			webServiceError('Docvert internal error: zip file does not exist at path "'.$sourceZipPath.'"');
+			webServiceError('&error-internal-error-zip-path-not-found;', 500, Array('path'=>$sourceZipPath) );
 			}
 		$this->destinationZip = $sourceZipPath;
 		//print $previewDirectory.'<br />';
@@ -212,7 +212,7 @@ class Themes
 	function listOfConvertedDocuments()
 		{
 		$listString = null;
-		if(!$this->previewDirectory) webServiceError('Unable to list converted documents because a previewDirectory was not given.');
+		if(!$this->previewDirectory) webServiceError('&error-webpage-no-preview-directory-given;');
 		$convertedDocumentPaths = glob($this->previewDirectory.DIRECTORY_SEPARATOR.'*');
 		$firstConvertedDocument = true;
 		foreach($convertedDocumentPaths as $convertedDocumentPath)
@@ -254,24 +254,10 @@ class Themes
 	function firstConversionUrl()
 		{
 		$listString = null;
-		if(!$this->previewDirectory) webServiceError('Unable to show the first converted document because a previewDirectory was not given.');
+		if(!$this->previewDirectory) webServiceError('&error-webpage-no-preview-directory-given;');
 		if(!file_exists($this->previewDirectory))
 			{
-			$formattedExpireInHours = '';
-			$expireInHours = round(getExpireSessionsAfterDays() * 24);
-			if($expireInHours == 0)
-				{
-				$formattedExpireInHours = ' less than one hour.';
-				}
-			elseif($expireInHours == 1)
-				{
-				$formattedExpireInHours = ' about one hour.';
-				}
-			else
-				{
-				$formattedExpireInHours = ' about '.$expireInHours.' hours.';
-				}
-			webServiceError('Preview directory does not exist at "'.$this->previewDirectory.'". Perhaps your session has expired? Docvert sessions expire after '.$formattedExpireInHours);
+			webServiceError('&error-webpage-no-preview-directory;');
 			}
 		$convertedDocumentPaths = glob($this->previewDirectory.DIRECTORY_SEPARATOR.'*');
 		
@@ -282,7 +268,7 @@ class Themes
 				return 'frameset.php?path='.str_replace('\\', '/', $convertedDocumentPath);
 				}
 			}
-		webServiceError('Unable to display previewDirectory of "'.$this->previewDirectory.'"');
+		webServiceError('&error-webpage-unable-to-display-preview-directory;', 500, Array('path'=>$this->previewDirectory) );
 		}
 
 
@@ -306,7 +292,7 @@ class Themes
 			}
 		else
 			{
-			webServiceError('Unknown page "'.$this->page.'"');
+			webServiceError('&error-webpage-unknown-page;', 500, Array('pageName'=>$this->page));
 			}
 		}
 
@@ -491,7 +477,7 @@ class Themes
 
 				if(!file_exists($bashScript))
 					{
-					die("Can't find bash script at ".$bashScript);
+					webServiceError("&error-webpage-bashscript-not-found;", 500, Array('path'=>$bashScript));
 					}
 
 				$shellCommandTemplate = str_replace('{{xvfb}}', $xvfbCommand, $shellCommandTemplate);
@@ -884,42 +870,13 @@ class Themes
 
 	function convertedDocumentNames()
 		{
-		if(!$this->previewDirectory) webServiceError('Unable to list converted documents because a previewDirectory was not given.');
 		return '';
-
-		$directoryNames = null;
-
-
-		if($directoryHandler = opendir($this->previewDirectory))
-			{
-			while (($file = readdir($directoryHandler)) !== false)
-				{
-				if($file != '.' && $file != '..' && stripos($file, '.zip') === False )
-					{
-					if(trim($file))
-						{
-						$directoryNames[] = trim($file);
-						}
-					}
-				}
-			closedir($directoryHandler);
-			}
-		$formattedNames = "";
-		for ($i = 0; $i < count($directoryNames); $i++)
-			{
-			$formattedNames .= $directoryNames[$i];
-			if($i < count($directoryNames) - 1)
-				{
-				$formattedNames .= '--';
-				}
-			}
-		return $formattedNames;
 		}
 
 	function showPhpInfo()
 		{
 		if(!$this->allowedAdminAccess) return;
-
+		$template = $this->getThemeFragment('admin-phpinfo.htmlf');
 		ob_start();
 		phpinfo();
 		$phpinfo = ob_get_contents();
@@ -928,12 +885,13 @@ class Themes
 		$phpinfo = substr($phpinfo, strpos($phpinfo, "<body") + 5);
 		$phpinfo = substr($phpinfo, strpos($phpinfo, ">") + 1);
 		$phpinfo = substr($phpinfo, 0, strpos($phpinfo, "</body>"));
-		return '<h2>Your <a href="http://www.php.net/phpinfo" style="color:#666677">phpinfo()</a></h2><p>This is the configuration of your server. Please copy and paste the text below into any bug reports...</p><div id="phpinfo">'.$phpinfo.'</div>';
+		$template = str_replace('{{phpinfo}}', $phpinfo, $template);
+		return $template;
 		}
 
 	function uploadId()
 		{
-		if(!$this->previewDirectory) webServiceError('Unable to list converted documents because a previewDirectory was not given.');
+		if(!$this->previewDirectory) webServiceError('&error-webpage-no-preview-directory-given;');
 		return substr($this->previewDirectory, strpos($this->previewDirectory, '/') + 1);
 		}
 
@@ -1022,7 +980,7 @@ class Themes
 			switch($_REQUEST['step'])
 				{
 				case '4':
-					if(!isset($_REQUEST['pages'])) webServiceError('There were no pages submitted. Please back up your browser and try again and ensure that your browser has JavaScript enabled.');
+					if(!isset($_REQUEST['pages'])) webServiceError('&error-webpage-generation-no-pages;');
 					$template = $this->getThemeFragment('generation-step4.htmlf');
 					$hiddenFormChosenPages = Array();
 					$listItems = Array();
@@ -1055,12 +1013,12 @@ class Themes
 				case '2':
 					if(!isset($_REQUEST['url']))
 						{			
-						webServiceError('Expected URL form submission.');
+						webServiceError('&error-webpage-generation-url;');
 						}
 					$originalUrl = $_REQUEST['url'];
 					if(trim($originalUrl) == '')
 						{
-						webServiceError('<h1>No URL given</h1><p>I expected a URL but (I think) you didn\'t give me one. Back up your browser and try again.</p>');
+						webServiceError('&error-webpage-generation-no-url-given;');
 						}
 					if(!stringStartsWith($originalUrl, 'http'))
 						{
@@ -1079,7 +1037,7 @@ class Themes
 						}
 					if($originalUrl === false)
 						{
-						webServiceError('Cannot access '.revealXml($originalUrl));
+						webServiceError('&error-webpage-cannot-get-url;', 500, Array('url'=>$originalUrl));
 						}
 					$page = file_get_contents($originalUrl);
 
@@ -1457,7 +1415,7 @@ function displayLocalisedErrorPage($message, $errorNumber, $errorData)
 				{
 				foreach($errorData as $key => $value)
 					{	
-					$template = str_replace('&dynamic-'.$key.';', $value, $template);
+					$template = str_replace('&dynamic-'.$key.';', revealXml($value), $template);
 					}	
 				}
 			die($template);
@@ -1476,7 +1434,7 @@ function displayLocalisedErrorPage($message, $errorNumber, $errorData)
 				{
 				foreach($errorData as $key => $value)
 					{	
-					$message = str_replace('&dynamic-'.$key.';', $value, $message);
+					$message = str_replace('&dynamic-'.$key.';', revealXml($value), $message);
 					}	
 				}
 

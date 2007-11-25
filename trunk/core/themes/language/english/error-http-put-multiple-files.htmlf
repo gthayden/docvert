@@ -1,0 +1,1 @@
+With HTTP method PUT I was given a binaryArray with &dynamic-numberOfFiles; files rather than 1.

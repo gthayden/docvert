@@ -8,7 +8,7 @@ class Serialize extends PipelineProcess
 	
 	public function process($currentXml)
 		{
-		if(!array_key_exists('toFile', $this->elementAttributes)) webServiceError('The pipeline\'s serialize stage doesn\'t name a file to save to. It should contain a toFile attribute and a filename (no directory).');
+		if(!array_key_exists('toFile', $this->elementAttributes)) webServiceError('&error-process-serialize-no-with-file;');
 		$toFile = $this->elementAttributes['toFile'];
 		$configFilenamesPath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'custom-filenames.php';
 		include_once($configFilenamesPath);

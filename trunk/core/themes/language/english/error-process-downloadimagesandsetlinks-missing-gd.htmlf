@@ -1,0 +1,2 @@
+Unable to load images into OpenDocument file as your PHP doesn't have the GD library.
+See <a href="http://php.net/gd">http://php.net/gd</a> for install instructions.

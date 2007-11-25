@@ -15,7 +15,7 @@ function getConfigDirectory()
 		}
 	if(!is_writable($configDirectory))
 		{
-		webServiceError('The configuration directory is not writable at <tt>'.$configDirectory.'</tt>. ');
+		webServiceError('&error-config-file-not-writable;', 500, Array('path'=>$configDirectory));
 		}
 	return $configDirectory;
 	}
@@ -27,7 +27,7 @@ function getGlobalConfigPath()
 		{
 		if(!is_readable($configPath))
 			{
-			webServiceError('The configuration file is not readable at <tt>'.$configPath.'</tt>. Ask your administrator to check the permissions on that file.');
+			webServiceError('&error-config-file-not-readable;', 500, Array('path'=>$configPath) );
 			}
 		return $configPath;
 		}
@@ -50,7 +50,7 @@ function setConfigItem($configPath, $key, $value)
 	$currentValue = getConfigItem($configPath, $key);
 	if(!is_writable($configPath))
 		{
-		webServiceError('The configuration file is not writable at <tt>'.$configPath.'</tt>. This may be intentional, ask your administrator.');
+		webServiceError('&error-config-file-not-writable;', 500, Array('path'=>$configPath));
 		}
 	
 	$newConfigItemLine = $key.'="'.$value.'"';

@@ -14,6 +14,8 @@ $setupOpenOfficeOrg = false;
 $outputZip = null;
 $extraParameters = null;
 
+$errorPlaceholders = Array();
+
 $arguments = $argv;
 array_shift($arguments);
 
@@ -43,7 +45,7 @@ foreach($arguments as $argument)
 		//print $outputZipPath."\n";
 		if(!file_exists(dirname($outputZip)))
 			{
-			$extraParameters .= "ERROR: output directory does not exist";
+			$extraParameters .= "&error-commandline-output-directory-does-not-exist;";
 			}
 		//print $outputZip."\n";
 		}
@@ -53,7 +55,8 @@ foreach($arguments as $argument)
 		$pipelineName = rawurldecode(substringAfter($argument, '--pipeline='));
 		if(!file_exists(DOCVERT_DIR.'pipeline'.DIRECTORY_SEPARATOR.$pipelineName))
 			{
-			$extraParameters .= 'Requested pipeline "'.$pipelineName.'" doesn\'t exist.'."\n";
+			$extraParameters .= '&error-commandline-no-pipeline;'
+			$errorPlaceholders['pipeline'] = $pipelineName;
 			}
 		else
 			{
@@ -73,7 +76,7 @@ foreach($arguments as $argument)
 		$extraParameters .= 'Unknown argument: '.$argument;
 		if(!stringStartsWith($argument, '--'))
 			{
-			$extraParameters .= '. Did you forget the double-dash "--" prefix?';
+			$extraParameters .= '&error-commandline-forget-double-dash;';
 			}
 		$extraParameters .= "\n\n";
 		}
@@ -82,22 +85,12 @@ foreach($arguments as $argument)
 if(!$files || !$converter || !$pipeline || !$outputZip || $extraParameters)
 	{
 	$commandLineHelp = "\n".$extraParameters;
-	$commandLineHelp .= 'Was not given these required parameters: :';
-	if(!$files) $commandLineHelp .= ' --files ';
-	if(!$converter) $commandLineHelp .= ' --converter';
-	if(!$pipeline) $commandLineHelp .= ' --pipeline';
-	if(!$outputZip) $commandLineHelp .= ' --output-zip';
-	$commandLineHelp .= "\n";
-	$commandLineHelp .= 'Here\'s the syntax you\'ll need to use: '."\n";
-	$commandLineHelp .= ' --input-files=paths seperated by commas (URL encoded, aside from the comma)'."\n";
-	$commandLineHelp .= ' --output-zip=path (URL encoded)'."\n";
-	$commandLineHelp .= ' --pipeline=name of pipeline (URL encoded)'."\n";
-	$commandLineHelp .= ' --converter=(openofficeorg | abiword)'."\n";
-	$commandLineHelp .= 'For autopipelines this is also required:'."\n";
-	$commandLineHelp .= ' --autopipeline=name of autopipeline (URL encoded)'."\n";
-	$commandLineHelp .= 'Example:'."\n";
-	$commandLineHelp .= '   /var/www/docvert/bin/odt2html --input-files=fullpath1,fullpath2 --output-zip=/home/marco/result.zip --pipeline=s5%20slideshow --converter=openofficeorg '."\n";
-	webServiceError($commandLineHelp, 400);
+	$commandLineHelp .= '&error-command-line-help;';
+	if(!$files) $errorPlaceholders['commandLineFiles'] = ' --files ';
+	if(!$converter) $errorPlaceholders['commandLineConverter'] = ' --converter';
+	if(!$pipeline) $errorPlaceholders['commandLinePipeline'] = ' --pipeline';
+	if(!$outputZip) $errorPlaceholders['commandLineOutputZip'] = ' --output-zip';
+	webServiceError($commandLineHelp, 400, $errorPlaceholders);
 	}
 
 

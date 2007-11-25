@@ -1,0 +1,3 @@
+<h2>&admin-phpinfo-title;</h2>
+&admin-phpinfo-intro;
+<div id="phpinfo">{{phpinfo}}</div>

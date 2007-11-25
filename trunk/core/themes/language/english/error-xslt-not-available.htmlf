@@ -1,0 +1,5 @@
+<p>Your PHP5 doesn't have XSLT enabled. You'll need to enable it to use Docvert.</p>
+<h2>Windows</h2>
+<p>You may just have to uncomment the line that reads "extension=php_xsl.dll" in your php.ini, change "extension_dir" to point at your "/ext" extensions directory in your PHP install (a full path), and then restart your web server.</p>
+<h2>Linux, OSX, Unixes</h2>
+<p>Use your distribution's PHP5 XSLT install first, then if that doesn't work try following <a href="http://php.net/xsl">PHP.Net's XSL instructions</a>. Be aware that often there may be a php.ini to modify, but there might also be a php-cli.ini</p>
