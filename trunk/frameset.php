@@ -1,69 +1,67 @@
 <?php
-if(isset($_GET['path']))
+if(!isset($_GET['path']))
 	{
-	$pathToUse = ensureOnlyValidCharacters($_GET['path']);
-	$pathToUse = str_replace('\\', '/', $pathToUse).'/';
-	$pathToUse = str_replace('/', DIRECTORY_SEPARATOR, $pathToUse);
-	$thereIsAPreview = file_exists($pathToUse.'test.html');
-	
+	die('This script is for displaying an HTML frameset and must be called with a URL parameter. It\'s not for direct access, it\'s called on document previews.');
+	}
 
-	$configFilenamesPath = 'core'.DIRECTORY_SEPARATOR.'custom-filenames.php';
-	include_once($configFilenamesPath);
-	$customFileNames = getCustomFilenames();
+$pathToUse = ensureOnlyValidCharacters($_GET['path']);
+$pathToUse = str_replace('\\', '/', $pathToUse).'/';
+$pathToUse = str_replace('/', DIRECTORY_SEPARATOR, $pathToUse);
+$thereIsAPreview = file_exists($pathToUse.'test.html');
 
 
-	$chosenFile = null;
-	$filesToDisplay = Array($customFileNames[0], 'index.*', 'default.*', '*.odt');
+$configFilenamesPath = 'core'.DIRECTORY_SEPARATOR.'custom-filenames.php';
+include_once($configFilenamesPath);
+$customFileNames = getCustomFilenames();
+
+
+$chosenFile = null;
+$filesToDisplay = Array($customFileNames[0], 'index.*', 'default.*', '*.odt');
+foreach($filesToDisplay as $fileToDisplay)
+	{
+	$possibleFile = getFirstByPattern($pathToUse.$fileToDisplay);
+	if($possibleFile)	
+		{
+		$chosenFile = $possibleFile;
+		break;
+		}
+	}
+
+if(!$chosenFile)
+	{
+	$filesToDisplayAsString = null;
 	foreach($filesToDisplay as $fileToDisplay)
 		{
-		$possibleFile = getFirstByPattern($pathToUse.$fileToDisplay);
-		if($possibleFile)	
-			{
-			$chosenFile = $possibleFile;
-			break;
-			}
+		$filesToDisplayAsString .= '"'.$fileToDisplay.'", ';
 		}
-	
-	if(!$chosenFile)
-		{
-		$filesToDisplayAsString = null;
-		foreach($filesToDisplay as $fileToDisplay)
-			{
-			$filesToDisplayAsString .= '"'.$fileToDisplay.'", ';
-			}
-		$filesToDisplayAsString = trim($filesToDisplayAsString);
-		$filesToDisplayAsString = substr($filesToDisplayAsString, 0, strlen($filesToDisplayAsString) - 1);
-		$filesInPreviewDirectory = glob($pathToUse.'*');
-		die('Docvert or pipeline error: Unable to determine the file to preview. I searched for the filename patterns '.$filesToDisplayAsString.' were tested but do not exist. Was given pathToUse of <tt>"'.$pathToUse.'"</tt> which contained <pre>'.revealXml(print_r($filesInPreviewDirectory, true)).'</pre>');
-		}
-	$chosenFile = str_replace('\\', '/', $chosenFile);
-	if($thereIsAPreview)
-		{
-		print '<html>';
-		print '<head>';
-		print '<frameset cols="80%, *" border="10" bordercolor="#333333" frameborder="15">';
-		print '<frame src="'.$chosenFile.'" id="contentFrame"/>';
-		print '<frame src ="'.dirname($chosenFile).'/test.html"/>';
-		print '</frameset>';
-		print '</head>';
-		print '<body><noframes>Docvert requires a frames-compatible browser</noframes></body>';
-		print '</html>';
-		}
-	else
-		{
-		print '<html>';
-		print '<head>';
-		print '<frameset cols="*">';
-		print '<frame src="'.$chosenFile.'" id="contentFrame"/>';
-		print '</frameset>';
-		print '</head>';
-		print '<body><noframes>Docvert requires a frames-compatible browser</noframes></body>';
-		print '</html>';
-		}
+	$filesToDisplayAsString = trim($filesToDisplayAsString);
+	$filesToDisplayAsString = substr($filesToDisplayAsString, 0, strlen($filesToDisplayAsString) - 1);
+	$filesInPreviewDirectory = glob($pathToUse.'*');
+	die('Docvert or pipeline error: Unable to determine the file to preview. I searched for the filename patterns '.$filesToDisplayAsString.' were tested but do not exist. Was given pathToUse of <tt>"'.$pathToUse.'"</tt> which contained <pre>'.revealXml(print_r($filesInPreviewDirectory, true)).'</pre>');
+	}
+$chosenFile = str_replace('\\', '/', $chosenFile);
+if($thereIsAPreview)
+	{
+	print '<html>';
+	print '<head>';
+	print '<frameset cols="80%, *" border="10" bordercolor="#333333" frameborder="15">';
+	print '<frame src="'.$chosenFile.'" id="contentFrame"/>';
+	print '<frame src ="'.dirname($chosenFile).'/test.html"/>';
+	print '</frameset>';
+	print '</head>';
+	print '<body><noframes>Docvert requires a frames-compatible browser</noframes></body>';
+	print '</html>';
 	}
 else
 	{
-	die('This script is for displaying an HTML frameset and must be called with a URL parameter. It\'s not for direct access, it\'s called on document previews.');
+	print '<html>';
+	print '<head>';
+	print '<frameset cols="*">';
+	print '<frame src="'.$chosenFile.'" id="contentFrame"/>';
+	print '</frameset>';
+	print '</head>';
+	print '<body><noframes>Docvert requires a frames-compatible browser</noframes></body>';
+	print '</html>';
 	}
 
 function getFirstByPattern($pattern)
