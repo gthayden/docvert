@@ -1,0 +1,2 @@
+Le stade IncludeDependentFiles des pipelines ne nomme pas les fichiers &agrave; copier.
+L'attribut "withFiles" doit contenir une liste de noms de fichiers (jokers accept&eacute;s).

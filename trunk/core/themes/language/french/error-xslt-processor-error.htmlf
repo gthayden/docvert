@@ -1,0 +1,3 @@
+Impossible de transformer les donn&eacute;es XML.
+L'erreur s'est produite lors de l'utilisation du fichier XSLT <tt>&dynamic-path;</tt>.
+Voici le message d'erreur entier : <tt>&dynamic-errorMessage;</tt>

@@ -1,0 +1,3 @@
+<h1>Erreur d'installation</h1>
+<p>La version de PHP sur le serveur est &dynamic-phpVersion;. Docvert n&eacute;cessite PHP 5 ou plus r&eacute;cent.</p>
+<p>Voir <a href="doc/install.txt">install.txt</a> pour de plus amples informations.</p>

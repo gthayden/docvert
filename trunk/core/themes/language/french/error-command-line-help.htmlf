@@ -1,0 +1,14 @@
+Les param&egrave;tres requis suivants n'&eacute;taient pas pr&eacute;sents:
+	&dynamic-commandLineFiles;
+	&dynamic-commandLineConverter;
+	&dynamic-commandLinePipeline;
+	&dynamic-commandLineOutputZip;
+Voici la syntaxe n&eacute;cessaire:
+	--input-files=chemins s&eacute;par&eacute;s par des virgules (encodage d'URL, except&eacute; pour les virgules)
+	--output-zip=chemin (encodage d'URL)
+	--pipeline=nom de la pipeline (encodage d'URL)
+	--converter=(openofficeorg | abiword)
+Pour les autopipelines, le param&egrave;tre suivant est &eacute;galement requis:
+	--autopipeline=nom de l'autopipeline (encodage d'URL)
+Exemple:
+	/var/www/docvert/bin/odt2html --input-files=chemincomplet1,chemincomplet2 --output-zip=/home/robert/resultat.zip --pipeline=s5%20slideshow --converter=openofficeorg 

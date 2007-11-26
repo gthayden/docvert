@@ -1,0 +1,5 @@
+<p>L'utilisation de ValidateAgainstSchema a &eacute;chou&eacute;e lors de l'ex&eacute;cution de la commande :</p>
+	<blockquote><tt>&dynamic-command;</tt></blockquote>
+<p>Le r&eacute;sultat :</p>
+	<blockquote><tt>$dynamic-output;</tt></blockquote>
+&dynamic-possibleError;
