@@ -1,0 +1,1 @@
+Le stade de s&eacute;rialisation d'une pipeline ne nomme pas le fichier o&ugrave; enregistrer.  Il doit contenir un attribut "toFile" et un nom de fichier sans le dossier.

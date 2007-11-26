@@ -1,0 +1,1 @@
+Une pipeline ConvertImages n&eacute;cessite un attribute "deleteOriginals" avec une valeur "true" ou "false".

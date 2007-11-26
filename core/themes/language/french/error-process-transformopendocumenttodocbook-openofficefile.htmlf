@@ -1,0 +1,4 @@
+Impossible de convertir vers le format DocBook puisque le format donn&eacute; est l'ancien format OpenOffice plut&ocirc;t que le format OpenDocument.
+Ceci est probablement d&ucirc; &agrave; la version d'OpenOffice.org install&eacute;e.
+Assurez-vous d'utiliser la version 1.9 ou plus r&eacute;cente et que le script convert-using-openoffice.org (tel que mentionnn&eacute; dans le fichier install.txt) est dirig&eacute; vers la version la plus r&eacute;cente.
+Si le probl&egrave;me persiste, veuillez rapporter le bogue avec votre version de OpenOffice.org, votre fichier de pipeline, le script et les autres informations que vous jugez pertinentes.

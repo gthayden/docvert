@@ -1,0 +1,1 @@
+Le stade de transformation d'une pipeline r&eacute;f&egrave;re a un fichier XSL qui n'existe pas. Il n'y a pas de fichier (ou les permissions en lecture sont manquantes) nomm&eacute; <tt>&dynamic-xslPath;</tt>

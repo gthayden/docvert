@@ -1,0 +1,5 @@
+<p>XSLT n'est pas activ&eacute; dans l'installation de PHP et est requis pour utiliser Docvert.</p>
+<h2>Windows</h2>
+<p>Vous n'avez probablement qu'&agrave; retirer le point-virgule devant la ligne "extension=php_xsl.dll" dans le fichier php.ini, et &agrave; diriger la variable "extension_dir" vers le r&eacute;pertoire d'extensions "/ext" de votre installation PHP avant de red&eacute;marrer le serveur Web.</p>
+<h2>Linux, OSX, UNIX</h2>
+<p>Commencez par utiliser l'installation de PHP de votre distribution. Si cela ne fonctionne pas, essayez les <a href="http://php.net/xsl">instructions XSL de PHP.Net</a>. Il y a parfois un fichier php.ini &agrave; modifier ainsi qu'un fichier php-cli.ini.</p>

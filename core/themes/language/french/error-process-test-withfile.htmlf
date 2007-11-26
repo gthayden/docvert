@@ -1,0 +1,1 @@
+Le stade de test d'une pipeline ne nomme pas de fichier XSLT. L'attribut "withFile" doit contenir un nom de fichier relatif au dossier de la pipeline.
