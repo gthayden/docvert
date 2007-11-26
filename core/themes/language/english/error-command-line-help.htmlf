@@ -4,7 +4,7 @@ Was not given these required parameters:
 	&dynamic-commandLinePipeline;
 	&dynamic-commandLineOutputZip;
 Here's the syntax you'll need to use:
-	--input-files=paths seperated by commas (URL encoded, aside from the comma)
+	--input-files=paths separated by commas (URL encoded, aside from the comma)
 	--output-zip=path (URL encoded)
 	--pipeline=name of pipeline (URL encoded)
 	--converter=(openofficeorg | abiword)
