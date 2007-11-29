@@ -42,50 +42,10 @@ class ConvertImages extends PipelineProcess
 
 		if(isset($this->elementAttributes['autoCrop']) && strtolower($this->elementAttributes['autoCrop']) == 'true')
 			{
-			$this->autoCropImages();
+			webServiceError('&error-disabled-crop-canvas;');
 			}
 		//displayXmlString($currentXml);
 		return $currentXml;
-		}
-
-
-	function autoCropImages()
-		{
-		$imagePathPattern = $this->contentDirectory.DIRECTORY_SEPARATOR.'*.gif';
-		$gifs = glob($imagePathPattern);
-		foreach($gifs as $gif)
-			{
-			$this->autoCropImage($gif);
-			}
-
-		$imagePathPattern = $this->contentDirectory.DIRECTORY_SEPARATOR.'*.png';
-		$pngs = glob($imagePathPattern);
-		foreach($pngs as $png)
-			{
-			$this->autoCropImage($png);
-			}		
-		}
-
-	function autoCropImage($path)
-		{
-		$cropCanvasClassPath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'crop-canvas'.DIRECTORY_SEPARATOR.'crop-canvas.php';
-		//die($cropCanvasClassPath);
-		include_once($cropCanvasClassPath);
-		$canvas = new CropCanvas();
-		$canvas->loadImage($path);
-		/*
-		TODO: cropByAuto() takes a value from 1-255.
-		20 seems to work well, but this might
-		need tweaking.
-		*/
-		$autoCropThreshold = 20;
-		if(isset($this->elementAttributes['autoCropThreshold']))
-			{
-			$autoCropThreshold = $this->elementAttributes['autoCropThreshold'];
-			}
-		$canvas->cropByAuto($autoCropThreshold);
-		$canvas->saveImage($path);
-		$canvas->flushImages(false);
 		}
 
 	function convertImageFormat($fromFormat, $toFormat, $insideDirectory, $deleteOriginals, &$currentXml, $jpegQuality)
