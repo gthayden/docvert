@@ -20,6 +20,7 @@
 		- added support for images
 		- pulling in styles outside automatic-styles.
 		- working around bugs in common XSL implementations of xsl:keys
+		- adding support for preformatted text
 		- all kinds of other stuff not worth mentioning
 
 	-For reference, original OOo 1.x namespaces,
@@ -316,40 +317,56 @@
 	<xsl:variable name="lowercaseReferencedParentStyleName" select="translate($referencedParentStyleName, $upperCaseLetters, $lowerCaseLetters)"/>
 
 	<xsl:if test="normalize-space(.) or descendant::draw:frame">
-		<!-- <xsl:if test="not(contains($lowercaseReferencedParentStyleName, 'title'))"> -->
-		<xsl:element name="db:para">
-			<!-- <xsl:value-of select="$referencedParentStyleName"/> -->
-			<xsl:call-template name="includeStyleNameWhenUseful"/>
-			<xsl:call-template name="detectDublinCoreMetaData">
-				<xsl:with-param name="possibleDCName"><xsl:value-of select="@text:style-name"/></xsl:with-param>
-			</xsl:call-template>
-			<xsl:choose>
-				<xsl:when test="$doNotInheritParentBold = 'bold' or $doNotInheritParentItalics = 'italic' ">
-					<db:emphasis>
-						<xsl:if test="$doNotInheritParentBold = 'bold' ">
-							<xsl:attribute name="role">
-								<xsl:text>bold</xsl:text>
-							</xsl:attribute>
-						</xsl:if>
-						<xsl:apply-templates/>
-					</db:emphasis>
-				</xsl:when>
-				<xsl:when test="$boolParentStyleBoldOrItalics and (not($doNotInheritParentBold) or not($doNotInheritParentItalics))">
-					<db:emphasis>
-						<xsl:if test="$referencedParentStyle[style:text-properties/@fo:font-weight = 'bold'] ">
-							<xsl:attribute name="role">
-								<xsl:text>bold</xsl:text>
-							</xsl:attribute>
-						</xsl:if>
-						<xsl:apply-templates/>
-					</db:emphasis>
-				</xsl:when>
-				<xsl:otherwise>
+		<xsl:choose>
+			<xsl:when test="starts-with($textStyle, 'preformatted')">
+				<xsl:element name="db:literallayout">
+					<xsl:attribute name="role"><xsl:value-of select="$textStyle"/></xsl:attribute>
 					<xsl:apply-templates/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:element>
-		<!-- </xsl:if> -->
+				</xsl:element>
+			</xsl:when>
+			<xsl:when test="starts-with($referencedParentStyleName, 'preformatted')">
+				<xsl:element name="db:literallayout">
+					<xsl:attribute name="role"><xsl:value-of select="$referencedParentStyleName"/></xsl:attribute>
+					<xsl:apply-templates/>
+				</xsl:element>
+			</xsl:when>
+			<xsl:otherwise>
+				<!-- <xsl:if test="not(contains($lowercaseReferencedParentStyleName, 'title'))"> -->
+				<xsl:element name="db:para">
+					<!-- <xsl:value-of select="$referencedParentStyleName"/> -->
+					<xsl:call-template name="includeStyleNameWhenUseful"/>
+					<xsl:call-template name="detectDublinCoreMetaData">
+						<xsl:with-param name="possibleDCName"><xsl:value-of select="@text:style-name"/></xsl:with-param>
+					</xsl:call-template>
+					<xsl:choose>
+						<xsl:when test="$doNotInheritParentBold = 'bold' or $doNotInheritParentItalics = 'italic' ">
+							<db:emphasis>
+								<xsl:if test="$doNotInheritParentBold = 'bold' ">
+									<xsl:attribute name="role">
+										<xsl:text>bold</xsl:text>
+									</xsl:attribute>
+								</xsl:if>
+								<xsl:apply-templates/>
+							</db:emphasis>
+						</xsl:when>
+						<xsl:when test="$boolParentStyleBoldOrItalics and (not($doNotInheritParentBold) or not($doNotInheritParentItalics))">
+							<db:emphasis>
+								<xsl:if test="$referencedParentStyle[style:text-properties/@fo:font-weight = 'bold'] ">
+									<xsl:attribute name="role">
+										<xsl:text>bold</xsl:text>
+									</xsl:attribute>
+								</xsl:if>
+								<xsl:apply-templates/>
+							</db:emphasis>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:apply-templates/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:element>
+				<!-- </xsl:if> -->
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:if>
 </xsl:template>
 
@@ -366,6 +383,13 @@
 
 <xsl:template match="draw:frame">
 	<xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="text:s"><!-- an additional space -->
+	<xsl:element name="db:literal">
+		<xsl:attribute name="role">additionalSpace</xsl:attribute>
+		<xsl:text>&#160;</xsl:text>
+	</xsl:element>
 </xsl:template>
 
 <xsl:template match="svg:desc">
