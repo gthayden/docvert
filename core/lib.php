@@ -36,24 +36,6 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 		{
 		$pipeline = 'fake:'.$forcedPipeline;
 		}
-/*
-	print_r($files);
-	print "<hr/>\n";
-	print_r($converter);
-	print "<hr/>\n";
-	print_r($pipeline);
-	print "<hr/>\n";
-	print_r($autoPipeline);
-	print "<hr/>\n";
-	print_r($afterConversion);
-	print "<hr/>\n";
-	print_r($setupOpenOfficeOrg);
-	print "<hr/>\n";
-	print_r($outputZip);
-	print "<hr/>\n";
-	print_r($justShowPreviewDirectory);
-*/
-
 
 	ensureClientType();
 	if(thereWasAFileGiven($files, $pipeline) || $justShowPreviewDirectory)
@@ -481,6 +463,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		{
 		$errorMessage = '&error-unable-to-generate-opendocument;';
 		$suggestedFixes = suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable, true);
+		$errorMessage .= $suggestedFixes;
 		$notExecutable = '';
 		if(isset($commandTemplateVariable['scriptPath']) && !is_executable($commandTemplateVariable['scriptPath']))
 			{
@@ -493,7 +476,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				$notExecutable = '&error-conversion-script-unix-not-executable;';
 				}
 			}
-		webServiceError($errorMessage, 500, Array('commandToRun'=>$command, 'responseToCommand'=>$output, 'suggestedFixes'=>$suggestedFixes, 'notExecutable'=>$notExecutable));
+		webServiceError($errorMessage, 500, Array('commandToRun'=>$command, 'responseToCommand'=>$output, 'notExecutable'=>$notExecutable));
 		}
 	else
 		{
@@ -556,15 +539,14 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 			}
 		if(stripos($output, 'X11') !== false || stripos($output, 'refused by server Xlib') !== false )
 			{
-	
 			include_once('config.php');
-			$runAsUser = getGlobalConfigItem('runOpenOfficeAsCustomUser');
-			if($runAtUser == null)
+			$runAsUser = getGlobalConfigItem('runExternalApplicationAsUser');
+			if($runAsUser == null)
 				{
 				$runAsUser = 'root';
 				}
 
-			$suggestedFixes .= '&error-can-not-run-as-user-1; "'.revealXml($runAsUser).'" &error-can-not-run-as-user-2; <blockquote><tt>sudo xhost local:'.revealXml($runAsUser).'</tt></blockquote>';
+			$suggestedFixes .= '&error-can-not-run-as-user-1; "'.revealXml($runAsUser).'" &error-can-not-run-as-user-2; "sudo xhost local:'.revealXml($runAsUser).'" ';
 			}
 
 		if(stripos($output, 'no passwd entry for'))

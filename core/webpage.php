@@ -451,12 +451,12 @@ class Themes
 			{
 			if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
 				{
-				setGlobalConfigItem('runOpenOfficeAsCustomUser', $_REQUEST['runasuser']);
+				setGlobalConfigItem('runExternalApplicationAsUser', $_REQUEST['runasuser']);
 				}
 
-			$customUser = getGlobalConfigItem('runOpenOfficeAsCustomUser');			
+			$customUser = getGlobalConfigItem('runExternalApplicationAsUser');			
 
-			$runAsCustomUser = $this->getThemeFragment('admin-configureopenofficeorg-runasuser.htmlf');
+			$runAsCustomUser = $this->getThemeFragment('admin-configure-runexternalapplicationasuser.htmlf');
 			$runAsCustomUser = str_replace('{{username}}', $customUser, $runAsCustomUser);
 
 			$disallowXVFB = getGlobalConfigItem('disallowXVFB');

@@ -1,1 +1,1 @@
-user can\'t access your desktop, so allow them by using <tt style="font-weight:bold">xhost</tt>. If that\'s the problem type this command:
+user can't access your desktop, so allow them by using <tt style="font-weight:bold">xhost</tt>. If that's the problem type this command:
