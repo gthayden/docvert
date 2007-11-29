@@ -101,6 +101,17 @@
 	</ul>
 </xsl:template>
 
+
+<xsl:template match="db:literallayout">
+	<xsl:element name="pre">
+		<xsl:apply-templates/>
+	</xsl:element>
+</xsl:template>
+
+<xsl:template match="db:literal[@role='additionalSpace']">
+	<xsl:text>&#160;</xsl:text>
+</xsl:template>
+
 <xsl:template match="db:footnote">
 	<div class="footnote">
 		<sup>
