@@ -623,16 +623,21 @@ function setupOpenOfficeOrg()
 	$output = makeOasisOpenDocument(null, 'openofficeorg', true);
 	$body = null;
 	$body .= '&setup-openofficeorg-title;';
+	$suggestedFixes = '';
+
 	if(trim($output) != '')
 		{
+		$suggestedFixes = suggestFixesToCommandLineErrorMessage($output, null, false);
+		}
+
+	if(trim($suggestedFixes) != '')
+		{
 		$body .= '&setup-openofficeorg-failed;<blockquote><tt>'.revealXml($output).'</tt></blockquote>';
-		$body .= suggestFixesToCommandLineErrorMessage($output, null, false);
-		webServiceError($body);
+		webServiceError($body.$suggestedFixes);
 		}
 	else
 		{
-		$body .= '&setup-openofficeorg-success;';
-		webServiceError($body, 200);
+		webServiceError('&setup-openofficeorg-success;', 200);
 		}
 	}
 
