@@ -6,27 +6,38 @@
 
 	{{create-password}}
 
-	{{choose-language}}
+	<div style="float:left;width:100%;clear:both;"> &#160; </div>
 
-	{{setup-openofficeorg}}
+	<div style="float:left;width:100%;clear:both;padding-bottom:1em;border-bottom:solid 3px #eeeeee">
+		<div style="float:left;width:45%;margin-right:5%">
+			{{change-password}}
 
-	{{non-opendocument-uploads}}
+			{{choose-language}}
 
-	{{unix-only-use-xvfb}}
+			{{document-generation}}
 
-	{{choose-converters}}
+			{{configure-upload-locations}}
 
-	{{document-generation}}
+			{{force-pipeline}}
 
-	{{configure-upload-locations}}
+			{{configure-filenames}}
 
-	{{force-pipeline}}
+			{{choose-theme}}
+		</div>
+		<div style="float:left;width:49%">
+			{{setup-openofficeorg}}
 
-	{{configure-filenames}}
+			{{non-opendocument-uploads}}
 
-	{{change-password}}
+			{{unix-only-use-xvfb}}
 
-	{{choose-theme}}
+			{{choose-converters}}
+		</div>
+	</div>
+
+	<div style="float:left;width:100%;clear:both;"> &#160; </div>
+
+	<div style="float:left;width:100%;clear:both;"> &#160; </div>
 
 	{{php-info}}
 </div>
