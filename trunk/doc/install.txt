@@ -12,24 +12,26 @@ Requirements
 
 *	PHP 5 or later, with the "ZLIB" and "XSL" extensions.
 
-*	If you want to convert Microsoft Word documents (no additional
-	software is required if you're just converting OpenDocument) then
-	you'll need to choose a 'Microsoft Word to OpenDocument' converter,
+Optional Libraries
+-------------------------------------------------------------
+*	If you want to convert Microsoft Word documents then
+	you'll need to choose a 'Microsoft Word to OpenDocument'
+	converter,
 
 	*	OpenOffice.org 1.9.122 or later.
 		The more current your version of OpenOffice.org
 		the more likely it'll be compatible with the
 		vagaries of the MS Word format - so keep your
 		OOo current.
+
 		On Linux/BSD/OSX you'll also need "Xvfb".
+
 		Accelerated OpenOffice.org conversions are supported
-		thanks to the fantastic work in PyODConverter and
-		JODConverter
+		thanks to the fantastic work in PyODConverter.
 
 	*	Abiword 2.4.2 or later.
+	
 
-Optional Libraries
--------------------------------------------------------------
 
 *	If you want to convert bitmap images like BMP, JPG,
 	PNG, GIF you'll need PHP GD.
