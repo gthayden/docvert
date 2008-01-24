@@ -798,7 +798,8 @@ function getTemporaryDirectoryInsideDirectory($makeInsideDirectory, $prefix = 'd
 			webServiceError('&error-unable-to-make-directory;', 500, Array('temporaryPath'=>$temporaryDirectory, 'exitAfterXLoops'=>$exitAfterXLoops));
 			}
 		}
-	while(@!mkdir($temporaryDirectory, 0777));
+	while(@!mkdir($temporaryDirectory, 0770));
+	@chgrp($temporaryDirectory, 'docvert'); //change to group "docvert"
 	return $temporaryDirectory;
 	}
 
@@ -1289,8 +1290,7 @@ function getPhpVersion()
 */
 function phpErrorHandler($errorLevel, $message, $file, $line)
 	{
-	//$errorLevelToDescribeMerelyDeprecatedWarnings = 2048;
-	//if($errorLevel < $errorLevelToDescribeMerelyDeprecatedWarnings)
+
 	//this uses stripos rather than docvert containsString() in order to be more stand alone
 	if(
 		stripos($message, "rmdir") === false &&
@@ -1298,7 +1298,8 @@ function phpErrorHandler($errorLevel, $message, $file, $line)
 		stripos($message, 'ftp_login') === false &&
 		stripos($message, 'imagecreatefromstring') === false &&
 		stripos($message, '404 Not Found') === false &&
-		(stripos($message, 'fsockopen') === false && stripos($message, 'Name or service not known') === false)
+		(stripos($message, 'fsockopen') === false && stripos($message, 'Name or service not known') === false) &&
+		stripos($message, 'chgrp') === false
 	)
 		{
 		webServiceError('<h1>&error-unhandled-error; (<abbr title="&error-level;">#</abbr>'.revealXml($errorLevel).')</h1><p>"'.revealXml($message).'"</p><p>In <tt>'.revealXml($file).'</tt> &nbsp; : <tt>'.revealXml($line).'</tt></p>');

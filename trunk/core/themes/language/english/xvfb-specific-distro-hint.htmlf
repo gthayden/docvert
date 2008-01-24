@@ -1,1 +1,1 @@
-In Ubuntu 6.06, XVFB is known not to work. If you have problems disable XVFB here.
+In Debian and Ubuntu 6.06 there may be the problem that XVFB does not work. If you have problems disable XVFB here.
