@@ -2,5 +2,6 @@
 				<form method="post">
 					<p style="margin:0.5em 30px;font-size:small">&run-external-application-as-user-label; <input type="text" name="runasuser" id="runasuser" value="{{username}}"/><input type="submit" name="setcustomuser" id="setcustomuser" value="&set-custom-openofficeorg-user-button;"/></p>
 					<p style="margin:0.5em 30px;font-size:small">&run-external-application-as-user-extra-help;</p>
+					<p style="margin:0.5em 30px;font-size:small">&run-external-application-as-user-explanation;</p>
 				</form>
 

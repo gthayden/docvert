@@ -447,7 +447,7 @@ class Themes
 		$runAsCustomUser = '';
 		$toggleStatus = '';
 		include_once('config.php');
-		if(DIRECTORY_SEPARATOR == '/')
+		if(DIRECTORY_SEPARATOR == '/') //Unix, sudo is available
 			{
 			if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
 				{
@@ -1311,8 +1311,17 @@ class Themes
 
 		foreach($this->converters as $converterId => $converterName)
 			{
+			$converterPlaceholder = '{{toggle-'.$converterId.'}}';
+			$hideConverterConfigurationKey = 'hideAdminOption'.$converterId;
+			$hideConverter = getGlobalConfigItem($hideConverterConfigurationKey);
+
+			if($hideConverter == 'true')
+				{
+				$template = str_replace($converterPlaceholder, '', $template);
+				continue;
+				}
+
 			$doNotUseConverter = 'doNotUseConverter'.$converterId;
-		
 			if(isset($_POST['converter-'.$converterId.'-enable']))
 				{
 				setGlobalConfigItem($doNotUseConverter, 'false');
@@ -1331,7 +1340,7 @@ class Themes
 				{
 				$interfacePath = 'admin-converter-'.$converterId.'-disabled.htmlf';
 				}
-			$converterPlaceholder = '{{toggle-'.$converterId.'}}';
+
 			if(stripos($template, $converterPlaceholder) === false)
 				{
 				$template .=  '<br/><br />&#160; Cannot find placeholder of '.$converterPlaceholder.' and so cannot display an interface for '.$converterName.'<br/>';
