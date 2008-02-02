@@ -133,6 +133,7 @@ class Themes
 				$htmlTemplate = str_replace('{{create-password}}', $this->createPassword(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{allow-webdav}}', $this->allowWebdavUploads(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{allow-ftp}}', $this->allowFtpUploads(), $htmlTemplate);
+				$htmlTemplate = str_replace('{{allow-blogger-api}}', $this->allowBloggerAPI(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{force-pipeline}}', $this->forcePipeline(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{configure-filenames}}', $this->configureFilenames(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{protocol-message}}', $this->protocolMessage(), $htmlTemplate);
@@ -772,8 +773,10 @@ class Themes
 						$port = "21";
 						break;
 					case 'webdav':
+					case 'bloggerapi':
 						$port = '80';
 						break;
+					case 'bloggerapi-ssl':
 					case 'webdav-ssl':
 					case 'webdav-tls':
 						$port = "443";
@@ -914,6 +917,14 @@ class Themes
 		}
 
 
+	function allowBloggerAPI()
+		{
+		if(function_exists('fsockopen'))
+			{
+			return '<option value="bloggerapi">Blogger API</option><option value="bloggerapi-ssl">Blogger API+SSL (https)</option>';
+			}
+		return '';
+		}
 
 	function configureFilenames()
 		{
