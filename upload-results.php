@@ -15,6 +15,7 @@ define('DOCVERT_CLIENT_TYPE', 'web');
 include_once('core'.DIRECTORY_SEPARATOR.'lib.php');
 include_once('core'.DIRECTORY_SEPARATOR.'ftp.php');
 include_once('core'.DIRECTORY_SEPARATOR.'http.php');
+include_once('core'.DIRECTORY_SEPARATOR.'blogger-api.php');
 include_once('core'.DIRECTORY_SEPARATOR.'upload-locations.php');
 
 if(isset($_POST['uploadto']) && isset($_POST['id']))
@@ -67,13 +68,12 @@ function uploadToUploadLocation($uploadLocation, $previewDirectory, $remoteDirec
 			return copyViaFtpRecursively($uploadLocation, $previewDirectory, $remoteDirectory, "passive");
 			break;
 		case 'webdav':
-			return copyViaWebDAVRecursively($uploadLocation, $previewDirectory, $remoteDirectory);
-			break;
-		case 'webdav-ssl':
-			return copyViaWebDAVRecursively($uploadLocation, $previewDirectory, $remoteDirectory);
-			break;
 		case 'webdav-tls':
 			return copyViaWebDAVRecursively($uploadLocation, $previewDirectory, $remoteDirectory);
+			break;
+		case 'bloggerapi':
+		case 'bloggerapi-ssl':
+			return copyViaBloggerAPI($uploadLocation, $previewDirectory, $remoteDirectory);
 			break;
 		default:
 			webServiceError('&error-unknown-protocol; '.$uploadLocation['protocol']);

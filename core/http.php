@@ -159,7 +159,7 @@ function pullpage($method, $host, $port, $usepath, $username, $password, $proxyU
 			$request['head'] .= httpLine($method.' '.$protocol.'://'.$host.$usepath.' HTTP/1.1');
 			break;
 		default:
-			webServiceError('&error-http-unknown-method;', 500, ('method'=>$method));
+			webServiceError('&error-http-unknown-method;', 500, Array('method'=>$method));
 		}
 	$request['head'] .= httpLine('User-Agent: '.$userAgent);
 	$request['head'] .= httpLine('Accept: */*');
@@ -168,7 +168,7 @@ function pullpage($method, $host, $port, $usepath, $username, $password, $proxyU
 	$request['head'] .= httpLine('Connection: keep-alive');
 	if($username.$password)
 		{
-		$request['head'] .= httpLine('Authorization: Basic '.base64_encode($user.':'.$pass));
+		$request['head'] .= httpLine('Authorization: Basic '.base64_encode($username.':'.$password));
 		}
 	if($proxyUsername.$proxyPassword)
 		{
@@ -211,7 +211,7 @@ function pullpage($method, $host, $port, $usepath, $username, $password, $proxyU
 		{
 		if(count($binaryArray) != 1)
 			{
-			webServiceError("&error-http-put-multiple-files", 500, Array('numberOfFiles'=>count($binaryArray));
+			webServiceError("&error-http-put-multiple-files", 500, Array('numberOfFiles'=>count($binaryArray)));
 			}
 		$request['head'] .= httpLine('Content-type: application/octet-stream');
 		$request['body'] = $binaryArray[0];
@@ -306,11 +306,25 @@ function pullpage($method, $host, $port, $usepath, $username, $password, $proxyU
 		print '<h2>Response</h2>';
 		print '<h3>Head</h3>';
 		print '<div style="margin:0px 3%">';
-		foreach($response['head'] as $eachHeader) print $eachHeader."<br />";
+		if(is_array($response) && array_key_exists('head', $response))
+			{
+			foreach($response['head'] as $eachHeader) print $eachHeader."<br />";
+			}
+		else
+			{
+			print "No header in response.";
+			}
 		print "</div>";
 		print "<h3>Body</h3>";
 		print '<div style="margin:0px 3%">';
-		print nl2br(textEncodingToHtmlEncoding($response['body']));
+		if(is_array($response) && array_key_exists('body', $response))
+			{
+			print nl2br(textEncodingToHtmlEncoding($response['body']));
+			}
+		else
+			{
+			print "No body in response.";
+			}
 		print "</div>";
 		die();
 		}
