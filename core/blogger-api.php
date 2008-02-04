@@ -1,8 +1,10 @@
 <?php
 /*
+	Take from
+
 	http://code.google.com/apis/blogger/developers_guide_protocol.html#create_public_post
 
-	Example of draft blog post (remove app:control tag and children to make it live),
+	...and example of draft blog post (remove the app:control branch to make it post a non-draft),
 	
 	<entry xmlns='http://www.w3.org/2005/Atom'>
 		<title type='text'>Marriage!</title>
@@ -38,11 +40,9 @@ function copyViaBloggerAPI($uploadLocation, $previewDirectory, $remoteDirectory)
 	$username = $uploadLocation['username'];
 	$password = $uploadLocation['password'];
 
-	$errorMessage = '';
 
-	//$httpCode = pullpage('POST', $host, $port,  $username, $password, $proxyUsername, $proxyPassword, null, null, $debug = true);
-	$title = ''; //extract title from <head><title> HERE
-	$body = '';
+	$title = 'my test title'; //TODO: Extract title from <head><title> HERE
+	$body = 'my test body';
 	$authorName = '';
 	$authorEmail = '';
 	$draft = true;
@@ -51,15 +51,15 @@ function copyViaBloggerAPI($uploadLocation, $previewDirectory, $remoteDirectory)
 	
 	$httpCode = postToBloggerApiBlog($host, $port, $uploadLocation['baseDirectory'], $username, $password, $title, $body, $authorName, $authorEmail, $draft);
 
-	$errorHtml = '';
-	if($errorMessage)
+	$errorMessage = '';
+	if($httpCode)
 		{
-		$errorHtml = nl2br($errorMessage);
+		$errorMessage = nl2br($httpCode);
 		}
 	return $errorMessage;
 	}
 
-function postToBloggerApiBlog($host, $port, $xmlRpcPath, $username, $password, $title, $body, $authorName, $authorEmail, $draft, $proxy)
+function postToBloggerApiBlog($host, $port, $xmlRpcPath, $username, $password, $title, $body, $authorName, $authorEmail, $draft, $proxyUsername=null, $proxyPassword=null)
 	{
 	$postData = "<entry xmlns='http://www.w3.org/2005/Atom'>\n";
 	$postData .= "\t<title type='text'>".revealXml($title)."</title>\n";
@@ -78,7 +78,9 @@ function postToBloggerApiBlog($host, $port, $xmlRpcPath, $username, $password, $
 	$postData .= "\t</author>\n";
 	$postData .= "</entry>";
 
-	pullpage('POST', $host, $port, $xmlRpcPath, $username, $password, $proxyUsername, $proxyPassword, $textArray = null, $binaryArray = null, $debug = false, $timeOutInSeconds = null);
+	$textArray['xmlrpc'] = $postData; //TODO: how to do submit this to the xmlrpc interface?
+
+	return pullpage('POST', $host, $port, $xmlRpcPath, $username, $password, $proxyUsername, $proxyPassword, $textArray = null, $binaryArray = null, $debug = false, $timeOutInSeconds = null);
 
 	}
 
