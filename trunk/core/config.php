@@ -57,7 +57,7 @@ function setConfigItem($configPath, $key, $value)
 	if($currentValue === null) // no previous value, just append
 		{
 		$iniFilePointer = fopen($configPath, 'a');
-		fwrite($iniFilePointer, "\n".$newConfigItemLine);
+		fwrite($iniFilePointer, "\n".$newConfigItemLine."\n");
 		fclose($iniFilePointer);
 		chmod($configPath, 0600); //security!
 		return;
