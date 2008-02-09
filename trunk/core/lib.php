@@ -799,7 +799,11 @@ function getTemporaryDirectoryInsideDirectory($makeInsideDirectory, $prefix = 'd
 			}
 		}
 	while(@!mkdir($temporaryDirectory, 0770));
-	@chgrp($temporaryDirectory, 'docvert'); //change to group "docvert"
+	$groupName = getGlobalConfigItem('runExternalApplicationAsUser');
+	if($groupName == null) {
+		$groupName = 'docvert'
+	}
+	@chgrp($temporaryDirectory, $groupName); //change to group "docvert"
 	return $temporaryDirectory;
 	}
 
