@@ -371,7 +371,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				{
 				$disallowXVFB = getGlobalConfigItem('disallowXVFB');
 				$commandTemplateVariable['elevatePermissions'] = 'sudo';
-				$customUser = getGlobalConfigItem('runOpenOfficeAsCustomUser');
+				$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
 				if($customUser !== null && $customUser != '' && $customUser != 'root')
 					{
 					$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
@@ -394,6 +394,12 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			elseif($operatingSystemFamily == 'Unix')
 				{
 				$commandTemplateVariable['elevatePermissions'] = 'sudo';
+				$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
+				if($customUser !== null && $customUser != '' && $customUser != 'root')
+					{
+					$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
+					}
+				
 				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-abiword.sh';
 				}
 			break;
