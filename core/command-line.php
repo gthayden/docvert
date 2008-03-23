@@ -55,7 +55,7 @@ foreach($arguments as $argument)
 		$pipelineName = rawurldecode(substringAfter($argument, '--pipeline='));
 		if(!file_exists(DOCVERT_DIR.'pipeline'.DIRECTORY_SEPARATOR.$pipelineName))
 			{
-			$extraParameters .= '&error-commandline-no-pipeline;'
+			$extraParameters .= '&error-commandline-no-pipeline;';
 			$errorPlaceholders['pipeline'] = $pipelineName;
 			}
 		else
