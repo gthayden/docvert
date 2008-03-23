@@ -807,7 +807,7 @@ function getTemporaryDirectoryInsideDirectory($makeInsideDirectory, $prefix = 'd
 	while(@!mkdir($temporaryDirectory, 0770));
 	$groupName = getGlobalConfigItem('runExternalApplicationAsUser');
 	if($groupName == null) {
-		$groupName = 'docvert'
+		$groupName = 'docvert';
 	}
 	@chgrp($temporaryDirectory, $groupName); //change to group "docvert"
 	return $temporaryDirectory;
