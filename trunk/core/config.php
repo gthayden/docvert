@@ -13,21 +13,22 @@ function getConfigDirectory()
 		{
 		$configDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR;
 		}
-	if(!is_writable($configDirectory))
-		{
-		webServiceError('&error-config-file-not-writable;', 500, Array('path'=>$configDirectory));
-		}
+	//if(!is_writable($configDirectory))
+	//	{
+	//	webServiceError('&error-config-file-not-writable;', 500, Array('path'=>$configDirectory));
+	//	}
 	return $configDirectory;
 	}
 
 function getGlobalConfigPath()
 	{
-	$configPath = getConfigDirectory().'docvert.conf';
+	$configDirectory = getConfigDirectory();
+	$configPath = $configDirectory.'docvert.conf';
 	if(file_exists($configPath))
 		{
 		if(!is_readable($configPath))
 			{
-			webServiceError('&error-config-file-not-readable;', 500, Array('path'=>$configPath) );
+			webServiceError('&error-config-file-not-readable;', 500, Array('path'=>$configDirectory) );
 			}
 		return $configPath;
 		}
