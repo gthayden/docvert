@@ -1367,10 +1367,10 @@ class Themes
 
 function replaceLanguagePlaceholder($match)
 	{
-	$language = getGlobalConfigItem('language');
-	if($language == null)
+	$language = 'english';
+	if(!defined('DOCVERT_ERROR_OCCURED'))
 		{
-		$language = 'english';
+		$language = getGlobalConfigItem('language');
 		}
 	$languageDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'language'.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR;
 	$placeholderPath = $languageDirectory.$match[1].'.htmlf';
@@ -1392,7 +1392,11 @@ function languageToISO639($language)
 
 function displayLocalisedErrorPage($message, $errorNumber, $errorData)
 	{
-	
+	if(defined('DOCVERT_ERROR_OCCURED'))
+		{
+		define('DOCVERT_RECURSIVE_ERROR', true);
+		}
+	define('DOCVERT_ERROR_OCCURED', true);
 	if(!headers_sent())
 		{
 		header('HTTP/1.1 '.$errorNumber);
