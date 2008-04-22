@@ -624,7 +624,7 @@ function setupOpenOfficeOrg()
 	else
 		{
 		session_start();
-		if($_SESSION['docvert_p'] != $adminPassword) webServiceError('&error-refusing-to-start-ooo-lack-of-password;', 300); 
+		if(Security::hashPassword($_SESSION['docvert_p']) != $adminPassword) webServiceError('&error-refusing-to-start-ooo-lack-of-password;', 300); 
 		}
 	$output = makeOasisOpenDocument(null, 'openofficeorg', true);
 	$body = null;
