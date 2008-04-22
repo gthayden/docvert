@@ -1371,6 +1371,10 @@ function replaceLanguagePlaceholder($match)
 	if(!defined('DOCVERT_ERROR_OCCURED'))
 		{
 		$language = getGlobalConfigItem('language');
+		if($language == null)
+			{
+			$language = 'english';
+			}
 		}
 	$languageDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'language'.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR;
 	$placeholderPath = $languageDirectory.$match[1].'.htmlf';
