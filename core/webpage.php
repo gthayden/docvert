@@ -35,7 +35,7 @@ class Themes
 		$adminPassword = Security::getAdminPassword();
 		if($adminPassword !== null)
 			{
-			if(isset($_POST['password']) && $_POST['password'] == $adminPassword || isset($_SESSION['docvert_p']) && $_SESSION['docvert_p'] == $adminPassword)
+			if(isset($_POST['password']) && Security::hashPassword($_POST['password']) == $adminPassword || isset($_SESSION['docvert_p']) && Security::hashPassword($_SESSION['docvert_p']) == $adminPassword)
 				{
 		
 				if(isset($_POST['password']))
