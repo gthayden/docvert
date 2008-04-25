@@ -13,10 +13,6 @@ function getConfigDirectory()
 		{
 		$configDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR;
 		}
-	//if(!is_writable($configDirectory))
-	//	{
-	//	webServiceError('&error-config-file-not-writable;', 500, Array('path'=>$configDirectory));
-	//	}
 	return $configDirectory;
 	}
 
@@ -38,6 +34,15 @@ function getGlobalConfigPath()
 
 function initializeIniFile($path)
 	{
+	$configDirectory = getConfigDirectory();
+	if(!file_exists($configDirectory))
+		{
+		webServiceError('&error-config-directory-not-available;', 500, Array('path'=>$configDirectory));
+		}
+	if(!is_writable($configDirectory))
+		{
+		webServiceError('&error-config-file-not-writable;', 500, Array('path'=>$configDirectory));
+		}
 	$header = '; Docvert web service configuration.'."\n".'; Project homepage at <http://docvert.org>';
 	file_put_contents($path, $header);
 	chmod($path, 0600); //security!
