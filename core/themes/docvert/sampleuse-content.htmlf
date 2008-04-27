@@ -9,12 +9,15 @@
 				<fieldset id="upload">
 					<legend>&web-service-sample-use;</legend>
 					<fieldset>
-						<legend>&file-uploads-label;</legend>
+						<legend>
+							&file-uploads-label;
+	 						<span style="font-size:small">
+								<a href="#" style="color:#336699;font-weight:normal" onclick="addmore(); return false" title="&add-more-file-uploads;">&add-more-file-uploads;</a>
+							</span>
+						</legend>
 						<input type="file" name="random file" class="uploadWidget"/><br />
 						<div id="additionalUploads"></div>
-						<span style="font-size:small">
-							<a href="#" style="color:blue" onclick="addmore(); return false" title="&add-more-file-uploads;">&add-more-file-uploads;</a>
-						</span>
+
 					</fieldset>
 					{{choose-pipeline}}
 					<fieldset id="breakUpOver" style="display:none">
