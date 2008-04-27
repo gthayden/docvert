@@ -32,8 +32,7 @@ class Test extends PipelineProcess
 		$testResults = xsltTransform($currentXml, $xslPath, $xslAttributes);
 		if(trim($testResults))
 			{
-			$testResultsPath = $this->contentDirectory.DIRECTORY_SEPARATOR.'test.html';
-			file_put_contents($testResultsPath, $testResults, FILE_APPEND);
+			$this->logError($testResults, 'raw');
 			}
 		}
 

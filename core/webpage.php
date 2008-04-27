@@ -441,6 +441,19 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 
+		$numberOfOpenOfficeBasedConvertersFound = 0;
+		$openOfficeBasedConverters = Array('openofficeorg', 'jodconverter', 'pyodconverter');
+		foreach($this->converters as $converterId => $converterName)
+			{
+			if(!in_array($converterId, $openOfficeBasedConverters)) continue;
+			$hideConverter = getGlobalConfigItem('hideAdminOption'.$converterId);
+			if($hideConverter == 'true')
+				{
+				$numberOfOpenOfficeBasedConvertersFound++;
+				}
+			}
+		if($numberOfOpenOfficeBasedConvertersFound == count($openOfficeBasedConverters)) return;
+
 		$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 		$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
 		$template = $this->getThemeFragment('admin-setupopenofficeorg.htmlf');
