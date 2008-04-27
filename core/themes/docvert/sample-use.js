@@ -176,7 +176,7 @@ function setPreviewHeight(event)
 			{
 			browserHeight = document.body.clientHeight;
 			}
-		var newHeight = browserHeight - 294;
+		var newHeight = browserHeight - 254;
 		if(newHeight < minimumHeight)
 			{
 			newHeight = minimumHeight;

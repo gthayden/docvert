@@ -1,11 +1,13 @@
-<div style="height:1px; clear:both;width:100%"> </div>
-<div style="float:right; margin-right:20px; width:300px; height:150px; ">
+<div style="float:right; margin:5px 9px 0px 0px; width:300px; height:150px; ">
 	<a href="{{download-url}}" class="downloadZip">&download-link-text;</span></a>
 	{{upload-results}}
 </div>
 
-<h1 class="previewResults" style="margin-top:0px;padding-top:0px;">&preview-conversion-results-title;</h1>
-<a href="sample-use.php" class="backToSampleUse" >&back-link-text;</a><br />
+<h1 class="previewResults" style="clear:left;margin-top:0px;padding-top:0px;"> <a href="sample-use.php" class="backToSampleUse" >&back-link-text;</a> &nbsp; &nbsp;  &preview-conversion-results-title;</h1>
+
+<div style="height:1px; width:100%"> </div>
+
+
 <div id="debugWriteLine" style="background:#eeeeee; border:solid 1px #cccccc; display:none; margin:1em 15em 1em 8em; text-align:left; padding:0.5em; color:black"></div>
 
 <div id="uploadDialog">

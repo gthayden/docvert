@@ -12,8 +12,7 @@
 		<div style="float:left;width:45%;margin-right:5%">
 			{{change-password}}
 
-			{{choose-language}}
-
+			
 			{{document-generation}}
 
 			{{configure-upload-locations}}
@@ -22,9 +21,12 @@
 
 			{{configure-filenames}}
 
-			{{choose-theme}}
 		</div>
 		<div style="float:left;width:49%">
+			{{choose-language}}
+
+			{{choose-theme}}
+
 			{{setup-openofficeorg}}
 
 			{{non-opendocument-uploads}}
