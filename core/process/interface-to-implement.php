@@ -28,6 +28,16 @@ abstract class PipelineProcess
 		$this->pipelineSettings = $pipelineSettings;
 		}
 
+	public function logError($errorMessage, $errorType='error')
+		{
+		if($errorType != 'error' && $errorType != 'warning') die('Error type must only be either "error" or "warning". Was "'.$errorType.'".');
+		if(!function_exists('replaceLanguagePlaceholder')) include_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'webpage.php');
+
+		$errorMessage = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $errorMessage);
+		$errorMessage = '<div class="'.$errorType.'">'.$errorMessage."</div>\n\n";
+		$testResultsPath = $this->contentDirectory.DIRECTORY_SEPARATOR.'test.html';
+		file_put_contents($testResultsPath, $errorMessage, FILE_APPEND);
+		}
 
 	/**
 	 * process the current pipeline content and pass it on to the next stage
