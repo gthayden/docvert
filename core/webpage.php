@@ -1332,7 +1332,7 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 		$template = $this->getThemeFragment('admin-converter-content.htmlf');
-
+		$thereWasAtLeastOneConverterAvailable = false;
 		foreach($this->converters as $converterId => $converterName)
 			{
 			$converterPlaceholder = '{{toggle-'.$converterId.'}}';
@@ -1343,6 +1343,10 @@ class Themes
 				{
 				$template = str_replace($converterPlaceholder, '', $template);
 				continue;
+				}
+			else
+				{
+				$thereWasAtLeastOneConverterAvailable = true;
 				}
 
 			$doNotUseConverter = 'doNotUseConverter'.$converterId;
@@ -1374,6 +1378,7 @@ class Themes
 				$template = str_replace($converterPlaceholder, $this->getThemeFragment($interfacePath), $template);
 				}
 			}
+		if($thereWasAtLeastOneConverterAvailable == false) return;
 		return $template;
 		}
 	}
