@@ -1376,14 +1376,28 @@ function replaceLanguagePlaceholder($match)
 			$language = 'english';
 			}
 		}
-	$languageDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'language'.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR;
-	$placeholderPath = $languageDirectory.$match[1].'.htmlf';
+	$languagePlaceholderId = $match;
+	if(is_array($match)) $languagePlaceholderId = $match[1];
+	$placeholderPath = getLanguagePlaceholderPath($languagePlaceholderId, $language);
 	if(file_exists($placeholderPath))
 		{
 		return trim(file_get_contents($placeholderPath));
 		}
+	elseif($language != 'english') //fallback on English for foreign languages
+		{
+		$placeholderPath = getLanguagePlaceholderPath($languagePlaceholderId, 'english');
+		if(file_exists($placeholderPath))
+			{
+			return trim(file_get_contents($placeholderPath));
+			}
+		}
 	return $match[0];
 	}
+
+function getLanguagePlaceholderPath($languagePlaceholderId, $language)
+	{
+	return dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'language'.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR.$languagePlaceholderId.'.htmlf';
+	} 
 
 function languageToISO639($language)
 	{

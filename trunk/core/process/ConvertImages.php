@@ -50,7 +50,11 @@ class ConvertImages extends PipelineProcess
 
 	function convertImageFormat($fromFormat, $toFormat, $insideDirectory, $deleteOriginals, &$currentXml, $jpegQuality)
 		{
-		if(!function_exists('imagecreatefromstring')) webServiceError('&error-process-convertimages-gd;');
+		if(!function_exists('imagecreatefromstring'))
+			{
+			$this->logError('&error-process-convertimages-gd;', 'warning');
+			return $currentXml;
+			}
 		$operatingSystemFamily = getOperatingSystemFamily();
 		$imagePathMask = $insideDirectory.DIRECTORY_SEPARATOR.'*.'.$fromFormat;
 		$fromImagePaths = glob($imagePathMask);
