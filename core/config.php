@@ -106,4 +106,9 @@ function setGlobalConfigItem($key, $value)
 	return setConfigItem(getGlobalConfigPath(), $key, $value);
 	}
 
+function getLocalPathForWebAvailableWritableDirectory()
+	{
+	return dirname(__FILE__).DIRECTORY_SEPARATOR.'writable';
+	}
+
 ?>

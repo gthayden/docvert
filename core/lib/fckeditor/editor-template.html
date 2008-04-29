@@ -2,8 +2,36 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Docvert's "What-You-See-Is-What-You-Get" Editor</title>
+	<script type="text/javascript">
+		
+		function resizeEditorWindow()
+			{
+			var editorIFrame = document.getElementById("allhtml__Frame");
+			if(editorIFrame)
+				{
+				var minimumHeight = 30;
+				var browserHeight = 0;
+				if(window.innerHeight)
+					{
+					browserHeight = window.innerHeight;
+					}
+				else if(document.body.clientHeight)
+					{
+					browserHeight = document.body.clientHeight;
+					}
+				var newHeight = browserHeight - 79;
+				if(newHeight < minimumHeight)
+					{
+					newHeight = minimumHeight;
+					}
+				editorIFrame.style.height = newHeight + "px";
+				}
+			}
+
+
+	</script>
 </head>
-<body style="padding:0px;margin:0px">
+<body style="padding:0px;margin:0px" onload="resizeEditorWindow()" onresize="resizeEditorWindow()">
 	<form method="post" action="../../../save-changes.php" id="allhtmlpassBackForm" target="_top" style="padding:0px;margin:0px">
 		<button type="submit" style="width:100%;font-weight:bold;background:#efefde;"><img src="../../../core/themes/docvert/save-icon.gif" alt="" align="absmiddle"/> &save-changes;</button>
 		<table cellpadding="3" cellspacing="0" border="0" width="100%" style="border:outset 2px #efefde; background:#efefde;">
@@ -24,7 +52,7 @@
 
 		<input type="hidden" id="allhtml" name="allhtml" value="{{value}}"/>
 		<input id="allhtml___Config" name="allhtml__Config" type="hidden"  value="{{config}}"/>
-		<iframe id="allhtml__Frame" src="../../../core/lib/fckeditor/editor/fckeditor.html?InstanceName=allhtml" frameborder="0" scrolling="no" style="width:100%;height:83%"></iframe>
+		<iframe id="allhtml__Frame" src="../../../core/lib/fckeditor/editor/fckeditor.html?InstanceName=allhtml" frameborder="0" scrolling="no" style="width:100%;height:75%"></iframe>
 
 		<button type="submit" style="width:100%;font-weight:bold;background:#efefde;"><img src="../../../core/themes/docvert/save-icon.gif" alt="" align="absmiddle"/> &save-changes;</button>
 	</form>

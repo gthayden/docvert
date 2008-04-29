@@ -1,7 +1,7 @@
 <?php
 /*
 	Docvert 3.3 - Copyright (C) 2005-2006-2007
-	by Matthew Cruickshank and the smart people in the CREDITS file.
+	by Matthew Holloway and the smart people in the CREDITS file.
 	"One day I'll release them from that file."
 	
 	Licenced for use under the GPL version 3. See the LICENCE file.
@@ -28,6 +28,7 @@ include_once('xml.php');
 include_once('config.php');
 set_error_handler('phpErrorHandler');
 date_default_timezone_set('UTC');
+define('WRITABLE_DIR', 'writable');
 
 function processConversion($files, $converter, $pipeline, $autoPipeline, $afterConversion, $setupOpenOfficeOrg, $outputZip, $justShowPreviewDirectory=null)
 	{
