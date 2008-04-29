@@ -224,8 +224,7 @@ function resetLoadingScreen()
 		{
 		uploadingProgress.src = "loading.php";
 		uploadingProgress.style.display = "none";
-		}			
-
+		}
 	}
 
 function changeTab(sender)
@@ -293,13 +292,12 @@ function editThisDocument(sender)
 	var currentLocationString = contentFrameDocument.location.toString()
 	var newLocationString = currentLocationString.substring(0, currentLocationString.lastIndexOf('/') + 1) + "docvert--all-html.html";
 	contentFrameDocument.location = newLocationString;
-	return false;
+	return false
 	}
-
-
 
 function reallyReplace(subject, searchString, replaceString)
 	{
+	//TODO: replace with a regex replace
 	var exitAfterXLoops = 1000;
 
 	while(subject.indexOf(searchString) >= 0)
