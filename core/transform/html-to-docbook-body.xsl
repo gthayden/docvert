@@ -143,6 +143,7 @@
 				</xsl:if>
 				<xsl:apply-templates select="key('headchildren', generate-id())"/>
 				<xsl:apply-templates select="key('children', generate-id())"/>
+				<xsl:call-template name="workAroundXslCurrentFunctionKeyBug"/>
 			</chapter>
 		</xsl:when>
 		<xsl:otherwise>
@@ -154,10 +155,27 @@
 			</xsl:if>
 			<xsl:apply-templates select="key('headchildren', generate-id())"/>
 			<xsl:apply-templates select="key('children', generate-id())"/>
+			<xsl:call-template name="workAroundXslCurrentFunctionKeyBug"/>
 			<xsl:text disable-output-escaping="yes">&lt;/sect</xsl:text><xsl:value-of select="$current - 1"/><xsl:text disable-output-escaping="yes">&gt;</xsl:text>
 		</xsl:otherwise>
 	</xsl:choose>
 </xsl:template>
+
+<xsl:template name="workAroundXslCurrentFunctionKeyBug">
+	<xsl:if test="not(key('children', generate-id()))">
+		<xsl:variable name="currentGenerateId" select="generate-id()"/>
+		<xsl:variable name="currentOutlineLevel" select="number(@heading-level)"/>
+		<!-- [[CurrentOutlineLevel:<xsl:value-of select="$currentOutlineLevel"/>]] -->
+		<xsl:for-each select="following-sibling::html:*[self::html:h1 or self::html:h2 or self::html:h3 or self::html:h4 or self::html:h5 or self::html:h6]">
+			<xsl:variable name="subheadingOutlineLevel" select="@heading-level"/>
+			<xsl:variable name="firstPrecedingHeading" select="./preceding-sibling::html:*[(self::html:h1 or self::html:h2 or self::html:h3 or self::html:h4 or self::html:h5 or self::html:h6) and @heading-level &lt; $subheadingOutlineLevel][1]"/>
+			<xsl:if test="generate-id($firstPrecedingHeading) = $currentGenerateId">
+				<xsl:apply-templates select="."/>
+			</xsl:if>
+		</xsl:for-each>
+	</xsl:if>
+</xsl:template>
+
 
 <!-- **********************
 ***************************

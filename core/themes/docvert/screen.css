@@ -16,27 +16,27 @@
 
 		#uploadBox {margin-left:5%}
 
-		.textbox {width:6em;border-color:#666;border-width:1px;padding:2px;}
+		.textbox {width:100%;border-color:#666;border-width:1px;padding:2px;}
 
-		#upload {background:#eeeeee;width:19em;margin:30px 0px 20px;border:solid 2px #dddddd; -moz-border-radius:10px;}
+		#upload {background:#eeeeee;width:270px;margin:30px 0px 20px;border:solid 2px #dddddd; -moz-border-radius:10px;}
 		#upload form {padding-top:2px;}
 		#upload legend {padding:5px 10px;background:#eeeeee;font-weight:bold;color:#666666; -moz-border-radius:10px;}
 		#upload fieldset {border:none;background:#dddddd;margin-top:10px; -moz-border-radius:5px;}
 		#upload fieldset legend {font-weight:bold;font-size:small;padding:0 10px;background:#dddddd; -moz-border-radius:5px;}
-		#upload .widget, #upload .uploadWidget {width:15em;}
+		#upload .widget, #upload .uploadWidget {width:100%;}
 
 		#upload .buttonTray {text-align:center;padding:5px 0px 0px 0px;margin-top:0px;}
-		#upload .submitButton {width:22em;background:#ffffcc;font-weight:bold; padding: 5px 15px; margin: 5px;}
+		#upload .submitButton {width:90%;background:#ffffcc;font-weight:bold; padding: 5px 15px; margin: 5px;}
 
-		.autopipeline {background:#ffcccc;}
-		.regularpipeline {background:#ffffff;}
+		.autopipeline {border-left:solid 1em #ff6666;}
+		.regularpipeline {border-left:solid 1em #ffffff;}
 
-		option.autopipeline, option.regularpipeline {width:16em;}
+		#pipeline {width:95%;}
 
 		.openofficeorg {display:inline;}
 
 		.arrowLeft { font-size:70px;color:#99cc99;width:100px;padding-top:80px;text-align:right;}
-		#noteToProgrammers {color:#006600;padding:30px 0px 0px 0px;width:200px }
+		#noteToProgrammers {color:#006600;padding:30px 0px 0px 0px;width:20em }
 
 		span.login {border:solid 1px #cccccc;background:#eeeeee;padding:5px;font-size:small}
 		form.login {text-align:center;}

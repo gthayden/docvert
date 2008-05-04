@@ -28,7 +28,6 @@ include_once('xml.php');
 include_once('config.php');
 set_error_handler('phpErrorHandler');
 date_default_timezone_set('UTC');
-define('WRITABLE_DIR', 'writable');
 
 function processConversion($files, $converter, $pipeline, $autoPipeline, $afterConversion, $setupOpenOfficeOrg, $outputZip, $justShowPreviewDirectory=null)
 	{
@@ -45,7 +44,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 		$previewDirectory = null;
 		if(!$justShowPreviewDirectory)
 			{
-			$previewDirectory = getTemporaryDirectoryInsideDirectory( dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'writable', 'preview');
+			$previewDirectory = getTemporaryDirectoryInsideDirectory(getWritableDirectory(), 'preview');
 			$temporaryDirectory = getTemporaryDirectory();
 			$pipelineToRunOnDocuments = substringAfter($pipeline, ':');
 			foreach($files as $file)
@@ -83,7 +82,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 			}
 		else
 			{
-			$previewDirectory = 'writable'.DIRECTORY_SEPARATOR.$justShowPreviewDirectory;
+			$previewDirectory = getWritableDirectory().$justShowPreviewDirectory;
 			$zipsInPreviewDirectory = glob($previewDirectory.DIRECTORY_SEPARATOR.'*.zip');
 			if(count($zipsInPreviewDirectory) != 1)
 				{
@@ -316,7 +315,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		'pyodconverter' => 'PyODConverter');
 
 	$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-	$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
+	$docvertWritableDir = getWritableDirectory();
 
 	if(!$converter)
 		{
@@ -1788,7 +1787,7 @@ function generateDocument($pages, $generatorPipeline)
 	$httpContext = stream_context_create($httpContextOptions);
 
 	$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-	$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
+	$docvertWritableDir = getWritableDirectory();
 	$disallowDocumentGeneration = getGlobalConfigItem('doNotAllowDocumentGeneration');
 	if($disallowDocumentGeneration == 'true')
 		{

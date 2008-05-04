@@ -16,6 +16,7 @@
 
 	<xsl:template match="html:html | html:body">
 		<docvert-remove-me>
+			<!-- just so that we don't have multiple root nodes -->
 			<xsl:apply-templates/>
 		</docvert-remove-me>
 	</xsl:template>

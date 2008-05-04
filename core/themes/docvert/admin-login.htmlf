@@ -1,5 +1,5 @@
 				<form method="post" class="login">
 					<span class="login">
-						&admin-login-label; <input type="password" id="password" name="password" class="textbox"/> <input type="submit" value="&admin-login-button;"/>
+						&admin-login-label; <input type="password" id="password" name="password"/> <input type="submit" value="&admin-login-button;"/>
 					</span>
 				</form>

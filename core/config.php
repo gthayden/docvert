@@ -5,13 +5,13 @@ include_once('lib.php');
 function getConfigDirectory()
 	{
 	$configDirectory = null;
-	if(DIRECTORY_SEPARATOR == '/')
+	if(DIRECTORY_SEPARATOR == '/') //if(this is a unix)
 		{
 		$configDirectory = '/etc/docvert/';
 		}
 	else
 		{
-		$configDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR;
+		$configDirectory = dirname(__file__).'\\config\\windows-specific\\config\\';
 		}
 	return $configDirectory;
 	}
@@ -106,9 +106,22 @@ function setGlobalConfigItem($key, $value)
 	return setConfigItem(getGlobalConfigPath(), $key, $value);
 	}
 
-function getLocalPathForWebAvailableWritableDirectory()
+
+function getWritableDirectory()
 	{
-	return dirname(__FILE__).DIRECTORY_SEPARATOR.'writable';
+	$defaultWritableDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR;
+	if(is_writable($defaultWritableDirectory)) return $defaultWritableDirectory;
+	if(DIRECTORY_SEPARATOR == '/') //if(this is a unix)
+		{
+		if(is_writable($_ENV['TMPDIR'])) return $_ENV['TMPDIR'];
+		$defaultWritableDirectory = '/tmp/';
+		}
+	else
+		{
+		$defaultWritableDirectory = $_ENV['TMP'];
+		}
+	if(is_writable($defaultWritableDirectory)) return $defaultWritableDirectory;
+	webServiceError('&error-config-file-not-writable;', 500, Array('path'=>$defaultWritableDirectory));
 	}
 
 ?>

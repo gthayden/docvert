@@ -203,9 +203,11 @@ class Themes
 			}
 		$this->destinationZip = $sourceZipPath;
 		//print $previewDirectory.'<br />';
-		$publicPreviewDirectory = 'writable/'.basename($previewDirectory);
-		//print $publicPreviewDirectory.'<br />';
 
+		// 'writable' hardcoded here because it's the public web preview directory. This should not change. Ever.
+		$publicPreviewDirectory = 'writable/'.basename($previewDirectory);
+
+		//print $publicPreviewDirectory.'<br />';
 		$this->previewDirectory = $publicPreviewDirectory;
 		$this->drawTheme();
 		}
@@ -324,7 +326,7 @@ class Themes
 
 	function afterConversion()
 		{
-		if(!is_writable('writable'))
+		if(!is_writable(getWritableDirectory()))
 			{
 			return $this->getThemeFragment('sampleuse-no-preview-until-writable.htmlf');
 			}
@@ -455,7 +457,7 @@ class Themes
 		if($numberOfOpenOfficeBasedConvertersFound == count($openOfficeBasedConverters)) return;
 
 		$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-		$docvertWritableDir = $docvertDir.'writable'.DIRECTORY_SEPARATOR;
+		$docvertWritableDir = getWritableDirectory();
 		$template = $this->getThemeFragment('admin-setupopenofficeorg.htmlf');
 
 		$runAsCustomUser = '';
@@ -646,7 +648,7 @@ class Themes
 
 	function createPassword()
 		{
-		if(!is_writable('writable'))
+		if(!is_writable(getWritableDirectory()))
 			{
 			return $this->getThemeFragment('admin-not-writable.htmlf');
 			}
@@ -700,7 +702,7 @@ class Themes
 		$oneDayInSeconds = 60 * 60 * 24;
 		$currentTime = time();
 		$deleteIfPriorTo = $currentTime - (getExpireSessionsAfterDays() * $oneDayInSeconds);
-		$previewDirectories = glob('writable'.DIRECTORY_SEPARATOR.'*');
+		$previewDirectories = glob(getWritableDirectory().'*');
 		
 		foreach($previewDirectories as $previewDirectory)
 			{

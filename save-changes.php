@@ -71,8 +71,6 @@ $docbookBodyXsltPath = $transformDirectory.'html-to-docbook-body.xsl';
 $docbookBody = xsltTransform($html, $docbookBodyXsltPath);
 $docbookBody = removeXmlDeclaration($docbookBody);
 
-
-
 $docbookBody = preg_replace("/<docvert-remove-me[^>]*?>/", '', $docbookBody);
 $docbookBody = preg_replace("/<\\/docvert-remove-me[^>]*?>/", '', $docbookBody);
 
@@ -82,8 +80,6 @@ $docbookBody = preg_replace("/<\\/docvert-remove-me[^>]*?>/", '', $docbookBody);
 $allDocumentsPreviewDirectory = dirname(__FILE__).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR.$documentPathParts[0].DIRECTORY_SEPARATOR;
 
 $previewDirectory = $allDocumentsPreviewDirectory.$documentPathParts[1].DIRECTORY_SEPARATOR;
-
-
 
 
 $unitTestResults = $previewDirectory.'test.html';
