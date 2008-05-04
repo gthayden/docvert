@@ -12,11 +12,13 @@ Requirements
 
 *	PHP 5 or later, with the "ZLIB" and "XSL" extensions.
 
+
+
 Optional Libraries
 -------------------------------------------------------------
 *	If you want to convert Microsoft Word documents then
 	you'll need to choose a 'Microsoft Word to OpenDocument'
-	converter,
+	converter, which is one of these...
 
 	*	OpenOffice.org 1.9.122 or later.
 		The more current your version of OpenOffice.org
@@ -30,7 +32,6 @@ Optional Libraries
 		thanks to the fantastic work in PyODConverter.
 
 	*	Abiword 2.4.2 or later.
-	
 
 
 *	If you want to convert bitmap images like BMP, JPG,
@@ -70,17 +71,35 @@ Optional Libraries
 		librsvg-bin
 	  http://librsvg.sourceforge.net/download/
 
-*	If you're using "Document Generation" you'll need
-	HTMLTidy.
+*	If you're using "Document Generation" you'll need PHP-Tidy
+	(HTMLTidy).
 
 Install + Security
 =============================================================
 
 Step 1.	Host the Docvert software on a web server.
 
-Step 2.	Secure Docvert's admin page,
+Step 2.	Ensure that /writable is writable.
 
-	Open on Docvert in your web browser and browse to
+	And,
+		Linux/OSX Users:
+			Ensure that /etc/docvert is
+			writable.
+
+		Windows Users:
+			Ensure that
+			/core/config/windows-specific/config/
+			is writable.
+
+			Ensure that this directory is not
+			browsable from the web. Verify that
+			it's not by browsing to this
+			directory in your web browser
+			Eg. it could be at
+			http://localhost/docvert/core/config/windows-specific/config/
+
+	Now secure Docvert's admin page by opening up
+	Docvert in your web browser and browse to
 	the admin page (the tab on the top-right).
 
 	On the admin page, set the password.
@@ -93,7 +112,6 @@ Step 3. Do you want to convert Word Documents or just
 
 	If you do want to convert Microsoft Word files (or
 	from other formats), then continue reading...
-
 
 	You'll need to choose a 'Microsoft Word to OpenDocument'
 	converter. You have the choice of,
