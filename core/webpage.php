@@ -5,6 +5,8 @@ include_once("lib.php");
 ob_start();
 Themes::cleanUpOldPreviews(getExpireSessionsAfterDays());
 
+
+
 function getExpireSessionsAfterDays()
 	{
 	// just a function so that I can later make it a config variable elsewhere -- matthew@holloway.co.nz
@@ -22,10 +24,10 @@ class Themes
 	public $destinationZip;
 	public $converters = Array(
 		'openofficeorg'=>'OpenOffice.org 2+',
+		'pipe-openofficeorg' => 'Pipe OpenOffice.org',
 		'abiword'=>'Abiword',
 		'jodconverter' => 'JODConverter',
 		'pyodconverter' => 'PyODConverter');
-
 
 	function drawTheme()
 		{
@@ -1265,6 +1267,7 @@ class Themes
 
 
 
+
 	function chooseLanguage()
 		{
 		if(!$this->allowedAdminAccess) return;
@@ -1282,6 +1285,8 @@ class Themes
 			{
 			$languages[] = basename($languageDirectory);
 			}
+		$languages[] = getFakeLanguageForTranslators();
+
 		$languageHtml = '';
 		foreach($languages as $language)
 			{
@@ -1387,6 +1392,7 @@ class Themes
 
 function replaceLanguagePlaceholder($match)
 	{
+	
 	$language = 'english';
 	if(!defined('DOCVERT_ERROR_OCCURED'))
 		{
@@ -1396,6 +1402,12 @@ function replaceLanguagePlaceholder($match)
 			$language = 'english';
 			}
 		}
+
+	if($language == getFakeLanguageForTranslators())
+		{
+		return $match[0];
+		}
+
 	$languagePlaceholderId = $match;
 	if(is_array($match)) $languagePlaceholderId = $match[1];
 	$placeholderPath = getLanguagePlaceholderPath($languagePlaceholderId, $language);
@@ -1426,6 +1438,11 @@ function languageToISO639($language)
 		"french"=>"fr"
 		);
 	return $languages[$language];
+	}
+
+function getFakeLanguageForTranslators()
+	{
+	return '(for translators)';
 	}
 
 function displayLocalisedErrorPage($message, $errorNumber, $errorData)

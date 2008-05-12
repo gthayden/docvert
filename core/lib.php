@@ -1,6 +1,6 @@
 <?php
 /*
-	Docvert 3.3 - Copyright (C) 2005-2006-2007
+	Docvert 3.4 - Copyright (C) 2005-2006-2007
 	by Matthew Holloway and the smart people in the CREDITS file.
 	"One day I'll release them from that file."
 	
@@ -28,6 +28,8 @@ include_once('xml.php');
 include_once('config.php');
 set_error_handler('phpErrorHandler');
 date_default_timezone_set('UTC');
+error_reporting(E_STRICT|E_ALL); //was E_ERROR
+
 
 function processConversion($files, $converter, $pipeline, $autoPipeline, $afterConversion, $setupOpenOfficeOrg, $outputZip, $justShowPreviewDirectory=null)
 	{
@@ -290,6 +292,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 	$commandTemplate = null;
 	$extensionlessOutputDocumentPath = null;
 	$outputDocumentPath = null;
+	$stdInData = null;
 	if(!$mockConversion)
 		{
 		$outputPathInfo = pathinfo($inputDocumentPath);
@@ -351,8 +354,23 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 	$operatingSystemFamily = getOperatingSystemFamily();
 	switch($converter)
 		{
+		case 'pipe-openofficeorg':
+			$stdInData = file_get_contents($commandTemplateVariable['inputDocumentPath']);
+			$commandTemplate = '{scriptPath} {useXVFB} {macrosDocumentPath}';
+			if($operatingSystemFamily == 'Windows')
+				{
+				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'windows-specific'.DIRECTORY_SEPARATOR.'pipe-to-openoffice.org.bat';
+				}
+			elseif($operatingSystemFamily == 'Unix')
+				{
+				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'pipe-to-openoffice.org.sh';
+				}
+			// no 'break' here, intentional
 		case 'openofficeorg':
-			$commandTemplate = '{elevatePermissions} {scriptPath} {useXVFB} {macrosDocumentPath} {inputDocumentUrl} {outputDocumentUrl}';
+			if(!$commandTemplate) //if(we didn't flow through from the above switch/case)
+				{
+				$commandTemplate = '{elevatePermissions} {scriptPath} {useXVFB} {macrosDocumentPath} {inputDocumentUrl} {outputDocumentUrl}';
+				}
 			$commandTemplateVariable['macrosDocumentPath'] = $docvertCommandPath.'trusted-macros'.DIRECTORY_SEPARATOR.'macros.odt';
 			$commandTemplateVariable['inputDocumentUrl'] = null;
 			$commandTemplateVariable['outputDocumentUrl'] = null;
@@ -365,7 +383,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				}
 			if($operatingSystemFamily == 'Windows')
 				{
-				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'windows-specific'.DIRECTORY_SEPARATOR.'convert-using-openoffice.org.bat';
+				if(!isset($commandTemplateVariable['scriptPath'])) $commandTemplateVariable['scriptPath'] = $docvertCommandPath.'windows-specific'.DIRECTORY_SEPARATOR.'convert-using-openoffice.org.bat';
 				}
 			elseif($operatingSystemFamily == 'Unix')
 				{
@@ -381,7 +399,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 					{
 					$commandTemplateVariable['useXVFB'] = 'true';
 					}
-				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-openoffice.org.sh';
+				if(!isset($commandTemplateVariable['scriptPath'])) $commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-openoffice.org.sh';
 				}
 			break;
 		case 'abiword':
@@ -445,6 +463,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		webServiceError('&error-script-path-does-not-exist-at;', 500, Array('scriptPath' => $commandTemplateVariable['scriptPath']));
 		}
 
+
 	$command = $commandTemplate;
 	foreach($commandTemplateVariable as $key => $value)
 		{
@@ -462,8 +481,25 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			}
 		$command = str_replace('{'.$key.'}', $replaceValue, $command);
 		}
-
-	$output = shellCommand($command);
+	
+	if(!$stdInData)
+		{
+		$output = shellCommand($command);
+		}
+	else
+		{
+		$response = pipeToShellCommand($command, $stdInData, 120, false);
+		if($response['statusCode'] == 0)
+			{
+			$openDocumentData = $response['stdOut'];
+			$output = $response['stdErr'];
+			file_put_contents($commandTemplateVariable['outputDocumentPath'], $openDocumentData);
+			}
+		else
+			{
+			$output = $response['stdOut'].$response['stdErr'];
+			}
+		}
 
 	if(!file_exists($commandTemplateVariable['outputDocumentPath']) && !$mockConversion)
 		{
