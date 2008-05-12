@@ -5,4 +5,5 @@
 					{{toggle-abiword}}
 					{{toggle-jodconverter}}
 					{{toggle-pyodconverter}}
+					{{toggle-pipe-openofficeorg}}
 				</div>
