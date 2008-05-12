@@ -111,17 +111,37 @@ function getWritableDirectory()
 	{
 	$defaultWritableDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'writable'.DIRECTORY_SEPARATOR;
 	if(is_writable($defaultWritableDirectory)) return $defaultWritableDirectory;
+	return getOperatingSystemsTemporaryDirectory();
+	}
+
+function getOperatingSystemsTemporaryDirectory()
+	{
+	if(defined('OPERATING_SYSTEM_TEMPORARY_DIRECTORY')) return OPERATING_SYSTEM_TEMPORARY_DIRECTORY;
+	$directoriesToCheck = Array();
+	if(isset($_ENV))
+		{
+		if(isset($_ENV['TMPDIR'])) $directoriesToCheck[] = $_ENV['TMPDIR'];
+		if(isset($_ENV['TMP'])) $directoriesToCheck[] = $_ENV['TMP'];
+		}
 	if(DIRECTORY_SEPARATOR == '/') //if(this is a unix)
 		{
-		if(is_writable($_ENV['TMPDIR'])) return $_ENV['TMPDIR'];
-		$defaultWritableDirectory = '/tmp/';
+		$directoriesToCheck[] = '/tmp/';
 		}
 	else
 		{
-		$defaultWritableDirectory = $_ENV['TMP'];
+		$directoriesToCheck[] = '\\temp\\';
+		$directoriesToCheck[] = '\\windows\\temp\\';
 		}
-	if(is_writable($defaultWritableDirectory)) return $defaultWritableDirectory;
-	webServiceError('&error-config-file-not-writable;', 500, Array('path'=>$defaultWritableDirectory));
+
+	foreach($directoriesToCheck as $directoryToCheck)
+		{
+		if(is_writable($directoryToCheck))
+			{
+			define('OPERATING_SYSTEM_TEMPORARY_DIRECTORY', $directoryToCheck);
+			return OPERATING_SYSTEM_TEMPORARY_DIRECTORY;
+			}
+		}
+	webServiceError('&error-config-file-not-writable;', 500, Array('path'=>implode(', ', $directoriesToCheck)) );
 	}
 
 ?>
