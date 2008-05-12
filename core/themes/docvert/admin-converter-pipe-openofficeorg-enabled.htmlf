@@ -1,0 +1,6 @@
+<p>
+	<form method="post" action="" style="display:inline">
+		&currently-pipe-openofficeorg-is; &enabled-item;:
+		<input type="submit" name="converter-pipe-openofficeorg-disable" value="&disable-pipe-openofficeorg-button;"/>
+	</form>
+</p>

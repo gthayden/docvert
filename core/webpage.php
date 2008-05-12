@@ -1407,10 +1407,12 @@ function replaceLanguagePlaceholder($match)
 		{
 		return $match[0];
 		}
-
 	$languagePlaceholderId = $match;
 	if(is_array($match)) $languagePlaceholderId = $match[1];
+
 	$placeholderPath = getLanguagePlaceholderPath($languagePlaceholderId, $language);
+
+	//if($languagePlaceholderId == 'disable-pipe-openofficeorg-button.htmlf') die(print_r($match, true).'<hr />'.$languagePlaceholderId.'<hr />'.$placeholderPath);
 	if(file_exists($placeholderPath))
 		{
 		return trim(file_get_contents($placeholderPath));
