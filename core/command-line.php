@@ -4,6 +4,10 @@
  *
  * included from command line scripts in /bin/...
 */
+if(DOCVERT_CLIENT_TYPE != 'command line')
+	{
+	die('Only available via command line. Was accessed via '.DOCVERT_CLIENT_TYPE);
+	}
 
 $files = null;
 $converter = null;
