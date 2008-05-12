@@ -5,54 +5,65 @@
  * PHPs inbuilt shell commands like shell_exec() or passthru() or system().
  * @return string
 */
-function shellCommand($command, $timeoutInSeconds=120)
+function shellCommand($command, $timeoutInSeconds=null, $dataToStdIn=null, $haltOnError=false)
 	{
-	$out = null;
-
-	//print __LINE__.': '.time().'<hr />';
-	if (!($p=popen("($command)2>&1&","r")))
+	if($timeoutInSeconds == null) $timeoutInSeconds=120;
+	$pipes = null;
+	$response = Array();
+	if($dataToStdIn)
 		{
-     		return "";
+		$descriptor = array(0=>array("pipe", "r"), 1=>array("pipe", "w"), 2=>array("pipe", "w") );
+		$currentWorkingDirectory = getOperatingSystemsTemporaryDirectory();
+		$envionmentVariables = array();
+		$process = proc_open($command, $descriptor, $pipes, $currentWorkingDirectory, $envionmentVariables);
+		fwrite($pipes[0], $dataToStdIn);
+		fclose($pipes[0]);
+		stream_set_timeout($pipes[1], $timeoutInSeconds);
+		stream_set_timeout($pipes[2], $timeoutInSeconds);
 		}
-	//print __LINE__.': '.time().'<hr />';
-
-	$endTime = microtime(true) + (float) $timeoutInSeconds;
-	//print __LINE__.': '.time().'<hr />';
-	while (!feof($p))
+	else
 		{
-		stream_set_timeout($p, $timeoutInSeconds);
-		$line = fgets($p, 1024);
-		$lastOut = $out;
-		$out .= $line;
-		if(microtime(true) > $endTime)
-			{
-			break;
-			}
+		$process = popen("($command)2>&1&","r");
+		$pipes[] = $process;
 		}
-	pclose($p);
-	return $out;
-	}
 
-function pipeToShellCommand($command, $dataToStdIn=null, $timeoutInSeconds=120, $haltOnError=true)
-	{
-	$descriptor = array( 0 => array("pipe", "r"), 1 => array("pipe", "w"), 2 => array("pipe", "w")	);
-	$currentWorkingDirectory = getOperatingSystemsTemporaryDirectory();
-	$envionmentVariables = array();
-	$process = proc_open($command, $descriptor, $pipes, $currentWorkingDirectory, $envionmentVariables);
 	if(!is_resource($process))
 		{
 		if($haltOnError) webServiceError($command);
+		if(!$dataToStdIn) return null;
 		return Array('stdOut'=>null, 'statusCode'=>-1, 'stdErr'=>null);
 		}
-	if($dataToStdIn) fwrite($pipes[0], $dataToStdIn);
-	fclose($pipes[0]);
-	$stdOut = stream_get_contents($pipes[1]);
-	$stdErr = stream_get_contents($pipes[2]);
-	fclose($pipes[1]);
-	fclose($pipes[2]);
-	$statusCode = proc_close($process);
-	if($statusCode != 0 && $haltOnError) webServiceError($statusCode.' '.$stdErr);
-	return Array('stdOut'=>$stdOut, 'statusCode'=>$statusCode, 'stdErr'=>$stdErr);
+
+	$endTime = microtime(true) + (float) $timeoutInSeconds;
+
+	foreach($pipes as $pipe)
+		{
+		if(!is_resource($pipe)) continue;
+		$returnValue = null;
+		while (!feof($pipe))
+			{
+			$returnValue .= fgets($pipe, 52);
+			$streamInfo = stream_get_meta_data($pipe);
+			if($streamInfo['timed_out'] === true || microtime(true) > $endTime)
+				{
+				$returnValue .= 'Docvert timeout';
+				break;
+				}
+			}
+		pclose($pipe);
+		$response[] = $returnValue;
+		}
+	
+	if(!$dataToStdIn)
+		{
+		return $response[0];
+		}
+	else
+		{
+		$statusCode = proc_close($process);
+		if($statusCode !== 0 && $haltOnError) webServiceError($statusCode.' '.implode(' ', $pipes) );
+		return Array('stdOut'=>$response[0], 'statusCode'=>$statusCode, 'stdErr'=>$response[1]);
+		}
 	}
 
 ?>

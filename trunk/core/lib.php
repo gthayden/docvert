@@ -488,8 +488,8 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		}
 	else
 		{
-		$response = pipeToShellCommand($command, $stdInData, 120, false);
-		if($response['statusCode'] == 0)
+		$response = shellCommand($command, null, $stdInData, false);
+		if($response['statusCode'] === 0)
 			{
 			$openDocumentData = $response['stdOut'];
 			$output = $response['stdErr'];

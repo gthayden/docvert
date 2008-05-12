@@ -135,6 +135,7 @@ function pullpage($method, $host, $port, $usepath, $username, $password, $proxyU
 		$protocol = 'https';
 		}
 	$fp = fsockopen($host, $port, $errno, $errstr, $timeOutInSeconds);
+	stream_set_blocking($fp, false);
 	$response = null;
 	if(!$fp)
 		{
