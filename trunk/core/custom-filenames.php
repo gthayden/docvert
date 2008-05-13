@@ -1,19 +1,23 @@
 <?php
 
+include_once('config.php');
+
 function getCustomFilenames()
 	{
-	$custom_filename_index = "index.html";
-	$custom_filename_section = "section#.html";
-	$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
-	$docvertWritableDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'writable';
-	$customFilenamesPath = $docvertWritableDir.DIRECTORY_SEPARATOR.'customfilenames.php';
-	if(file_exists($customFilenamesPath))
+	$defaultFilenameForIndex = "index.html";
+	$customFilenameIndex = getGlobalConfigItem('customFilenameIndex');
+	if($customFilenameIndex === null)
 		{
-		include($customFilenamesPath);
-		$custom_filename_index = $custom['index'];
-		$custom_filename_section = $custom['section'];
+		$customFilenameIndex = $defaultFilenameForIndex;
 		}
-	return array($custom_filename_index, $custom_filename_section);
+
+	$defaultFilenameForSection = "section#.html";
+	$customFilenameSection = getGlobalConfigItem('customFilenameSection');
+	if($customFilenameSection === null)
+		{
+		$customFilenameSection = $defaultFilenameForSection;
+		}
+	return array($defaultFilenameForIndex, $customFilenameSection);
 	}
 
 function replaceCustomFilenamePlaceholders($filename, $depthArray)

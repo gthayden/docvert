@@ -85,8 +85,4 @@ function ensureOnlyValidCharacters($input)
 	return $input;			
 	}
 
-function revealXml($input)
-	{
-	return str_replace('>', '&gt;', str_replace('<','&lt;', $input));
-	}
 ?>

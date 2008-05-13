@@ -94,7 +94,7 @@ if(!$files || !$converter || !$pipeline || !$outputZip || $extraParameters)
 	$errorPlaceholders['commandLineConverter'] = '';
 	$errorPlaceholders['commandLinePipeline'] = '';
 	$errorPlaceholders['commandLineOutputZip'] = '';
-	if(!$files) $errorPlaceholders['commandLineFiles'] = ' --files ';
+	if(!$files) $errorPlaceholders['commandLineFiles'] = ' --input-files ';
 	if(!$converter) $errorPlaceholders['commandLineConverter'] = ' --converter';
 	if(!$pipeline) $errorPlaceholders['commandLinePipeline'] = ' --pipeline';
 	if(!$outputZip) $errorPlaceholders['commandLineOutputZip'] = ' --output-zip';

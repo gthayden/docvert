@@ -23,7 +23,7 @@ Errors and Troubleshooting
   there's an error that it's not found.
     OR
   I can't download the sample documents.
-
+* xauth or xvfb errors
 
 I get a "Parse error, unexpected T_STRING" about "webpage.php"
 --------------------------------------------------------------
@@ -275,5 +275,18 @@ I can't download the sample documents.
 
 	See if Apache is configured to server the alias "/doc" to another
 	directory.
+
+xauth or xvfb errors
+--------------------
+If you dont't have xauth installed try installing 'xbase-clients'.
+
+xvfb errors are inherently difficult to debug because it's a fake X-server and so
+no one can see what's going on. xvfb is only used by OpenOffice.org, so if you find
+yourself struggling with xvfb then instead try using Abiword (not a good solution,
+granted, but I thought it was worth saying). Do be sure to get a recent version of
+Abiword because their OpenDocument support improved a lot recently, and version
+2.6.3 is quite good).
+
+
 
 
