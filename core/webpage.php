@@ -1502,14 +1502,6 @@ function displayLocalisedErrorPage($message, $errorNumber, $errorData)
 			die($template);
 			break;
 		case 'command line':
-			$endOfBlockElements = array('</p>', '</h1>', '</h2>', '</h3>', '</h4>', '</h5>', '</h6>', '</li>', '</blockquote>');
-			$message = str_replace($endOfBlockElements, "\n", $message);
-			$message = preg_replace('/<.*?>/s','',$message);
-			$message = str_replace('&lt;','<', $message);
-			$message = str_replace('&gt;','>', $message);
-			$message = str_replace('&amp;','&', $message);
-			$message .= "\n";
-			$message = trim($message)."\n";
 			$message = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $message);
 			if($errorData)
 				{
@@ -1518,6 +1510,14 @@ function displayLocalisedErrorPage($message, $errorNumber, $errorData)
 					$message = str_replace('&dynamic-'.$key.';', revealXml($value), $message);
 					}	
 				}
+			$endOfBlockElements = array('</p>', '</h1>', '</h2>', '</h3>', '</h4>', '</h5>', '</h6>', '</li>', '</blockquote>');
+			$message = str_replace($endOfBlockElements, "\n", $message);
+			$message = preg_replace('/<.*?>/s','',$message);
+			$message = str_replace('&lt;','<', $message);
+			$message = str_replace('&gt;','>', $message);
+			$message = str_replace('&amp;','&', $message);
+			$message .= "\n";
+			$message = trim($message)."\n";
 
 			if($pageType == 'bad')
 				{

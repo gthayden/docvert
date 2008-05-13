@@ -8,9 +8,9 @@ if(!file_exists($libPath))
 	{
 	die('Docvert internal error. Unable to determine path of core/lib.php due to programming error. Can you please email docvert@holloway.co.nz with the command you typed to make this happen, your platform and versions of PHP? Cheers bro.');
 	}
-include($libPath);
+include_once($libPath);
 $commandLineLibrary = DOCVERT_DIR.'core/command-line.php';
-include($commandLineLibrary);
+include_once($commandLineLibrary);
 
 function inNestedArray($key, $haystack)
 	{
