@@ -7,6 +7,9 @@ Errors and Troubleshooting
 * Sudo keeps asking for password but it has permissions, I set it via visudo
 * OpenOffice.org reports "Error in function createUserSettingsDocument
   (elements.cxx)"
+     OR
+  OpenOffice.org reports the error
+	"The application cannot be started. An Internal error occurred"
 * OpenOffice.org keeps giving me macro warnings even though I've told it to
   trust macros
 * Start tag expected, '<' not found in [...]
@@ -89,10 +92,15 @@ Sudo keeps asking for password but it has permissions, I set it via visudo
 
 
 OpenOffice.org reports "Error in function createUserSettingsDocument (elements.cxx)"
+     OR
+  OpenOffice.org reports the error
+	"The application cannot be started. An Internal error occurred"
 ------------------------------------------------------------------------------------
 
 	OpenOffice.org is complaining that it's unable to save a user settings
-	file, so make sure OpenOffice.org is running as a user that can write to
+	file, which are usually stored under each users ".openoffice.org2" directory.
+
+	Make sure OpenOffice.org is running as a user that can write to
 	their home directory. Make sure that the HOME environment variable is set
 	appropriately in convert-using-openoffice.org.sh. Typically you'll be
 	running as the root user.

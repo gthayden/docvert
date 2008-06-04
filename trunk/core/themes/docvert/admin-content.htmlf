@@ -12,7 +12,6 @@
 		<div style="float:left;width:45%;margin-right:5%">
 			{{change-password}}
 
-			
 			{{document-generation}}
 
 			{{configure-upload-locations}}
@@ -27,13 +26,19 @@
 
 			{{choose-theme}}
 
-			{{setup-openofficeorg}}
+			{{setup-openofficeorg-server}}
 
-			{{non-opendocument-uploads}}
+			{{setup-openofficeorg}}
 
 			{{unix-only-use-xvfb}}
 
+			{{run-as-user}}
+
+			{{non-opendocument-uploads}}
+
 			{{choose-converters}}
+
+			{{super-user-method}}
 		</div>
 	</div>
 

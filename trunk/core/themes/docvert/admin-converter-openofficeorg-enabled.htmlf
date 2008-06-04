@@ -1,6 +1,0 @@
-<p>
-	<form method="post" action="" style="display:inline">
-		&currently-openofficeorg-is; &enabled-item;:
-		<input type="submit" name="converter-openofficeorg-disable" value="&disable-openofficeorg-button;"/>
-	</form>
-</p>

@@ -1,0 +1,6 @@
+<p>
+	<form method="post" action="" style="display:inline">
+		&currently-converter-is; &disabled-item;:
+		<input type="submit" name="converter-&dynamic-converterId;-disable" value="&enable; &dynamic-converterName;"/>
+	</form>
+</p>

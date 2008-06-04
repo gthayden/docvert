@@ -1,10 +1,9 @@
-<h2>&use-xvfb-title;</h2>
-<p>
-	<span style="margin:0px; border: solid 1px #999933; background: #ffffcc; color: #660000; font-size:small">
-		&#160;
+<div style="padding-left:1em">
+	<h3 style="margin:2em 0px 0px 2em;">&use-xvfb-title;</h3>
+	<p style="margin-left:3em; border: solid 1px #999933; background: #ffffcc; color: #660000; font-size:small;padding:0.5em">
 		&xvfb-desktop-warning;
-	</span>
-</p>
-<p>&xvfb-specific-distro-hint;</p>
+	</p>
+	<p style="margin-left:2em;"><span style="font-size:small">&xvfb-specific-distro-hint;</span></p>
 
-<form method="post" action=""><p><input id="enablexvfb" name="enablexvfb" type="submit" value="&enable-xvfb-button;"/></p></form>
+	<form method="post" action=""><p style="margin-left:2em"><input id="enablexvfb" name="enablexvfb" type="submit" value="&enable-xvfb-button;"/></p></form>
+</div>

@@ -144,4 +144,12 @@ function getOperatingSystemsTemporaryDirectory()
 	webServiceError('&error-config-file-not-writable;', 500, Array('path'=>implode(', ', $directoriesToCheck)) );
 	}
 
+function getSuperUserPreference()
+	{
+	$superUserPreference = 'sudo';
+	$customSuperUserPreference = getGlobalConfigItem('superUserPreference');
+	if($customSuperUserPreference) $superUserPreference = $customSuperUserPreference;
+	return $superUserPreference;
+	}
+
 ?>

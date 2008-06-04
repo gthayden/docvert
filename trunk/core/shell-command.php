@@ -7,9 +7,8 @@
 */
 function shellCommand($command, $timeoutInSeconds=null, $dataToStdIn=null, $haltOnError=false)
 	{
-	if($timeoutInSeconds == null) $timeoutInSeconds=120;
+	if($timeoutInSeconds === null) $timeoutInSeconds=120;
 	$pipes = null;
-	$response = Array();
 	if($dataToStdIn)
 		{
 		$descriptor = array(0=>array("pipe", "r"), 1=>array("pipe", "w"), 2=>array("pipe", "w") );
@@ -24,8 +23,11 @@ function shellCommand($command, $timeoutInSeconds=null, $dataToStdIn=null, $halt
 	else
 		{
 		$process = popen("($command)2>&1&","r");
+		//stream_set_timeout($process, $timeoutInSeconds);		
+		if($timeoutInSeconds == 0) return;
 		$pipes[] = $process;
 		}
+
 
 	if(!is_resource($process))
 		{
@@ -34,15 +36,15 @@ function shellCommand($command, $timeoutInSeconds=null, $dataToStdIn=null, $halt
 		return Array('stdOut'=>null, 'statusCode'=>-1, 'stdErr'=>null);
 		}
 
+	$response = Array();
 	$endTime = microtime(true) + (float) $timeoutInSeconds;
-
 	foreach($pipes as $pipe)
 		{
 		if(!is_resource($pipe)) continue;
 		$returnValue = null;
 		while (!feof($pipe))
 			{
-			$returnValue .= fgets($pipe, 52);
+			$returnValue .= fgets($pipe, 8);
 			$streamInfo = stream_get_meta_data($pipe);
 			if($streamInfo['timed_out'] === true || microtime(true) > $endTime)
 				{
@@ -50,8 +52,8 @@ function shellCommand($command, $timeoutInSeconds=null, $dataToStdIn=null, $halt
 				break;
 				}
 			}
-		pclose($pipe);
 		$response[] = $returnValue;
+		pclose($pipe);
 		}
 	
 	if(!$dataToStdIn)
