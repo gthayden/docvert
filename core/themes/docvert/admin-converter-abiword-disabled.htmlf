@@ -1,6 +1,0 @@
-<p>
-	<form method="post" action="" style="display:inline">
-		&currently-abiword-is; &disabled-item;:
-		<input type="submit" name="converter-abiword-enable" value="&enable-abiword;"/>
-	</form>
-</p>

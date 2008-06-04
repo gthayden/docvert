@@ -1,4 +1,6 @@
-<h2>&use-xvfb-title;</h2>
-<p>&xvfb-specific-distro-hint;</p>
-<form method="post" action=""><p><input id="disablexvfb" name="disablexvfb" type="submit" value="&disable-xvfb-button;"/></p></form>
+<div style="padding-left:1em">
+	<h3 style="margin:2em 0px 0px 2em;">&use-xvfb-title;</h3>
+	<p style="margin-left:2em;"><span style="font-size:small">&xvfb-specific-distro-hint;</span></p>
+	<form method="post" action=""><p style="margin-left:2em;"><input id="disablexvfb" name="disablexvfb" type="submit" value="&disable-xvfb-button;"/></p></form>
+</div>
  

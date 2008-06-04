@@ -1,6 +1,0 @@
-<p>
-	<form method="post" action="" style="display:inline">
-		&currently-pyodconverter-is; &disabled-item;:
-		<input type="submit" name="converter-pyodconverter-enable" value="&enable-pyodconverter-button;"/>
-	</form>
-</p>

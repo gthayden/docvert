@@ -28,7 +28,7 @@ include_once('xml.php');
 include_once('config.php');
 set_error_handler('phpErrorHandler');
 date_default_timezone_set('UTC');
-error_reporting(E_STRICT|E_ALL); //was E_ERROR
+error_reporting(E_STRICT|E_ALL);
 
 
 function processConversion($files, $converter, $pipeline, $autoPipeline, $afterConversion, $setupOpenOfficeOrg, $outputZip, $justShowPreviewDirectory=null)
@@ -311,11 +311,8 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		'outputDocumentPath' => $outputDocumentPath
 		);
 
-	$converters = Array(
-		'openofficeorg'=>'OpenOffice.org 2+',
-		'abiword'=>'Abiword',
-		'jodconverter' => 'JODConverter',
-		'pyodconverter' => 'PyODConverter');
+
+	$converters = getConverters();
 
 	$docvertDir = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 	$docvertWritableDir = getWritableDirectory();
@@ -343,10 +340,10 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			// There's only one choice, so don't bother asking the user
 			}
 		}
-	
+
 	$doNotUseConverter = getGlobalConfigItem('doNotUseConverter'.$converter);
 
-	if($doNotUseConverter == 'true')
+	if($doNotUseConverter == 'true' || !array_key_exists($converter, $converters))
 		{
 		webServiceError('&error-disabled-converter;', 500, Array('converter' => $converter) );
 		}
@@ -354,18 +351,6 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 	$operatingSystemFamily = getOperatingSystemFamily();
 	switch($converter)
 		{
-		case 'pipe-openofficeorg':
-			$stdInData = file_get_contents($commandTemplateVariable['inputDocumentPath']);
-			$commandTemplate = '{scriptPath} {useXVFB} {macrosDocumentPath}';
-			if($operatingSystemFamily == 'Windows')
-				{
-				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'windows-specific'.DIRECTORY_SEPARATOR.'pipe-to-openoffice.org.bat';
-				}
-			elseif($operatingSystemFamily == 'Unix')
-				{
-				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'pipe-to-openoffice.org.sh';
-				}
-			// no 'break' here, intentional
 		case 'openofficeorg':
 			if(!$commandTemplate) //if(we didn't flow through from the above switch/case)
 				{
@@ -433,17 +418,13 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			$commandTemplateVariable['outputDocumentUrl'] = convertLocalPathToOpenOfficeOrgUrl($commandTemplateVariable['outputDocumentPath']);
 			break;
 		case 'pyodconverter':
-			$commandTemplate = '{elevatePermissions} python {pyodConverterPath} {inputDocumentPath} {outputDocumentPath}';
-			$commandTemplateVariable['conversionDirectory'] = dirname(__FILE__).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'jodconverter';
+			$commandTemplate = '{elevatePermissions} {pyodConverterPath} --stream';
 			$commandTemplateVariable['pyodConverterPath'] = dirname(__FILE__).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'pyodconverter'.DIRECTORY_SEPARATOR.'pyodconverter.py';
 			if(!file_exists($commandTemplateVariable['pyodConverterPath']))
 				{
 				webServiceError('&error-jodconverter-not-found;', 500, Array('pyodConverterPath' => $commandTemplateVariable['pyodConverterPath']));
 				}
-			//$commandTemplateVariable['inputDocumentPath'] = basename($commandTemplateVariable['inputDocumentPath']);
-			//$commandTemplateVariable['outputDocumentPath'] = basename($commandTemplateVariable['outputDocumentPath']);
-			$commandTemplateVariable['inputDocumentUrl'] = convertLocalPathToOpenOfficeOrgUrl('/'.$commandTemplateVariable['inputDocumentPath']);
-			$commandTemplateVariable['outputDocumentUrl'] = convertLocalPathToOpenOfficeOrgUrl('/'.$commandTemplateVariable['outputDocumentPath']);
+			$stdInData = file_get_contents($commandTemplateVariable['inputDocumentPath']);
 			break;
 		default:
 			$additionalError = '';
@@ -489,11 +470,10 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 	else
 		{
 		$response = shellCommand($command, null, $stdInData, false);
-		if($response['statusCode'] === 0)
+		if($response['statusCode'] == 0)
 			{
-			$openDocumentData = $response['stdOut'];
+			file_put_contents($commandTemplateVariable['outputDocumentPath'], $response['stdOut']);
 			$output = $response['stdErr'];
-			file_put_contents($commandTemplateVariable['outputDocumentPath'], $openDocumentData);
 			}
 		else
 			{
@@ -620,7 +600,16 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 			}
 		if( (stripos($output, 'connection failed') !== false && stripos($output, 'running and listening') !== false) || stripos($output, 'failed to connect to OpenOffice.org') )
 			{
-			$suggestedFixes .= '&error-pyod-or-jod-converter-not-running;<blockquote><tt>soffice -headless -accept="socket,port=8100;urp;"</tt></blockquote>';
+			$suggestedFixes .= '&error-pyod-or-jod-converter-not-running;';
+			$operatingSystemFamily = getOperatingSystemFamily();
+			if($operatingSystemFamily == 'Windows')
+				{
+				$suggestedFixes .= '<blockquote><tt>soffice -headless -accept="socket,port=2002;urp;"</tt></blockquote>';
+				}
+			elseif($operatingSystemFamily == 'Unix')
+				{
+				$suggestedFixes .= '<blockquote><tt>'.dirname(__FILE__).'/config/unix-specific/openoffice.org-server-init.sh start</tt></blockquote>';
+				}
 			}
 		if( (stripos($output, 'jodconverter') !== false || stripos($output, 'pyodconverter') !== false) && ( (stripos($output, 'URL seems to be an unsupported one') !== false || stripos($output, 'ErrorCodeIOException') !== false) ) )
 			{
@@ -630,7 +619,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 				$temporaryDirectoryMessage = dirname($commandTemplateVariable['outputDocumentPath']);
 				$temporaryDirectoryMessage = ' ("'.$temporaryDirectoryMessage.'") ';
 				}
-			$suggestedFixes .= '&error-pyod-or-jod-converter-bad-url; '.revealXml($temporaryDirectory);
+			$suggestedFixes .= '&error-pyod-or-jod-converter-bad-url; '.revealXml($temporaryDirectoryMessage);
 			}
 		if(stripos($output, 'jodconverter') !== false && stripos($output, 'inputFile doesn\'t exist') !== false)
 			{
@@ -1902,5 +1891,16 @@ function webServiceError($message, $errorNumber = 500, $errorData = null)
 	displayLocalisedErrorPage($message, $errorNumber, $errorData);
 	}
 
+
+function getConverters()
+	{
+	$converters = Array(
+		'pyodconverter' => 'PyODConverter via "OOo Server"',
+		'openofficeorg' => 'OpenOffice.org Stand-alone',
+		'abiword' => 'Abiword');
+
+	// $converters['jodconverter'] = 'JODConverter via "OOo Server"'; //uncomment this line to reenable jodconverter
+	return $converters;
+	}
 
 ?>

@@ -5,15 +5,6 @@ include_once("lib.php");
 ob_start();
 Themes::cleanUpOldPreviews(getExpireSessionsAfterDays());
 
-
-
-function getExpireSessionsAfterDays()
-	{
-	// just a function so that I can later make it a config variable elsewhere -- matthew@holloway.co.nz
-	$expireAfterDays = 0.5;
-	return $expireAfterDays;
-	}
-
 class Themes
 	{
 	public $chosenTheme;
@@ -24,10 +15,13 @@ class Themes
 	public $destinationZip;
 	public $converters = Array(
 		'openofficeorg'=>'OpenOffice.org 2+',
-		'pipe-openofficeorg' => 'Pipe OpenOffice.org',
 		'abiword'=>'Abiword',
-		'jodconverter' => 'JODConverter',
 		'pyodconverter' => 'PyODConverter');
+
+	function __construct()
+		{
+		$this->converters = getConverters();
+		}
 
 	function drawTheme()
 		{
@@ -132,6 +126,8 @@ class Themes
 				$htmlTemplate = str_replace('{{configure-upload-locations}}', $this->configureUploadLocations(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{non-opendocument-uploads}}', $this->nonOpenDocumentUploads(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{setup-openofficeorg}}', $this->setupOpenOfficeOrg(), $htmlTemplate);
+				$htmlTemplate = str_replace('{{run-as-user}}', $this->runAsUser(), $htmlTemplate);
+				$htmlTemplate = str_replace('{{setup-openofficeorg-server}}', $this->setupOpenOfficeOrgServer(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{create-password}}', $this->createPassword(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{allow-webdav}}', $this->allowWebdavUploads(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{allow-ftp}}', $this->allowFtpUploads(), $htmlTemplate);
@@ -140,6 +136,7 @@ class Themes
 				$htmlTemplate = str_replace('{{configure-filenames}}', $this->configureFilenames(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{protocol-message}}', $this->protocolMessage(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{document-generation}}', $this->documentGeneration(), $htmlTemplate);
+				$htmlTemplate = str_replace('{{super-user-method}}', $this->superUserMethod(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{php-info}}', $this->showPhpInfo(), $htmlTemplate);
 				break;
 			case 'generation':
@@ -162,13 +159,7 @@ class Themes
 
 	function getThemeFragment($path)
 		{
-		$themePath = $this->themeDirectory.$path;
-		if(!file_exists($themePath)) //instead use default directory
-			{
-			$themePath = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'docvert'.DIRECTORY_SEPARATOR.$path;
-			}
-		$themeFragment = file_get_contents($themePath);
-		return preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $themeFragment);
+		return getThemeFragmentByPath($path, $this->themeDirectory);
 		}
 
 	function unzipConversionResults($sourceZipPath, $previewDirectory)
@@ -441,6 +432,115 @@ class Themes
 		return $this->getThemeFragment('admin-logout.htmlf');
 		}
 
+	function setupOpenOfficeOrgServer()
+		{
+		$operatingSystemFamily = getOperatingSystemFamily();
+		if(!$this->allowedAdminAccess || $operatingSystemFamily != 'Unix') return;
+
+		$userMessage = null;
+		$pidFile = '/tmp/openoffice.org-server.pid';
+		$output = '';
+
+		if(isset($_REQUEST['openofficeorg-server-on']) || isset($_REQUEST['openofficeorg-server-off']) )
+			{
+			$unixConfigPath = dirname(__FILE__).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'unix-specific'.DIRECTORY_SEPARATOR;
+			$startStopPythonScript = $unixConfigPath.'openoffice.org-server-init.py';
+			$startStopBashScript = $unixConfigPath.'openoffice.org-server-init.sh';
+			$startOrStop = null;
+			if(isset($_REQUEST['openofficeorg-server-on']))
+				{
+				if(file_exists($pidFile) && filesize($pidFile) > 0)
+					{
+					$userMessage = 'existing-pid';
+					}
+				else
+					{
+					$startOrStop = 'start';
+					}
+				}
+			elseif(isset($_REQUEST['openofficeorg-server-off']))
+				{
+				if(file_exists($pidFile) && filesize($pidFile) > 0)
+					{
+					$startOrStop = 'stop';
+					}
+				else
+					{
+					$userMessage = 'no-existing-pid';
+					}
+				}
+			if($startOrStop)
+				{
+				include_once('config.php');
+				$runAsUser = 'root';
+				$sudo = '';
+				$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
+				if($customUser)
+					{
+					$runAsUser = $customUser;
+					}
+				$startStopScript = null;
+				$superUserPreference = getSuperUserPreference();
+				if($superUserPreference == 'sudo')
+					{
+					$startStopScript = $startStopBashScript;
+					$sudo = 'sudo';
+					}
+				elseif($superUserPreference == 'setuid')
+					{
+					$startStopScript = $startStopPythonScript;
+					}
+
+				$commandTemplate = '{sudo} {startStopScript} {startOrStop} {runAsUser}';
+				$commandTemplate = str_replace('{sudo}', $sudo, $commandTemplate);
+				$commandTemplate = str_replace('{startStopScript}', $startStopScript, $commandTemplate);
+				$commandTemplate = str_replace('{startOrStop}', $startOrStop, $commandTemplate);
+				$commandTemplate = str_replace('{runAsUser}', $runAsUser, $commandTemplate);
+
+				$output = shellCommand($commandTemplate, 1);
+				//sleep(); // due to OOo delay in startup/shutdown we'll just twiddle our thumbs for a bit
+				if(isset($_REQUEST['openofficeorg-server-on']) || isset($_REQUEST['openofficeorg-server-off']))
+					{
+					if(trim($output))
+						{
+						$output = '<blockquote><tt>'.revealXml($output).'</tt></blockquote>';
+						}
+					else
+						{
+						$output = '<i>nothing</i> (no response)';
+						}
+					if(isset($_REQUEST['openofficeorg-server-on']) && !file_exists($pidFile))
+						{
+						webServiceError('Unable to start PyODConverter OOo server. Output was '.$output);
+						}
+					elseif(isset($_REQUEST['openofficeorg-server-off']) && file_exists($pidFile) )
+						{
+						webServiceError('Unable to stop PyODConverter OOo server. Output was '.$output);
+						}
+					}
+				}
+			}
+
+		if(file_exists($pidFile) && filesize($pidFile) > 0)
+			{
+			$response = $this->getThemeFragment('admin-setupopenofficeorg-server-button-disabled.htmlf');
+			}
+		else
+			{
+			$response = $this->getThemeFragment('admin-setupopenofficeorg-server-button-enabled.htmlf');
+			}
+		if($userMessage)
+			{
+			$response = $response.$this->getThemeFragment('error-setupopenofficeorg-server-'.$userMessage.'.htmlf');
+			}
+		if($output)
+			{
+			$response = $response.'<p>Output:</p><pre style="padding:0px 0.5em;font-size:small;background:#cccccc">'.$output.'</pre>';
+			}
+		return $response;
+		}
+
+
 	function setupOpenOfficeOrg()
 		{
 		if(!$this->allowedAdminAccess) return;
@@ -462,26 +562,16 @@ class Themes
 		$docvertWritableDir = getWritableDirectory();
 		$template = $this->getThemeFragment('admin-setupopenofficeorg.htmlf');
 
-		$runAsCustomUser = '';
+
 		$toggleStatus = '';
 		include_once('config.php');
 		if(DIRECTORY_SEPARATOR == '/') //Unix, sudo is available
 			{
-			if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
-				{
-				setGlobalConfigItem('runExternalApplicationAsUser', $_REQUEST['runasuser']);
-				}
-
-			$customUser = getGlobalConfigItem('runExternalApplicationAsUser');			
-
-			$runAsCustomUser = $this->getThemeFragment('admin-configure-runexternalapplicationasuser.htmlf');
-			$runAsCustomUser = str_replace('{{username}}', $customUser, $runAsCustomUser);
 
 			$disallowXVFB = getGlobalConfigItem('disallowXVFB');
 			if(isset($_POST['startOpenOfficeOrgServerLinux']))
 				{
 				$shellCommandTemplate = '{{elevate-privledges}} {{bash-script}} {{xvfb}}';
-				$bashScript = '';
 				$xvfbCommand = '';
 				$elevatePrivledges = '';
 
@@ -490,40 +580,37 @@ class Themes
 					$xvfbCommand = 'true';
 					}
 
-				$bashScript = dirname(__FILE__).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'unix-specific'.DIRECTORY_SEPARATOR.'start-openoffice-server.sh';
-				$elevatePrivledges = 'sudo';
-
-				if(!file_exists($bashScript))
-					{
-					webServiceError("&error-webpage-bashscript-not-found;", 500, Array('path'=>$bashScript));
-					}
-
 				$shellCommandTemplate = str_replace('{{xvfb}}', $xvfbCommand, $shellCommandTemplate);
 				$shellCommandTemplate = str_replace('{{elevate-privledges}}', $elevatePrivledges, $shellCommandTemplate);
-				$shellCommandTemplate = str_replace('{{bash-script}}', $bashScript, $shellCommandTemplate);
 				$output = shellCommand($shellCommandTemplate, 3);
 				include_once('lib.php');
 				$diagnostics = suggestFixesToCommandLineErrorMessage($output, Array(), false);
 				if($diagnostics)
 					{
-					if(!is_executable($bashScript))
-						{
-						$diagnostics .= '<p>The script is not set as executable, so "<tt>chmod +x</tt>" it. So, the problem is that, or...</p>'.$diagnostics;
-						}
 					$diagnostics .= '<div style="background:#ffff99;border: solid 1px #ffff99;"><h1 style="font-size:small;padding-left:1%;color:red">Diagnostics</h1> <p>There were problems opening up JODConverter OpenOffice.org Server</p><p>I ran this command,</p><blockquote><tt>'.$shellCommandTemplate.'</tt></blockquote><p>But I don\'t think I was able to start OpenOffice.org because the script returned.</p><blockquote><tt>'.$output.'</tt></blockquote>'.$diagnostics.'</div>';
 					$toggleStatus = $diagnostics.$toggleStatus;
 					}
 				}
-			$openOfficeServer = $this->getThemeFragment('admin-setupopenofficeorg-linux.htmlf');
-			}
-		else
-			{
-			$openOfficeServer = $this->getThemeFragment('admin-setupopenofficeorg-windows.htmlf');
-			}
-		$template = str_replace('{{openoffice-server}}', $openOfficeServer, $template);
+			};
+
 		$template = str_replace('{{toggle}}', $toggleStatus, $template);
-		$template = str_replace('{{run-as-user}}', $runAsCustomUser, $template);
 		return $template;
+		}
+
+	function runAsUser()
+		{
+		if(!$this->allowedAdminAccess) return;
+		$runAsCustomUser = '';
+		include_once('config.php');	
+		if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
+			{
+			setGlobalConfigItem('runExternalApplicationAsUser', $_REQUEST['runasuser']);
+			}
+		$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
+
+		$runAsCustomUser = $this->getThemeFragment('admin-configure-runexternalapplicationasuser.htmlf');
+		$runAsCustomUser = str_replace('{{username}}', $customUser, $runAsCustomUser);
+		return $runAsCustomUser;
 		}
 
 	function documentGeneration()
@@ -933,7 +1020,6 @@ class Themes
 		return '';
 		}
 
-
 	function allowBloggerAPI()
 		{
 		if(function_exists('fsockopen'))
@@ -1303,6 +1389,38 @@ class Themes
 		return $pageTemplate;
 		}
 
+	function superUserMethod()
+		{
+		if(!$this->allowedAdminAccess) return;
+		$hideAdminSuperUserMethodInterface = getGlobalConfigItem('hideAdminSuperUserMethodUserInterface');
+		if($hideAdminSuperUserMethodInterface == 'true' || $hideAdminSuperUserMethodInterface == true) return;
+		include_once('config.php');
+		if(isset($_POST['preferSetuid']))
+			{
+			setGlobalConfigItem('superUserPreference', 'setuid');			
+			}
+		elseif(isset($_POST['preferSudo']))
+			{
+			setGlobalConfigItem('superUserPreference', 'sudo');
+			}
+		$template = $this->getThemeFragment('admin-superusermethod-content.htmlf');
+		$superUserPreference = getSuperUserPreference();
+		$template = str_replace('&superUserPreference;', $superUserPreference, $template);
+		switch($superUserPreference)
+			{
+			case 'sudo':
+				$template = str_replace('&disableSetuid;', '', $template);
+				$template = str_replace('&disableSudo;', 'disabled="disabled"', $template);
+				break;
+			case 'setuid':
+				$template = str_replace('&disableSetuid;', 'disabled="disabled"', $template);
+				$template = str_replace('&disableSudo;', '', $template);
+				break;
+			}
+		return $template;
+		}
+
+
 	function forcePipeline()
 		{
 		if(!$this->allowedAdminAccess) return;
@@ -1340,59 +1458,62 @@ class Themes
 		if(!$this->allowedAdminAccess) return;
 		$template = $this->getThemeFragment('admin-converter-content.htmlf');
 		$thereWasAtLeastOneConverterAvailable = false;
-		foreach($this->converters as $converterId => $converterName)
-			{
-			$converterPlaceholder = '{{toggle-'.$converterId.'}}';
-			$hideConverterConfigurationKey = 'hideAdminOption'.$converterId;
-			$hideConverter = getGlobalConfigItem($hideConverterConfigurationKey);
-
-			if($hideConverter == 'true')
-				{
-				$template = str_replace($converterPlaceholder, '', $template);
-				continue;
-				}
-			else
-				{
-				$thereWasAtLeastOneConverterAvailable = true;
-				}
-
-			$doNotUseConverter = 'doNotUseConverter'.$converterId;
-			if(isset($_POST['converter-'.$converterId.'-enable']))
-				{
-				setGlobalConfigItem($doNotUseConverter, 'false');
-				}
-			elseif(isset($_POST['converter-'.$converterId.'-disable']))
-				{
-				setGlobalConfigItem($doNotUseConverter, 'true');
-				}
-			$interfacePath = null;
-			$convertConfig = getGlobalConfigItem($doNotUseConverter);
-			if($convertConfig === null || $convertConfig == 'false')
-				{
-				$interfacePath = 'admin-converter-'.$converterId.'-enabled.htmlf';
-				}
-			else
-				{
-				$interfacePath = 'admin-converter-'.$converterId.'-disabled.htmlf';
-				}
-
-			if(stripos($template, $converterPlaceholder) === false)
-				{
-				$template .=  '<br/><br />&#160; Cannot find placeholder of '.$converterPlaceholder.' and so cannot display an interface for '.$converterName.'<br/>';
-				}
-			else
-				{
-				$template = str_replace($converterPlaceholder, $this->getThemeFragment($interfacePath), $template);
-				}
-			}
-		if($thereWasAtLeastOneConverterAvailable == false) return;
+		$template = preg_replace_callback('/{{toggle-(.*?)}}/s', 'chooseConvertersCallback', $template);
+		//if($thereWasAtLeastOneConverterAvailable == false) return;
 		return $template;
 		}
 	}
 
+function chooseConvertersCallback($match)
+	{
+	$converterId = $match[1];
+	$converters = getConverters();
+	if(!array_key_exists($converterId, $converters)) return; //'Not found '.$converterId;
+	$converterPlaceholder = '{{toggle-'.$converterId.'}}';
+
+	$hideConverterConfigurationKey = 'hideAdminOption'.$converterId;
+	$hideConverter = getGlobalConfigItem($hideConverterConfigurationKey);
+
+	if($hideConverter == 'true')
+		{
+		$template = str_replace($converterPlaceholder, '', $template);
+		continue;
+		}
+	else
+		{
+		$thereWasAtLeastOneConverterAvailable = true;
+		}
+
+	$doNotUseConverter = 'doNotUseConverter'.$converterId;
+	if(isset($_POST['converter-'.$converterId.'-enable']))
+		{
+		setGlobalConfigItem($doNotUseConverter, 'true');
+		}
+	elseif(isset($_POST['converter-'.$converterId.'-disable']))
+		{
+		setGlobalConfigItem($doNotUseConverter, 'false');
+		}
+	$interfacePath = null;
+	$convertConfig = getGlobalConfigItem($doNotUseConverter);
+	if($convertConfig === null || $convertConfig == 'false' || $convertConfig == false)
+		{
+		$interfacePath = 'admin-converter-enabled.htmlf';
+		}
+	else
+		{
+		$interfacePath = 'admin-converter-disabled.htmlf';
+		}
+
+	$themeDirectory = getGlobalConfigItem('theme');
+	$interfacePart = getThemeFragmentByPath($interfacePath, $themeDirectory);
+	$interfacePart = str_replace('&dynamic-converterName;', str_replace('"', "'", $converters[$converterId]), $interfacePart);
+	$interfacePart = str_replace('&dynamic-converterId;', $converterId, $interfacePart);
+	//print $interfacePath.' |'.revealXml($convertConfig).'|'.$doNotUseConverter.': '.revealXml($interfacePart).'<hr />';
+	return $interfacePart;
+	}
+
 function replaceLanguagePlaceholder($match)
 	{
-	
 	$language = 'english';
 	if(!defined('DOCVERT_ERROR_OCCURED'))
 		{
@@ -1530,6 +1651,24 @@ function displayLocalisedErrorPage($message, $errorNumber, $errorData)
 			die();
 			break;
 		}
+	}
+
+function getExpireSessionsAfterDays()
+	{
+	// just a function so that I can later make it a config variable elsewhere -- matthew@holloway.co.nz
+	$expireAfterDays = 0.5;
+	return $expireAfterDays;
+	}
+
+function getThemeFragmentByPath($path, $themeDirectory)
+	{
+	$themePath = $themeDirectory.$path;
+	if(!file_exists($themePath)) //instead use default directory
+		{
+		$themePath = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'docvert'.DIRECTORY_SEPARATOR.$path;
+		}
+	$themeFragment = file_get_contents($themePath);
+	return preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $themeFragment);
 	}
 
 ?>

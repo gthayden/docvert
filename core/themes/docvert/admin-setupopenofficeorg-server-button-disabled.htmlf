@@ -1,0 +1,7 @@
+<h2>OpenOffice.org Server</h2>
+<form method="post">
+	<p>
+		Currently <abbr title="OpenOffice.org">OOo</abbr> server is <span style="background:#99ff99">enabled</span>:
+		<input type="submit" name="openofficeorg-server-off" value="Turn off"/>
+	</p>
+</form>

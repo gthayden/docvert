@@ -3,7 +3,8 @@ mockConversion="$1"
 docvertMacrosDocumentPath="$2"
 inputDocumentUrl="$3"
 outputDocumentUrl="$4"
-HOME=/var/www/docvert
+HOME=/tmp/
+
 
 if [ $mockConversion = "true" ]
 then
@@ -11,6 +12,7 @@ then
 else
 	xvfbRun="/usr/bin/xvfb-run"
 fi
+
 
 cd /tmp
 ${xvfbRun} /usr/lib/openoffice/program/soffice -writer -norestore "${docvertMacrosDocumentPath}" macro://macros/Standard.convert.toOasisOpenDocumentFormat\(${inputDocumentUrl},${outputDocumentUrl}\)

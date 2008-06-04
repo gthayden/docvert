@@ -1,1 +1,3 @@
-<p>This error message probably means that PyODConverter or JODConverter is complaining about OpenOffice.org not running. If so, start OpenOffice.org in listening mode by using this command,</p>
+<p>This error message probably means that PyODConverter/JODConverter is complaining about 'OpenOffice.org Server' not running. If so, start 'OpenOffice.org Server' in by clicking 'Turn On' on the admin page.</p>
+<p><b><i>OR</i></b> (only if that doesn't work)</p>
+<p>Use this command,</p>
