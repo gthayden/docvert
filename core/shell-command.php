@@ -23,8 +23,13 @@ function shellCommand($command, $timeoutInSeconds=null, $dataToStdIn=null, $halt
 	else
 		{
 		$process = popen("($command)2>&1&","r");
+		if($timeoutInSeconds == 0)
+			{
+			pclose($process);
+			return;
+			}
 		//stream_set_timeout($process, $timeoutInSeconds);		
-		if($timeoutInSeconds == 0) return;
+
 		$pipes[] = $process;
 		}
 

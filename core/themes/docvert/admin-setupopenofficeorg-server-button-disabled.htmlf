@@ -2,6 +2,6 @@
 <form method="post">
 	<p>
 		&currently-openofficeorg-server-is; &enabled-item;:
-		<input type="submit" name="openofficeorg-server-on" value="&turn-off;"/>
+		<input type="submit" name="openofficeorg-server-off" value="&turn-off;"/>
 	</p>
 </form>

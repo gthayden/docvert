@@ -13,49 +13,51 @@ Requirements
 *	PHP 5 or later, with the "ZLIB" and "XSL" extensions.
 
 
-
 Optional Libraries
 -------------------------------------------------------------
 *	If you want to convert Microsoft Word documents then
-	you'll need to choose a 'Microsoft Word to OpenDocument'
-	converter, which is one of these...
+	you'll need to choose a Microsoft Word to OpenDocument
+	converter.
 
-	*	OpenOffice.org 1.9.122 or later.
-		The more current your version of OpenOffice.org
-		the more likely it'll be compatible with the
-		vagaries of the MS Word format - so keep your
-		OOo current.
+	Your options are as follows (in order of preference)
 
-		On Linux/BSD/OSX you'll also need "Xvfb".
+	Option 1) "PyODConverter via OOo Server" depends on
+		* OpenOffice.org 2.3 or later (NOTE version. 2.3)
+		* python-uno (Python UNO libraries)
 
-		Accelerated OpenOffice.org conversions are supported
-		thanks to the fantastic work in PyODConverter.
+	Option 2) "OpenOffice.org Stand-alone" depends on,		
+		* OpenOffice.org 1.9.122 or later (NOTE version. 1.9+)
+		* Xvfb  (on Linux/BSD/OSX)
 
-	*	Abiword 2.4.2 or later.
-
+	Option 3)
+		* Abiword 2.4.2 or later.
 
 *	If you want to convert bitmap images like BMP, JPG,
-	PNG, GIF you'll need PHP GD.
+	PNG, GIF you'll need PHP GD ("php5-gd").
 
 *	If your documents files have diagrams or graphs in WMF
-	(windows metafile format) and you want to convert
+	or EMF (windows metafile format) and you want to convert
 	them to PNG/JPEG/SVG then you'll need to install
 	"libwmf".
-	Windows,
-	  http://gnuwin32.sourceforge.net/packages/libwmf.htm
-	  and grab "Complete package, except sources"
-	Linux,
-	  your distribution's packaging, and find
-		libwmf0.2-7 or later,
-		libwmf-bin
-	  - http://wvware.sourceforge.net/libwmf.html
+
+		Windows:
+		http://gnuwin32.sourceforge.net/packages/libwmf.htm
+		and grab "Complete package, except sources"
+
+		Linux:
+		your distribution's packaging, and find
+			libwmf0.2-7 or later,
+			libwmf-bin
+		http://wvware.sourceforge.net/libwmf.html
 
 *	If you want to validate documents against a schema
 	you'll need
-	Linux:
+
+		Linux:
 		Trang from your distro's package manager or
 		<http://thaiopensource.com/relaxng/trang.html>
-	Windows:
+
+		Windows:
 		...I don't know. If you could suggest a good
 		schema validator with command line support
 		I'll support it.
@@ -63,16 +65,18 @@ Optional Libraries
 *	If your documents have SVG images and you want to
 	convert them to PNG/JPEG/GIF, then you'll need to
 	install "svgrlib".
-	Windows,
-	  http://www.gimp.org/~tml/gimp/win32/downloads.html
-	Linux,
-	  your distribution's packaging, and find
-		librsvg2-2
-		librsvg-bin
-	  http://librsvg.sourceforge.net/download/
+
+		Windows:
+		http://www.gimp.org/~tml/gimp/win32/downloads.html
+
+		Linux:
+		your distribution's packaging, and find
+			librsvg2-2
+			librsvg-bin
+		http://librsvg.sourceforge.net/download/
 
 *	If you're using "Document Generation" you'll need PHP-Tidy
-	(HTMLTidy).
+	("php5-tidy").
 
 Install + Security
 =============================================================
@@ -83,8 +87,9 @@ Step 2.	Ensure that /writable is writable.
 
 	And,
 		Linux/OSX Users:
-			Ensure that /etc/docvert is
-			writable.
+			Make /etc/docvert and ensure that
+			/etc/docvert is writable to the web
+			server user (typically "www-data").
 
 		Windows Users:
 			Ensure that
@@ -95,63 +100,70 @@ Step 2.	Ensure that /writable is writable.
 			browsable from the web. Verify that
 			it's not by browsing to this
 			directory in your web browser
-			Eg. it could be at
+			Eg. ensure you can't browse to (for example)
 			http://localhost/docvert/core/config/windows-specific/config/
 
 	Now secure Docvert's admin page by opening up
 	Docvert in your web browser and browse to
 	the admin page (the tab on the top-right).
-
 	On the admin page, set the password.
 
 Step 3. Do you want to convert Word Documents or just
 	OpenDocument files?
 
-	If you just want to convert OpenDocument files then
-	go to Step 4.
+	(If you just want to convert OpenDocument files then
+	skip this stage ... advance to Step 4)
 
-	If you do want to convert Microsoft Word files (or
-	from other formats), then continue reading...
+	Still reading?
 
-	You'll need to choose a 'Microsoft Word to OpenDocument'
+	Well you'll need to choose a 'Microsoft Word to OpenDocument'
 	converter. You have the choice of,
-		* PyODConverter with OpenOffice.org
-		* Standalone OpenOffice.org
-		* JODConverter with OpenOffice.org
-		* Abiword
 
-	If you're just trialing Docvert then
-	"Standalone OpenOffice.org" is the easiest option to set up.
+		1) PyODConverter via OOo Server
+		2) OpenOffice.org Stand-alone
+		3) Abiword
 
-	However if you've been using Docvert for a while then I recommend the
-	"PyODConverter with OpenOffice.org" option.
+	Choose now! (I strongly recommend the first one)
 
-	Choose now!
-
-
-	PyODConverter with OpenOffice
-	-----------------------------
+	1) PyODConverter via OOo Server
+	-------------------------------
 	
-		PyODConverter requires Python and OpenOffice.org to
-		be running in server mode (listening on a port).
+		This requires Python, python-uno, and
+		OpenOffice.org 2.3+ running in server mode
+		(which means it's listening on a port).
 
-		Docvert includes its own copy of PyODConverter so there's
-		no need to download a copy, but you'll need to configure
-		OpenOffice.org to be listening on a port.
+		Docvert includes its own highly customised version of
+		PyODConverter so there's no need to download a copy.
 
-		See http://www.artofsolving.com/opensource/pyodconverter
-		for how to configure OpenOffice.org to do this, however,
-		it can be as simple as running,
+			For Linux/OSX users you'll need to allow
+			your web-server user to start/stop
+			OOo Server so go to the admin page and under
+			the "Run as User" heading enter the username
+			to run OpenOffice.org as.
 
-			Unix
-			soffice -accept="socket,port=8100;urp;"
+			Then ensure that the admin page's
+			"Super User Method" is "sudo",
+			and then you'll need to configure permissions
+			with the "visudo" command (from the command line)
+			to add some lines to sudoers,
+			Add this line,
 
-			Windows
-			soffice.exe -accept="socket,port=8100;urp;"
+	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/openoffice.org-server-init.sh
+
+			Replace NAMEOFUSER with... the name of the user but
+			leave the brackets () because sudoers wants them.
+			And replace www-data with the web server user if it's
+			something else.
+			For example, it might look like this,
+
+	www-data ALL=(docvert) NOPASSWD: /var/www/docvert/core/config/unix-specific/openoffice.org-server-init.sh
+
+			if you wanted to run OOo Server under
+			the system user "docvert".
 
 
-	Standalone OpenOffice.org 
-	---------------------------------------------------------------
+	2) Standalone OpenOffice.org (DEPRECATED)
+	-----------------------------------------
 
 		Stage i)
 			Windows:
@@ -159,8 +171,8 @@ Step 3. Do you want to convert Word Documents or just
 				these files,
 					"convert-using-openoffice.org.bat"
 
-			Linux/OSX:
 				In "core/config/unix-specific" edit
+			Linux/OSX:
 				these files,
 					"convert-using-openoffice.org.sh"
 
@@ -176,12 +188,10 @@ Step 3. Do you want to convert Word Documents or just
 				configure permissions with the "visudo"
 				command to add some lines to sudoers,
 
-				Add these lines (read below for which
+				Add this line (read below for which
 				bits to edit)
 
 	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-openoffice.org.sh
-	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/validate-against-schema.sh
-	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-abiword.sh
 
 				/var/www/vhosts[...].sh are the paths to your
 				scripts. In the case of Abiword, point to Abiword
@@ -242,43 +252,31 @@ Step 3. Do you want to convert Word Documents or just
 			Stage ii correctly then read the troubleshooting.txt file, or
 			post on the Docvert mailing list.
 
+	3) Abiword
+	----------
 
-	JODConverter with OpenOffice
-	----------------------------
-	
-		JODConverter requires Java and OpenOffice.org to
-		be running in server mode (listening on a port).
-
-		Docvert DOES NOT include its own copy of JODConverter
-		so you'll need to download it and put it in
-
-			core/lib/jodconverter
-
-		Then you'll need to configure OpenOffice.org to be
-		listening on a port.
-
-		See http://www.artofsolving.com/opensource/jodconverter
-		for how to configure OpenOffice.org to do this, however,
-		it can be as simple as running,
-
-			Unix
-			soffice -accept="socket,port=8100;urp;"
-
-			Windows
-			soffice.exe -accept="socket,port=8100;urp;"
-
-
-	Abiword
-	-------------------------------------------------------------------------
 		Edit the core/config Abiword file for...
-			Linux/OSX:
-				In "core/config/unix-specific" edit
-				this file,
-					"convert-using-abiword.sh"
-			Windows:
-				In "core/config/windows-specific" edit
-				this file,
-					"convert-using-abiword.bat"
+
+		Linux/OSX:
+			In "core/config/unix-specific" edit
+			this file,
+				"convert-using-abiword.sh"
+		Windows:
+			In "core/config/windows-specific" edit
+			this file,
+				"convert-using-abiword.bat"
+
+			For Linux/OSX users you'll need to
+			configure permissions with the "visudo"
+			command to add some lines to sudoers,
+			Add this line
+
+	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-abiword.sh
+
+			Replace NAMEOFUSER with.. the name of the user but
+			leave the brackets () because sudoers wants them.
+			And replace www-data with the web server user if it's
+			something else.
 
 Step 4.	That's it.
 
@@ -292,20 +290,27 @@ Step 4.	That's it.
 	-----------------
 		And if you want Schema Validation then edit,
 			Linux/OSX,
-				"validate-against-schema.sh"
+				validate-against-schema.sh
 			Windows,
-				"validate-against-schema.bat"
+				validate-against-schema.bat
 		...to point to Trang.
+
+			For Linux/OSX users you'll need to
+			configure permissions with the "visudo"
+			command to add some lines to sudoers,
+			Add this line
+
+	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/validate-against-schema.sh
 
 
 	Image Conversion
 	----------------
 		Edit these...
 			Linux/OSX,
-				"convert-using-wmf2gd.sh"
-				"convert-using-wmf2svg.sh"
+				convert-using-wmf2gd.sh
+				convert-using-wmf2svg.sh
 			Windows,
-				"convert-using-wmf2gd.bat"
-				"convert-using-wmf2svg.bat"
+				convert-using-wmf2gd.bat
+				convert-using-wmf2svg.bat
 
 
