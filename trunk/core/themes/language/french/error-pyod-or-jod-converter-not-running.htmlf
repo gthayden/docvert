@@ -1,1 +1,3 @@
-<p>Cette erreur indique probablement que PyODConverter/JODConverter ne peut se connnecter &agrave; OpenOffice.org.  Veuillez d&eacute;marrer OpenOffice.org en mode d'&eacute;coute avec la commande suivante :</p>
+<p>Cette erreur indique probablement que PyODConverter/JODConverter ne peut se connnecter &agrave; OpenOffice.org.  Veuillez d&eacute;marrer OpenOffice.org en mode d'&eacute;coute en cliquant sur le bouton 'Activer' dans la page d'administration.</p>
+<p><b><i>OU</i></b> (seulement si &ccedil;a ne fonctionne pas)</p>
+<p>Utilisez la commande suivante :</p>
