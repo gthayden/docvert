@@ -472,7 +472,7 @@ class Themes
 			if($startOrStop)
 				{
 				include_once('config.php');
-				$runAsUser = 'root';
+				$runAsUser = '';
 				$sudo = '';
 				$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
 				if($customUser)
@@ -497,25 +497,21 @@ class Themes
 				$commandTemplate = str_replace('{startOrStop}', $startOrStop, $commandTemplate);
 				$commandTemplate = str_replace('{runAsUser}', $runAsUser, $commandTemplate);
 
-				$output = shellCommand($commandTemplate, 1);
-				//sleep(); // due to OOo delay in startup/shutdown we'll just twiddle our thumbs for a bit
+				$output = shellCommand($commandTemplate, 0);
+				sleep(5); // due to OOo delay in startup/shutdown we'll just twiddle our thumbs for a bit
 				if(isset($_REQUEST['openofficeorg-server-on']) || isset($_REQUEST['openofficeorg-server-off']))
 					{
 					if(trim($output))
 						{
-						$output = '<blockquote><tt>'.revealXml($output).'</tt></blockquote>';
-						}
-					else
-						{
-						$output = '<i>nothing</i> (no response)';
+						$output = '<blockquote><tt>$'.revealXml($commandTemplate).'<br /><br />'.revealXml($output).'</tt></blockquote>';
 						}
 					if(isset($_REQUEST['openofficeorg-server-on']) && !file_exists($pidFile))
 						{
-						webServiceError('Unable to start PyODConverter OOo server. Output was '.$output);
+						webServiceError('&error-unable-to-start-ooo-server; '.$output);
 						}
 					elseif(isset($_REQUEST['openofficeorg-server-off']) && file_exists($pidFile) )
 						{
-						webServiceError('Unable to stop PyODConverter OOo server. Output was '.$output);
+						webServiceError('&error-unable-to-stop-ooo-server; '.$output);
 						}
 					}
 				}
@@ -529,10 +525,10 @@ class Themes
 			{
 			$response = $this->getThemeFragment('admin-setupopenofficeorg-server-button-enabled.htmlf');
 			}
-		if($userMessage)
-			{
-			$response = $response.$this->getThemeFragment('error-setupopenofficeorg-server-'.$userMessage.'.htmlf');
-			}
+		//if($userMessage)
+		//	{
+		//	$response = $response.$this->getThemeFragment('error-setupopenofficeorg-server-'.$userMessage.'.htmlf');
+		//	}
 		if($output)
 			{
 			$response = $response.'<p>Output:</p><pre style="padding:0px 0.5em;font-size:small;background:#cccccc">'.$output.'</pre>';
@@ -854,7 +850,6 @@ class Themes
 			}
 		return $uploadHtml;
 		}
-
 
 	function configureUploadLocations()
 		{
