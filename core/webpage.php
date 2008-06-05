@@ -474,6 +474,8 @@ class Themes
 				include_once('config.php');
 				$runAsUser = '';
 				$sudo = '';
+				$startTime = 8;
+				$stopTime = 3;
 				$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
 				if($customUser)
 					{
@@ -498,20 +500,27 @@ class Themes
 				$commandTemplate = str_replace('{runAsUser}', $runAsUser, $commandTemplate);
 
 				$output = shellCommand($commandTemplate, 0);
-				sleep(5); // due to OOo delay in startup/shutdown we'll just twiddle our thumbs for a bit
+				switch($startOrStop)
+					{ // due to OOo delay in startup/shutdown we'll just twiddle our thumbs for a bit
+					case 'start':
+						sleep($startTime);
+						break;
+					case 'stop':
+						sleep($stopTime);
+						break;
+					}
+
 				if(isset($_REQUEST['openofficeorg-server-on']) || isset($_REQUEST['openofficeorg-server-off']))
 					{
-					if(trim($output))
-						{
-						$output = '<blockquote><tt>$'.revealXml($commandTemplate).'<br /><br />'.revealXml($output).'</tt></blockquote>';
-						}
+					$output = '<blockquote><tt>'.revealXml($commandTemplate).'</tt></blockquote><blockquote><tt>'.revealXml($output).'</tt></blockquote>';
+					
 					if(isset($_REQUEST['openofficeorg-server-on']) && !file_exists($pidFile))
 						{
-						webServiceError('&error-unable-to-start-ooo-server; '.$output);
+						webServiceError('&error-unable-to-start-ooo-server; '.$output.' ');
 						}
 					elseif(isset($_REQUEST['openofficeorg-server-off']) && file_exists($pidFile) )
 						{
-						webServiceError('&error-unable-to-stop-ooo-server; '.$output);
+						webServiceError('&error-unable-to-stop-ooo-server; '.$output.' ');
 						}
 					}
 				}
