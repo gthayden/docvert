@@ -2,6 +2,7 @@
 include_once("ensure-php5.php");
 include_once("shell-command.php");
 include_once("lib.php");
+error_reporting(E_STRICT|E_ALL);
 ob_start();
 Themes::cleanUpOldPreviews(getExpireSessionsAfterDays());
 
@@ -1461,9 +1462,9 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 		$template = $this->getThemeFragment('admin-converter-content.htmlf');
-		$thereWasAtLeastOneConverterAvailable = false;
 		$template = preg_replace_callback('/{{toggle-(.*?)}}/s', 'chooseConvertersCallback', $template);
-		//if($thereWasAtLeastOneConverterAvailable == false) return;
+		$thereWasAtLeastOneConverterAvailable = (strpos($template, '-enable') !== false) || (strpos($template, '-disable') !== false);
+		if($thereWasAtLeastOneConverterAvailable == false) return;
 		return $template;
 		}
 	}
@@ -1473,20 +1474,6 @@ function chooseConvertersCallback($match)
 	$converterId = $match[1];
 	$converters = getConverters();
 	if(!array_key_exists($converterId, $converters)) return; //'Not found '.$converterId;
-	$converterPlaceholder = '{{toggle-'.$converterId.'}}';
-
-	$hideConverterConfigurationKey = 'hideAdminOption'.$converterId;
-	$hideConverter = getGlobalConfigItem($hideConverterConfigurationKey);
-
-	if($hideConverter == 'true')
-		{
-		$template = str_replace($converterPlaceholder, '', $template);
-		continue;
-		}
-	else
-		{
-		$thereWasAtLeastOneConverterAvailable = true;
-		}
 
 	$doNotUseConverter = 'doNotUseConverter'.$converterId;
 	if(isset($_POST['converter-'.$converterId.'-enable']))
@@ -1497,6 +1484,16 @@ function chooseConvertersCallback($match)
 		{
 		setGlobalConfigItem($doNotUseConverter, 'false');
 		}
+
+	$converterPlaceholder = '{{toggle-'.$converterId.'}}';
+	$hideConverterConfigurationKey = 'hideAdminOption'.$converterId;
+	$hideConverter = getGlobalConfigItem($hideConverterConfigurationKey);
+	
+	if($hideConverter == 'true')
+		{
+		return '';
+		}
+
 	$interfacePath = null;
 	$convertConfig = getGlobalConfigItem($doNotUseConverter);
 	if($convertConfig === null || $convertConfig == 'false' || $convertConfig == false)
