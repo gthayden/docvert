@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          openoffice.org-server
 # Default-Start:     2 3 4 5
