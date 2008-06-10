@@ -829,12 +829,7 @@ function getTemporaryDirectoryInsideDirectory($makeInsideDirectory, $prefix = 'd
 			webServiceError('&error-unable-to-make-directory;', 500, Array('temporaryPath'=>$temporaryDirectory, 'exitAfterXLoops'=>$exitAfterXLoops));
 			}
 		}
-	while(@!mkdir($temporaryDirectory, 0770));
-	$groupName = getGlobalConfigItem('runExternalApplicationAsUser');
-	if($groupName == null) {
-		$groupName = 'docvert';
-	}
-	@chgrp($temporaryDirectory, $groupName); //change to group "docvert"
+	while(@!mkdir($temporaryDirectory, 0700)); //read/write/execute for DIRECTORIES of www-data (or web server user)
 	return $temporaryDirectory;
 	}
 
@@ -1325,8 +1320,7 @@ function getPhpVersion()
 */
 function phpErrorHandler($errorLevel, $message, $file, $line)
 	{
-
-	//this uses stripos rather than docvert containsString() in order to be more stand alone
+	//this uses stripos rather than docvert containsString() in order to be more stand alone [read: less dependant on other functions]
 	if(
 		stripos($message, "rmdir") === false &&
 		stripos($message, "mkdir") === false &&

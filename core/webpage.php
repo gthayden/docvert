@@ -165,11 +165,11 @@ class Themes
 
 	function unzipConversionResults($sourceZipPath, $previewDirectory)
 		{
-		chmod($previewDirectory, 0777);
+		chmod($previewDirectory, 0700); //read/write/execute for DIRECTORIES of www-data (or web server user)
 		$destinationZipPath = $previewDirectory.DIRECTORY_SEPARATOR.basename($sourceZipPath);
 		$this->destinationZip = $destinationZipPath;
 		if(!moveFile($sourceZipPath, $destinationZipPath)) webServiceError('&error-webpage-unable-to-move;', 500, Array('source'=>$sourceZipPath, 'destination'=>$destinationZipPath) );
-		chmod($destinationZipPath, 0777);
+		chmod($destinationZipPath, 0600); //read/write but not execute for FILES of www-data (or web server user)
 		include_once('./core/lib/pclzip-2-6/pclzip.lib.php');
 		$archive = new PclZip($destinationZipPath);
 		if (($archivedFiles = $archive->listContent()) == 0)
@@ -183,7 +183,7 @@ class Themes
 			$extractedDestinationPath = substr($extractedFileMetaData['filename'], 2);
 			if(file_exists($extractedDestinationPath))
 				{
-				chmod($extractedDestinationPath, 0777);
+				chmod($extractedDestinationPath, 0600); //read/write but not execute for FILES of www-data (or web server user)
 				}
 			}
 		return $this->destinationZip;
