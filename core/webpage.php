@@ -14,10 +14,12 @@ class Themes
 	public $allowedAdminAccess;
 	public $previewDirectory;
 	public $destinationZip;
-	public $converters = Array(
+	public $converters = Array
+		(
 		'openofficeorg'=>'OpenOffice.org 2+',
 		'abiword'=>'Abiword',
-		'pyodconverter' => 'PyODConverter');
+		'pyodconverter' => 'PyODConverter'
+		);
 
 	function __construct()
 		{
