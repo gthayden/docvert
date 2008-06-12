@@ -921,7 +921,7 @@ function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDire
 		$template = getXHTMLTemplate();
 		$template = str_replace('{{title}}', $title, $template);
 		$template = str_replace('{{body}}', '<h1>Document Notices</h1>'."\n".'<p class="timestamp"><span class="time">'.date('r').'</span></p>'.$body, $template);
-		$template = str_replace('{{head}}', '<style type="text/css"> body {font-size:small} .error{background:#ffeeee;border: solid 1px red; padding:10px;margin-bottom:10px} h1{font-size:medium;} p {margin-top:0px;} .error h1{margin:0px;padding:0px;}  .timestamp {font-size:x-small;color:#999999} .validation{background:#eeeeff; border: solid 1px blue; padding:10px;margin-bottom:10px} p {margin:0px;} .warning {background:#eeeeff; border: solid 1px blue; padding:10px;margin-bottom:10px} </style>', $template);
+		$template = str_replace('{{head}}', '<style type="text/css"> body {font-size:small} .note{background:#eeeeff;border:solid 1px #9999ff; padding:10px;margin-bottom:10px} .error{background:#ffeeee;border: solid 1px red; padding:10px;margin-bottom:10px} h1{font-size:medium;} p {margin-top:0px;} .error h1{margin:0px;padding:0px;}  .timestamp {font-size:x-small;color:#999999} .validation{background:#eeeeff; border: solid 1px blue; padding:10px;margin-bottom:10px} p {margin:0px;} .warning {background:#eeeeff; border: solid 1px blue; padding:10px;margin-bottom:10px} </style>', $template);
 		file_put_contents($testResultsPath, $template);
 		}
 	$stylesXmlPath = $contentDirectory.DIRECTORY_SEPARATOR.'styles.xml';
@@ -1876,6 +1876,17 @@ function generateDocument($pages, $generatorPipeline)
 	header('Content-disposition: attachment; filename='.basename($openDocumentPath));
 	header('Content-type: application/vnd.oasis.opendocument.text');
 	readfile($openDocumentPath);
+	}
+
+function formatFileSize($fileSize)
+	{
+	$language = getGlobalConfigItem('language');
+	if($language == null) $language = 'english';		
+	$fileSizeName = array(
+		'english' => array(' B&#160;', " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"),
+		'french' => array(' B&#160;', " ko", " Mo", " Go", " To", " Po", " Eo", " Zo", " Yo")
+		);
+	return round($fileSize/pow(1024, ($i = floor(log($fileSize, 1024))))) . $fileSizeName[$language][$i];
 	}
 
 

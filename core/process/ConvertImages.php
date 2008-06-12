@@ -12,14 +12,10 @@ class ConvertImages extends PipelineProcess
 		if(!array_key_exists('formats', $this->elementAttributes)) webServiceError('&error-process-convertimages-formats;');
 		if(!array_key_exists('deleteOriginals', $this->elementAttributes)) webServiceError('&error-process-convertimages-deleteoriginals-required;');
 
-		$jpegQuality = null;
+		$jpegQuality = 75;
 		if(isset($this->elementAttributes['jpegQuality']))
 			{
 			$jpegQuality = $this->elementAttributes['jpegQuality'];
-			}
-		else
-			{
-			$jpegQuality = 75;
 			}
 		if($jpegQuality <= 0 || $jpegQuality >= 100)
 			{
@@ -36,6 +32,8 @@ class ConvertImages extends PipelineProcess
 			$deleteOriginals = (strtolower($this->elementAttributes['deleteOriginals']) == "true");
 			$currentXml = $this->convertImageFormat($fromFormat, $toFormat, $this->contentDirectory, $deleteOriginals, $currentXml, $jpegQuality);
 			}
+
+		$this->losslesslyOptimiseImages();
 		//add xml references to the newly created image files...
 		//do it using OpenDocument... ugh... assume OpenDocument for now...
 		$this->formatsConverted = null;
@@ -46,6 +44,52 @@ class ConvertImages extends PipelineProcess
 			}
 		//displayXmlString($currentXml);
 		return $currentXml;
+		}
+
+	function losslesslyOptimiseImages()
+		{
+		$jpegPaths = glob($this->contentDirectory.DIRECTORY_SEPARATOR.'*.jp*');
+		foreach($jpegPaths as $jpegPath)
+			{
+			$originalModifiedTime = filemtime($jpegPath);
+			$originalFilesize = filesize($jpegPath);
+			$response = shellCommand('jpegoptim -o '.$jpegPath);
+			clearstatcache();
+			$optimisedFilesize = filesize($jpegPath);
+			$optimisedModifiedTime = filemtime($jpegPath);
+			if($originalModifiedTime != $optimisedModifiedTime || $originalFilesize != $optimisedFilesize)
+				{
+				$this->logError(basename($pngPath).' &image-optimised-from; '.formatFileSize($originalFilesize).' &to; '.formatFileSize($optimisedFilesize).' ('.(round(($optimisedFilesize/$originalFilesize)*100)).'&percent;)', 'note');
+				}
+			else if(strpos($response, 'not found') !== false)
+				{
+				$this->logError('&jpegoptim-not-available;', 'warning');
+				}
+			else //jpegoptim made no optimisations, stay quiet about it
+				{
+				}
+			}
+		$pngPaths = glob($this->contentDirectory.DIRECTORY_SEPARATOR.'*.png');
+		foreach($pngPaths as $pngPath)
+			{
+			$originalModifiedTime = filemtime($pngPath);
+			$originalFilesize = filesize($pngPath);
+			$response = shellCommand('optipng -o7 '.$pngPath);
+			clearstatcache();
+			$optimisedFilesize = filesize($pngPath);
+			$optimisedModifiedTime = filemtime($pngPath);
+			if($originalModifiedTime != $optimisedModifiedTime || $originalFilesize != $optimisedFilesize)
+				{
+				$this->logError(basename($pngPath).' &image-optimised-from; '.formatFileSize($originalFilesize).' &to; '.formatFileSize($optimisedFilesize).' ('.(round(($optimisedFilesize/$originalFilesize)*100)).'&percent;)', 'note');
+				}
+			else if(strpos($response, 'not found') !== false)
+				{
+				$this->logError('&optipng-not-available;', 'warning');
+				}
+			else //optipng made no optimisations, stay quiet about it
+				{
+				}
+			}
 		}
 
 	function convertImageFormat($fromFormat, $toFormat, $insideDirectory, $deleteOriginals, &$currentXml, $jpegQuality)

@@ -305,20 +305,8 @@ class Themes
 
 	function downloadSize()
 		{
-		$language = getGlobalConfigItem('language');
-		if($language == null)
-			{
-			$language = 'english';
-			}
-		
-		$fileSize = filesize($this->destinationZip);
-		$fileSizeName = array(
-			'english' => array(' B&#160;', " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"),
-			'french' => array(' B&#160;', " ko", " Mo", " Go", " To", " Po", " Eo", " Zo", " Yo")
-			);
-		return round($fileSize/pow(1024, ($i = floor(log($fileSize, 1024))))) . $fileSizeName[$language][$i];
+		return formatFileSize(filesize($this->destinationZip));
 		}
-
 
 	function afterConversion()
 		{
