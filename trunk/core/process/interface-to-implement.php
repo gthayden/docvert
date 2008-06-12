@@ -30,11 +30,11 @@ abstract class PipelineProcess
 
 	public function logError($errorMessage, $errorType='error')
 		{
-		if($errorType != 'error' && $errorType != 'warning' && $errorType != 'raw') die('Error type must only be either "error" or "warning" or "raw" (for when the message is appended as is). Was "'.$errorType.'".');
+		if($errorType != 'error' && $errorType != 'warning' && $errorType != 'raw' && $errorType != 'note') die('Error type must only be either "error" or "warning" or "raw" (for when the message is appended as is). Was "'.$errorType.'".');
 		if(!function_exists('replaceLanguagePlaceholder')) include_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'webpage.php');
 
 		$errorMessage = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $errorMessage);
-		if($errorType == 'error' || $errorType == 'warning')
+		if($errorType == 'error' || $errorType == 'warning' || $errorType == 'note')
 			{
 			$errorMessage = '<div class="'.$errorType.'">'.$errorMessage."</div>\n\n";
 			}
