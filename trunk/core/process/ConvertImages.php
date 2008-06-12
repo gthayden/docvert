@@ -51,44 +51,47 @@ class ConvertImages extends PipelineProcess
 		$jpegPaths = glob($this->contentDirectory.DIRECTORY_SEPARATOR.'*.jp*');
 		foreach($jpegPaths as $jpegPath)
 			{
-			$originalModifiedTime = filemtime($jpegPath);
-			$originalFilesize = filesize($jpegPath);
-			$response = shellCommand('jpegoptim -o '.$jpegPath);
-			clearstatcache();
-			$optimisedFilesize = filesize($jpegPath);
-			$optimisedModifiedTime = filemtime($jpegPath);
-			if($originalModifiedTime != $optimisedModifiedTime || $originalFilesize != $optimisedFilesize)
-				{
-				$this->logError(basename($pngPath).' &image-optimised-from; '.formatFileSize($originalFilesize).' &to; '.formatFileSize($optimisedFilesize).' ('.(round(($optimisedFilesize/$originalFilesize)*100)).'&percent;)', 'note');
-				}
-			else if(strpos($response, 'not found') !== false)
-				{
-				$this->logError('&jpegoptim-not-available;', 'warning');
-				}
-			else //jpegoptim made no optimisations, stay quiet about it
-				{
-				}
+			$this->losslesslyOptimiseImage($jpegPath, 'jpeg');
 			}
 		$pngPaths = glob($this->contentDirectory.DIRECTORY_SEPARATOR.'*.png');
 		foreach($pngPaths as $pngPath)
 			{
-			$originalModifiedTime = filemtime($pngPath);
-			$originalFilesize = filesize($pngPath);
-			$response = shellCommand('optipng -o7 '.$pngPath);
-			clearstatcache();
-			$optimisedFilesize = filesize($pngPath);
-			$optimisedModifiedTime = filemtime($pngPath);
-			if($originalModifiedTime != $optimisedModifiedTime || $originalFilesize != $optimisedFilesize)
+			$this->losslesslyOptimiseImage($pngPath, 'png');
+			}
+		}
+
+	function losslesslyOptimiseImage($path, $jpegOrPng)
+		{
+		$originalModifiedTime = filemtime($path);
+		$originalFilesize = filesize($path);
+		if($jpegOrPng == 'jpeg')
+			{
+			$response = shellCommand('jpegoptim -o '.$path);
+			}
+		elseif($jpegOrPng == 'png')
+			{
+			$response = shellCommand('optipng -o7 '.$path);
+			}
+		clearstatcache();
+		$optimisedFilesize = filesize($path);
+		$optimisedModifiedTime = filemtime($path);
+		if($originalModifiedTime != $optimisedModifiedTime || $originalFilesize != $optimisedFilesize)
+			{
+			$this->logError(basename($path).' &image-optimised-from; '.formatFileSize($originalFilesize).' &to; '.formatFileSize($optimisedFilesize).' ('.(round(($optimisedFilesize/$originalFilesize)*100)).'&percent;)', 'note');
+			}
+		else if(strpos($response, 'not found') !== false)
+			{
+			if($jpegOrPng == 'jpeg')
 				{
-				$this->logError(basename($pngPath).' &image-optimised-from; '.formatFileSize($originalFilesize).' &to; '.formatFileSize($optimisedFilesize).' ('.(round(($optimisedFilesize/$originalFilesize)*100)).'&percent;)', 'note');
+				$this->logError('&jpegoptim-not-available;', 'warning');
 				}
-			else if(strpos($response, 'not found') !== false)
+			elseif($jpegOrPng == 'png')
 				{
 				$this->logError('&optipng-not-available;', 'warning');
 				}
-			else //optipng made no optimisations, stay quiet about it
-				{
-				}
+			}
+		else //jpegoptim made no optimisations, stay quiet about it
+			{
 			}
 		}
 
