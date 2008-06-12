@@ -439,6 +439,8 @@ class Themes
 		{
 		$operatingSystemFamily = getOperatingSystemFamily();
 		if(!$this->allowedAdminAccess || $operatingSystemFamily != 'Unix') return;
+		$hideOpenOfficeOrgServerOption = getGlobalConfigItem('hideAdminOptionOpenOfficeOrgServer');
+		if($hideOpenOfficeOrgServerOption == "true") return;
 
 		$userMessage = null;
 		$pidFile = '/tmp/openoffice.org-server.pid';
@@ -552,6 +554,8 @@ class Themes
 	function setupOpenOfficeOrg()
 		{
 		if(!$this->allowedAdminAccess) return;
+		$hideOpenOfficeOrgOption = getGlobalConfigItem('hideAdminOptionOpenOfficeOrg');
+		if($hideOpenOfficeOrgOption == "true") return;
 
 		$numberOfOpenOfficeBasedConvertersFound = 0;
 		$openOfficeBasedConverters = Array('openofficeorg', 'jodconverter', 'pyodconverter');
@@ -573,21 +577,18 @@ class Themes
 
 		$toggleStatus = '';
 		include_once('config.php');
-		if(DIRECTORY_SEPARATOR == '/') //Unix, sudo is available
+		if(DIRECTORY_SEPARATOR == '/') //Unix, so sudo is available
 			{
-
 			$disallowXVFB = getGlobalConfigItem('disallowXVFB');
 			if(isset($_POST['startOpenOfficeOrgServerLinux']))
 				{
 				$shellCommandTemplate = '{{elevate-privledges}} {{bash-script}} {{xvfb}}';
 				$xvfbCommand = '';
 				$elevatePrivledges = '';
-
 				if($disallowXVFB)
 					{
 					$xvfbCommand = 'true';
 					}
-
 				$shellCommandTemplate = str_replace('{{xvfb}}', $xvfbCommand, $shellCommandTemplate);
 				$shellCommandTemplate = str_replace('{{elevate-privledges}}', $elevatePrivledges, $shellCommandTemplate);
 				$output = shellCommand($shellCommandTemplate, 3);
@@ -600,7 +601,6 @@ class Themes
 					}
 				}
 			};
-
 		$template = str_replace('{{toggle}}', $toggleStatus, $template);
 		return $template;
 		}
@@ -609,7 +609,10 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 		$runAsCustomUser = '';
-		include_once('config.php');	
+		include_once('config.php');
+		$hideRunAsUserOption = getGlobalConfigItem('hideAdminRunAsUser');
+		if($hideRunAsUserOption == "false") return;
+
 		if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
 			{
 			setGlobalConfigItem('runExternalApplicationAsUser', $_REQUEST['runasuser']);
@@ -651,6 +654,8 @@ class Themes
 	function nonOpenDocumentUploads()
 		{
 		if(!$this->allowedAdminAccess) return;
+		$hideNonOpenDocumentUploads = getGlobalConfigItem('hideAdminNonOpenDocumentUploads');
+		if($hideNonOpenDocumentUploads == "false") return;
 
 		if(isset($_POST['disablenonopendocument']))
 			{
@@ -763,6 +768,8 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 		if(DIRECTORY_SEPARATOR == '\\') return; //windows
+		$hideOpenOfficeOrgOption = getGlobalConfigItem('hideAdminOptionOpenOfficeOrg');
+		if($hideOpenOfficeOrgOption == "true") return;
 		
 		$disallowXVFB = getGlobalConfigItem('disallowXVFB');
 		if($disallowXVFB === null || $disallowXVFB === 'false')
