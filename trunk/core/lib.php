@@ -397,13 +397,24 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			elseif($operatingSystemFamily == 'Unix')
 				{
 				$commandTemplate = '{elevatePermissions} {scriptPath} --stream';
-				$commandTemplateVariable['elevatePermissions'] = 'sudo';
 				$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
-				if($customUser !== null && $customUser != '' && $customUser != 'root')
+				$superUserPreference = getGlobalConfigItem('superUserPreference');
+				if($superUserPreference == null)
 					{
-					$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
+					$superUserPreference = 'sudo';
 					}
-				
+				if($superUserPreference == 'sudo')
+					{
+					$commandTemplateVariable['elevatePermissions'] = 'sudo';
+					if($customUser !== null && $customUser != '' && $customUser != 'root')
+						{
+						$commandTemplateVariable['elevatePermissions'] = ' -u '.$customUser;
+						}
+					}
+				elseif($superUserPreference == 'setuid')
+					{
+					$commandTemplate .= ' --setuid='.$customUser;
+					}
 				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-abiword.py';
 				$stdInData = file_get_contents($commandTemplateVariable['inputDocumentPath']);
 				}
@@ -464,7 +475,6 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 			}
 		$command = str_replace('{'.$key.'}', $replaceValue, $command);
 		}
-	
 	if(!$stdInData)
 		{
 		$output = shellCommand($command);
