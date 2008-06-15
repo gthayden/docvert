@@ -408,7 +408,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 					$commandTemplateVariable['elevatePermissions'] = 'sudo';
 					if($customUser !== null && $customUser != '' && $customUser != 'root')
 						{
-						$commandTemplateVariable['elevatePermissions'] = ' -u '.$customUser;
+						$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
 						}
 					}
 				elseif($superUserPreference == 'setuid')
