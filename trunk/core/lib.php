@@ -388,14 +388,15 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				}
 			break;
 		case 'abiword':
-			$commandTemplate = '{elevatePermissions} {scriptPath} {inputDocumentPath}';
 			if($operatingSystemFamily == 'Windows')
 				{
+				$commandTemplate = '{elevatePermissions} {scriptPath} {inputDocumentPath}';
 				$commandTemplateVariable['inputDocumentPath'] = $commandTemplateVariable['inputDocumentPath'];
 				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'windows-specific'.DIRECTORY_SEPARATOR.'convert-using-abiword.bat';
 				}
 			elseif($operatingSystemFamily == 'Unix')
 				{
+				$commandTemplate = '{elevatePermissions} {scriptPath} --stream';
 				$commandTemplateVariable['elevatePermissions'] = 'sudo';
 				$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
 				if($customUser !== null && $customUser != '' && $customUser != 'root')
@@ -403,7 +404,8 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 					$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
 					}
 				
-				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-abiword.sh';
+				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-abiword.py';
+				$stdInData = file_get_contents($commandTemplateVariable['inputDocumentPath']);
 				}
 			break;
 		case 'jodconverter':
@@ -1851,7 +1853,6 @@ function generateDocument($pages, $generatorPipeline)
 			$tidiedPageContents = preg_replace($scriptTagPattern, '', $tidiedPageContents);
 			$questionMarkPattern = "/<\\?.*?\\?>/is"; //as strangely used on news.yahoo.com
 			$tidiedPageContents = preg_replace($questionMarkPattern, '', $tidiedPageContents);
-
 			$thisPage = str_replace('{{page}}', $tidiedPageContents, $thisPage);
 			$pageXml .= $thisPage;
 			}

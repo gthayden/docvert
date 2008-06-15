@@ -271,7 +271,7 @@ Step 3. Do you want to convert Word Documents or just
 			command to add some lines to sudoers,
 			Add this line
 
-	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-abiword.sh
+	www-data ALL=(NAMEOFUSER) NOPASSWD: /var/www/docvert/core/config/unix-specific/convert-using-abiword.py
 
 			Replace NAMEOFUSER with.. the name of the user but
 			leave the brackets () because sudoers wants them.
