@@ -708,7 +708,8 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 		{
 		webServiceError('&error-oasis-path;');
 		}
-	include_once(DOCVERT_DIR.'core/lib/pclzip-2-6/pclzip.lib.php');
+	ini_set('include_path',ini_get('include_path').':'.DOCVERT_DIR.'core/lib/pclzip-2-6:');
+	include_once('pclzip.lib.php');
 	$unknownImageIndex = 1;
 	$documentDirectory = dirname($oasisOpenDocumentPath).DIRECTORY_SEPARATOR;
 	$archive = new PclZip($oasisOpenDocumentPath);
