@@ -1921,15 +1921,15 @@ function getLanguageToUse()
 		elseif(isset($_ENV['LC_MESSAGES']) || isset($_ENV[' LC_ALL']) ||isset($_ENV['LANG']))
 			{
 			$langCode = '';
-			if(isset($_ENV['LC_MESSAGES']))
+			if(isset($_ENV['LC_MESSAGES']) && trim($_ENV['LC_MESSAGES']))
 				{
 				$langCode = $_ENV['LC_MESSAGES'];
 				}
-			elseif(isset($_ENV['LC_ALL']))
+			elseif(isset($_ENV['LC_ALL']) && trim($_ENV['LC_ALL']))
 				{
 				$langCode = $_ENV['LC_ALL'];
 				}
-			elseif(isset($_ENV['LANG']))
+			elseif(isset($_ENV['LANG']) && trim($_ENV['LANG']))
 				{
 				$langCode = $_ENV['LANG'];
 				}
