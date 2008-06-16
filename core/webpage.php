@@ -1366,9 +1366,10 @@ class Themes
 		$chosenLanguage = getGlobalConfigItem('language');
 		if($chosenLanguage == null)
 			{
-			$chosenLanguage = 'english';
+			$chosenLanguage = '(auto)';
 			}
 
+		$languages[] = getAutoDetectLanguage();
 		foreach($languageDirectories as $languageDirectory)
 			{
 			$languages[] = basename($languageDirectory);
@@ -1383,9 +1384,11 @@ class Themes
 				{
 				$languageHtml .= ' selected="selected"';
 				}
-			$languageHtml .= '>'.$language.'</option>';
+			$languageHtml .= '>';
+			$languageCode = '&language-name-'.str_replace(' ', '-', $language).';';
+			$languageHtml .= preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $languageCode);
+			$languageHtml .= '</option>';
 			}
-
 		$pageTemplate = $this->getThemeFragment('admin-choose-language.htmlf');
 		$pageTemplate = str_replace('{{list-of-languages}}', $languageHtml, $pageTemplate);
 		return $pageTemplate;
@@ -1512,16 +1515,18 @@ function chooseConvertersCallback($match)
 
 function replaceLanguagePlaceholder($match)
 	{
-	$language = 'english';
+	if(!is_array($match)) $match = Array($match, '');
+
+	$language = getLanguageToUse();
 	if(!defined('DOCVERT_ERROR_OCCURED'))
 		{
-		$language = getGlobalConfigItem('language');
-		if($language == null)
+		$language = getLanguageToUse();
+		if($language == null || $language == '(auto)')
 			{
 			$language = 'english';
 			}
 		}
-
+	
 	if($language == getFakeLanguageForTranslators())
 		{
 		return $match[0];
@@ -1531,7 +1536,6 @@ function replaceLanguagePlaceholder($match)
 
 	$placeholderPath = getLanguagePlaceholderPath($languagePlaceholderId, $language);
 
-	//if($languagePlaceholderId == 'disable-pipe-openofficeorg-button.htmlf') die(print_r($match, true).'<hr />'.$languagePlaceholderId.'<hr />'.$placeholderPath);
 	if(file_exists($placeholderPath))
 		{
 		return trim(file_get_contents($placeholderPath));
@@ -1559,11 +1563,6 @@ function languageToISO639($language)
 		"french"=>"fr"
 		);
 	return $languages[$language];
-	}
-
-function getFakeLanguageForTranslators()
-	{
-	return '(for translators)';
 	}
 
 function displayLocalisedErrorPage($message, $errorNumber, $errorData)
