@@ -1891,14 +1891,83 @@ function generateDocument($pages, $generatorPipeline)
 
 function formatFileSize($fileSize)
 	{
-	$language = getGlobalConfigItem('language');
-	if($language == null) $language = 'english';		
+	$language = getLanguageToUse();
 	$fileSizeName = array(
 		'english' => array(' B&#160;', " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"),
 		'french' => array(' B&#160;', " ko", " Mo", " Go", " To", " Po", " Eo", " Zo", " Yo")
 		);
 	return round($fileSize/pow(1024, ($i = floor(log($fileSize, 1024))))) . $fileSizeName[$language][$i];
 	}
+
+
+function getLanguageToUse()
+	{
+	$language = getGlobalConfigItem('language');
+	if($language == '' || $language == getAutoDetectLanguage())
+		{
+		$langCodes = Array();
+		if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+			{
+			$httpLangCodes = substringBefore($_SERVER['HTTP_ACCEPT_LANGUAGE'], ';');
+			$httpLangCodes = explode(',', $httpLangCodes);
+			foreach($httpLangCodes as $httpLangCode)
+				{
+				if(strlen($httpLangCode) >= 2)
+					{
+					$langCodes[] = substr($httpLangCode, 0, 2);
+					}
+				}
+			}
+		elseif(isset($_ENV['LC_MESSAGES']) || isset($_ENV[' LC_ALL']) ||isset($_ENV['LANG']))
+			{
+			$langCode = '';
+			if(isset($_ENV['LC_MESSAGES']))
+				{
+				$langCode = $_ENV['LC_MESSAGES'];
+				}
+			elseif(isset($_ENV['LC_ALL']))
+				{
+				$langCode = $_ENV['LC_ALL'];
+				}
+			elseif(isset($_ENV['LANG']))
+				{
+				$langCode = $_ENV['LANG'];
+				}
+
+			if(strlen($langCode) >= 2)
+				{
+				$langCodes = Array(substr($langCode, 0, 2));
+				}
+			}
+		foreach($langCodes as $langCode)
+			{
+			switch($langCode)
+				{
+				case 'en':
+					return 'english';
+				case 'fr':
+					return 'french';
+				}
+			}
+		return 'english';
+		}
+	else
+		{
+		return $language;
+		}
+	}
+
+
+function getFakeLanguageForTranslators()
+	{
+	return '(for translators)';
+	}
+
+function getAutoDetectLanguage()
+	{
+	return '(auto)';
+	}
+
 
 
 function webServiceError($message, $errorNumber = 500, $errorData = null)
