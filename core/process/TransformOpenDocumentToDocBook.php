@@ -31,7 +31,7 @@ class TransformOpenDocumentToDocBook extends PipelineProcess
 				webServiceError('&error-process-transformopendocumenttodocbook-openofficefile;');
 				break;
 			default:
-				webServiceError('&error-process-transformopendocumenttodocbook-unsupported-file;', 500, Array('documentType'=>$documentType) );
+				webServiceError('&error-process-transformopendocumenttodocbook-unsupported-file; ['.revealXml($currentXml).']', 500, Array('documentType'=>$documentType) );
 				break;
 			}
 		return $currentXml;

@@ -212,8 +212,39 @@ function ensureMakeDirectory($makeInsideDirectory, $directoryName)
 			webServiceError('&problem-creating-directory', 500, Array('directoryToMake'=>$directoryToMake, 'numberOfAttempts'=>$variation) );
 			}
 		}
-	while (@!mkdir($directoryToMake, 0777));
+	while (!mkdir($directoryToMake, 0700));
 	return $directoryToMake;
+	}
+
+function debug_ensureDirectoryReadable($path)
+	{
+	print $path.' exists?';
+	if(file_exists($path))
+		{
+		print "Yes.";
+		}
+	else
+		{
+		print "No.";
+		}
+	print "<hr />";
+	$user = posix_getpwuid(fileowner($path));
+	print "Owned by user: ";
+	print_r($user);
+	$group = posix_getgrgid(filegroup($path));
+	print "<hr />";
+	print "Owned by group: ";
+	print_r($group);
+	print "<hr />";
+	$wildcardInsideDirectory = $path.DIRECTORY_SEPARATOR.'*';
+	print $wildcardInsideDirectory.'<hr />';
+	print "Globbing directory results = ";
+	$resultOfGlob = glob($wildcardInsideDirectory);
+	print_r($resultOfGlob);
+	print "<hr />";
+	print "File permissions: ".substr(sprintf('%o', fileperms($path)), -4).'<hr />';
+	if($resultOfGlob === false) webServiceError('&error-unable-to-read-directory;', 500, Array('path'=>$path));
+	die("Success");
 	}
 
 /**
@@ -254,7 +285,7 @@ function moveUploadToConversionDirectory($file, $temporaryDirectory)
 function isAnOasisOpenDocument($fileUploadArray)
 	{
 	$isAnOasisOpenDocument = false;
-	$validOasisOpenDocumentMimeType = 'application/vnd.oasis.opendocument.text'; // .text not .presentation or .graphics...
+	$validOasisOpenDocumentMimeType = 'application/vnd.oasis.opendocument.text'; // ".text" not ".presentation" or ".graphics"...
 	if(stripos($fileUploadArray['type'], $validOasisOpenDocumentMimeType) === false)
 		{
 		$pathInfo = pathinfo($fileUploadArray['name']);
@@ -779,9 +810,13 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 			}
 		}
 	$contentXmlPath = $documentDirectory.'docvert-content.xml';
-	if(count($odfObjects) >= 1 && file_exists($contentXmlPath))
+	if(!file_exists($contentXmlPath))
 		{
-		// Rename image
+		webServiceError('&error-no-content-xml-file-found;');
+		}
+	if(count($odfObjects) >= 1)
+		{
+		// Rename image paths
 		$contentXml = file_get_contents($contentXmlPath);
 		foreach($odfObjects as $odfObject)
 			{
@@ -924,6 +959,7 @@ function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDire
 	$pipelineStages = xmlStringToArray($pipelineString);
 	$currentXml = file_get_contents($contentPath);
 	$currentXml = fixImagePaths($currentXml);
+
 	$pipelineSettings = array("pipeline" => $pipelineToUse, "autopipeline" => $autoPipeline);
 	processAPipelineLevel($pipelineStages, $currentXml, $pipelineDirectory, $contentDirectory, $previewDirectory, $pipelineSettings);
 	$testResultsPath = $contentDirectory.DIRECTORY_SEPARATOR.'test.html';
@@ -1056,7 +1092,7 @@ function processAPipelineStage($elementAttributes, $currentXml, $pipelineDirecto
 	$processPath = DOCVERT_DIR.'core/process/'.$elementAttributes['process'].'.php';
 	if(file_exists($processPath))
 		{
-		require_once($processPath);
+		include_once($processPath);
 		if(class_exists($elementAttributes['process']))
 			{
 			$docvertTransformDirectory = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'transform'.DIRECTORY_SEPARATOR;
