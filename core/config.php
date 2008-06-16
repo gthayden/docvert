@@ -8,6 +8,7 @@ function getConfigDirectory()
 	if(DIRECTORY_SEPARATOR == '/') //if(this is a unix)
 		{
 		$configDirectory = '/etc/docvert/';
+		if(!file_exists($configDirectory)) $configDirectory = dirname(__file__).'/config/unix-specific/config/';
 		}
 	else
 		{
