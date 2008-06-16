@@ -1517,14 +1517,10 @@ function replaceLanguagePlaceholder($match)
 	{
 	if(!is_array($match)) $match = Array($match, '');
 
-	$language = getLanguageToUse();
+	$language = 'english';
 	if(!defined('DOCVERT_ERROR_OCCURED'))
 		{
 		$language = getLanguageToUse();
-		if($language == null || $language == '(auto)')
-			{
-			$language = 'english';
-			}
 		}
 	
 	if($language == getFakeLanguageForTranslators())
