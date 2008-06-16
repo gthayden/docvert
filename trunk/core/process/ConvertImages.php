@@ -9,6 +9,7 @@ class ConvertImages extends PipelineProcess
 	
 	public function process($currentXml)
 		{
+
 		if(!array_key_exists('formats', $this->elementAttributes)) webServiceError('&error-process-convertimages-formats;');
 		if(!array_key_exists('deleteOriginals', $this->elementAttributes)) webServiceError('&error-process-convertimages-deleteoriginals-required;');
 
@@ -32,7 +33,6 @@ class ConvertImages extends PipelineProcess
 			$deleteOriginals = (strtolower($this->elementAttributes['deleteOriginals']) == "true");
 			$currentXml = $this->convertImageFormat($fromFormat, $toFormat, $this->contentDirectory, $deleteOriginals, $currentXml, $jpegQuality);
 			}
-
 		$this->losslesslyOptimiseImages();
 		//add xml references to the newly created image files...
 		//do it using OpenDocument... ugh... assume OpenDocument for now...
@@ -42,7 +42,7 @@ class ConvertImages extends PipelineProcess
 			{
 			webServiceError('&error-disabled-crop-canvas;');
 			}
-		//displayXmlString($currentXml);
+
 		return $currentXml;
 		}
 
@@ -105,7 +105,8 @@ class ConvertImages extends PipelineProcess
 		$operatingSystemFamily = getOperatingSystemFamily();
 		$imagePathMask = $insideDirectory.DIRECTORY_SEPARATOR.'*.'.$fromFormat;
 		$fromImagePaths = glob($imagePathMask);
-
+		//debug_ensureDirectoryReadable($insideDirectory);
+		if($fromImagePaths === false) return $currentXml;
 		foreach($fromImagePaths as $fromImagePath)
 			{
 			$escapedFromImagePath = escapeshellarg($fromImagePath);
@@ -204,7 +205,7 @@ class ConvertImages extends PipelineProcess
 				{
 				$currentXml = str_replace(basename($fromImagePath), basename($toImagePath), $currentXml);
 				//die($fromImagePath.' '.$toImagePath);
-				//displayXmlString($currentXml);
+				displayXmlString($currentXml);
 				}
 			}
 
