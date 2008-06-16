@@ -107,7 +107,7 @@ FCKConfig.ToolbarSets["Basic"] = [
 ] ;
 
 FCKConfig.ToolbarSets["Default"] = [
-	['Style','-','Bold','Italic','-','Link','Unlink','OrderedList','UnorderedList','-','Table', '-', 'JustifyLeft','JustifyCenter','JustifyRight','-','Source']
+	['-', '-', '-', 'Style','-','Bold','Italic','-','Link','Unlink','OrderedList','UnorderedList','-','Table', '-', 'JustifyLeft','JustifyCenter','JustifyRight','-','Source']
 ] ;
 
 
