@@ -22,7 +22,14 @@ class GeneratePostConversionEditorFiles extends PipelineProcess
 			$this->saveFile('docvert--all-docbook.xml', $editableDocbook);
 			}
 
-		$editorTemplatePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'fckeditor'.DIRECTORY_SEPARATOR.'editor-template.html';
+		
+		$chosenTheme = getGlobalConfigItem('theme');
+		if($chosenTheme == null)
+			{
+			$chosenTheme = 'docvert';
+			}
+
+		$editorTemplatePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$chosenTheme.DIRECTORY_SEPARATOR.'fckeditor-template.html';
 		$editorTemplate = file_get_contents($editorTemplatePath);
 		$editorTemplate = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $editorTemplate);
 
