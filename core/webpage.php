@@ -599,7 +599,7 @@ class Themes
 		$runAsCustomUser = '';
 		include_once('config.php');
 		$hideRunAsUserOption = getGlobalConfigItem('hideAdminRunAsUser');
-		if($hideRunAsUserOption == "false") return;
+		if($hideRunAsUserOption == "true") return;
 
 		if(isset($_REQUEST['setcustomuser']) && isset($_REQUEST['runasuser']))
 			{
@@ -643,7 +643,7 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 		$hideNonOpenDocumentUploads = getGlobalConfigItem('hideAdminNonOpenDocumentUploads');
-		if($hideNonOpenDocumentUploads == "false") return;
+		if($hideNonOpenDocumentUploads == "true") return;
 
 		if(isset($_POST['disablenonopendocument']))
 			{
