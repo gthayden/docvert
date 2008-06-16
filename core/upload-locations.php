@@ -7,6 +7,7 @@ function getUploadLocations()
 	$uploadLocations = Array();
 	$uploadConfigsPathPattern = getConfigDirectory().'upload-*.conf';
 	$uploadConfigs = glob($uploadConfigsPathPattern);
+	if($uploadConfigs === False) return $uploadLocations;
 	foreach($uploadConfigs as $uploadConfig)
 		{
 		$uploadId = basename($uploadConfig, '.conf');
