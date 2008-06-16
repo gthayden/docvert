@@ -667,7 +667,8 @@ class Themes
 	function mswordToOpenDocumentConverter()
 		{
 		$disallowNonOpenDocumentUploads = getGlobalConfigItem('disallowNonOpenDocumentUploads');
-		if($disallowNonOpenDocumentUploads === null || $disallowNonOpenDocumentUploads == 'false')
+
+		if($disallowNonOpenDocumentUploads == 'false')
 			{
 			$template = $this->getThemeFragment('sampleuse-converter-content.htmlf');
 			$numberOfConvertersThatAreDisallowed = 0;
@@ -681,7 +682,7 @@ class Themes
 					}
 				}
 
-			if( $numberOfConvertersThatAreDisallowed+1 == count($this->converters) )
+			if( $numberOfConvertersThatAreDisallowed +1 >= count($this->converters) )
 				{
 				// There's only one choice, so don't bother asking the user
 				return '';
@@ -718,7 +719,7 @@ class Themes
 			}
 		else
 			{
-			return $this->getThemeFragment('sampleuse-msword-to-opendocument-converter~off.htmlf');
+			return '';
 			}
 
 		}
