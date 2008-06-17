@@ -256,7 +256,7 @@ class Themes
 		if(!$this->previewDirectory) webServiceError('&error-webpage-no-preview-directory-given;');
 		if(!file_exists($this->previewDirectory))
 			{
-			webServiceError('&error-webpage-no-preview-directory;');
+			webServiceError('&error-webpage-no-preview-directory;]]', 500, Array('path'=>$this->previewDirectory));
 			}
 		$convertedDocumentPaths = glob($this->previewDirectory.DIRECTORY_SEPARATOR.'*');
 		
