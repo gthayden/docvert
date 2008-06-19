@@ -14,16 +14,34 @@ export HOME=/tmp/
 pidfile="/tmp/openoffice.org-server.pid"
 username="$2"
 groupname="$3"
-startStopDaemon="/sbin/start-stop-daemon"
+startStopDaemon="/sbin/start-stop-daemonTYPO"
+rpmDaemon="/usr/bin/daemon"
 
-if [ -n "$username" ]
+if [ -e "$startStopDaemon" ]
 then
-	username="-c $username "
-fi
-if [ -n "$groupname" ]
+	if [ -n "$username" ]
+	then
+		username="-c $username "
+	fi
+	if [ -n "$groupname" ]
+	then
+		groupname="-g $groupname "
+	fi
+elif [ -e "$rpmDaemon" ]
 then
-	groupname="-g $groupname "
+	if [ -n "$username" ]
+	then
+		username="--user=$username"
+		if [ -n "$groupname" ]
+		then
+			username="$username.$groupname"
+		fi
+	fi
+else
+	echo "Unable to find $startStopDaemon or $rpmDaemon"
+	exit 1
 fi
+
 if [ -s "$ooocommand" ]
 then
 	sleep 0
@@ -38,7 +56,12 @@ ooo_start()
 		echo "Already running? pid file exists at $pidfile"
 	else
 		rm -f "$pidfile"
-		$startStopDaemon "$groupname" "$username" --pidfile $pidfile --start --exec "$ooocommand"
+		if [ -e "$startStopDaemon" ]
+		then
+			$startStopDaemon "$groupname" "$username" --pidfile $pidfile --start --exec "$ooocommand"
+		else
+			$rpmDaemon --pidfile=$pidfile $ooocommand
+		fi
 		sleep 2
 		pgrep "soffice" > "$pidfile"
 		if [ -s "$pidfile" ]
@@ -55,7 +78,14 @@ ooo_stop()
 {
 	if [ -s "$pidfile" ]
 	then
-		$startStopDaemon "$groupname" "$username" --stop --quiet --pidfile "$pidfile"
+		if [ -e "$startStopDaemon" ]
+		then
+			$startStopDaemon "$groupname" "$username" --stop --quiet --pidfile "$pidfile"
+		else
+			pid=$(cat $pidfile)
+			kill -s 9 $pid
+			sleep 1
+		fi
 		rm -f "$pidfile"
 		return 0
 	else
@@ -72,6 +102,7 @@ case "$1" in
 	;;
 	restart)
 		ooo_stop
+		sleep 1
 		ooo_start
 	;;
 	*)
