@@ -14,7 +14,7 @@ export HOME=/tmp/
 pidfile="/tmp/openoffice.org-server.pid"
 username="$2"
 groupname="$3"
-startStopDaemon="/sbin/start-stop-daemonTYPO"
+startStopDaemon="/sbin/start-stop-daemon"
 rpmDaemon="/usr/bin/daemon"
 
 if [ -e "$startStopDaemon" ]

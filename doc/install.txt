@@ -24,13 +24,14 @@ Optional Libraries
 	Option 1) "PyODConverter via OOo Server" depends on
 		* OpenOffice.org 2.3 or later (NOTE version. 2.3)
 		* python-uno (Python UNO libraries)
+		* "openoffice.org-headless".
 
 	Option 2) "OpenOffice.org Stand-alone" depends on,		
 		* OpenOffice.org 1.9.122 or later (NOTE version. 1.9+)
 		* Xvfb  (on Linux/BSD/OSX)
 
 	Option 3)
-		* Abiword 2.4.2 or later.
+		* Abiword 2.4.2 or later with the ODF plugin.
 
 *	If you want to convert bitmap images like BMP, JPG,
 	PNG, GIF you'll need PHP GD ("php5-gd").
@@ -91,9 +92,14 @@ Step 2.	Ensure that /writable is writable.
 			/etc/docvert is writable to the web
 			server user (typically "www-data").
 
+			If you don't have access to /etc/docvert/
+			then instead use
+			core/config/unix-specific/config/
+			and ensure that's writable.
+
 		Windows Users:
 			Ensure that
-			/core/config/windows-specific/config/
+			core/config/windows-specific/config/
 			is writable.
 
 			Ensure that this directory is not
@@ -103,9 +109,11 @@ Step 2.	Ensure that /writable is writable.
 			Eg. ensure you can't browse to (for example)
 			http://localhost/docvert/core/config/windows-specific/config/
 
-	Now secure Docvert's admin page by opening up
-	Docvert in your web browser and browse to
-	the admin page (the tab on the top-right).
+	IF NEITHER of these locations are suitable then you can change the configuration
+	location by editing core/config.php
+
+	Now secure Docvert's admin page by opening up Docvert in your web
+	browser and browse to the admin page (the tab on the top-right).
 	On the admin page, set the password.
 
 Step 3. Do you want to convert Word Documents or just
@@ -161,9 +169,14 @@ Step 3. Do you want to convert Word Documents or just
 			if you wanted to run OOo Server under
 			the system user "docvert".
 
+			You may need to edit the following file to point at
+			your Linux/OSX applications,
 
-	2) Standalone OpenOffice.org (DEPRECATED)
-	-----------------------------------------
+		core/config/unix-specific/openoffice.org-server-init.sh
+
+
+	2) Standalone OpenOffice.org (DEPRECATED - NOT RECOMMENDED)
+	-----------------------------------------------------------
 
 		Stage i)
 			Windows:
