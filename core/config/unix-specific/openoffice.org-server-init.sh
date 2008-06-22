@@ -9,13 +9,19 @@
 # Description:       Start/stop OpenOffice.org in server mode
 ### END INIT INFO
 
-ooocommand="/var/www/docvert/core/config/unix-specific/openoffice.org-server.sh"
-export HOME=/tmp/
+scriptDirectory=$( dirname "$0" )
+scriptDirectory=$( cd $scriptDirectory; pwd )
+
+ooocommand="$scriptDirectory/openoffice.org-server.sh"
+kill="/bin/kill"
 pidfile="/tmp/openoffice.org-server.pid"
 username="$2"
 groupname="$3"
 startStopDaemon="/sbin/start-stop-daemon"
 rpmDaemon="/usr/bin/daemon"
+whoami=$( whoami )
+
+export HOME=/tmp/
 
 if [ -e "$startStopDaemon" ]
 then
@@ -37,9 +43,6 @@ then
 			username="$username.$groupname"
 		fi
 	fi
-else
-	echo "Unable to find $startStopDaemon or $rpmDaemon"
-	exit 1
 fi
 
 if [ -s "$ooocommand" ]
@@ -53,19 +56,26 @@ ooo_start()
 {
 	if [ -s "$pidfile" ]
 	then
-		echo "Already running? pid file exists at $pidfile"
+		pid=$( cat "$pidfile" )
+		echo "Already running? pid file exists at $pidfile that contains process #$pid"
 	else
 		rm -f "$pidfile"
 		if [ -e "$startStopDaemon" ]
 		then
 			$startStopDaemon "$groupname" "$username" --pidfile $pidfile --start --exec "$ooocommand"
-		else
+		elif [ -e "$rpmDaemon" ]
+		then
 			$rpmDaemon --pidfile=$pidfile $ooocommand
+		else
+			echo "Warning: Unable to find $startStopDaemon or $rpmDaemon so instead I'll daemonize by forking as the current user, $whoami."
+			$ooocommand &
 		fi
 		sleep 2
 		pgrep "soffice" > "$pidfile"
 		if [ -s "$pidfile" ]
 		then
+			pid=$( cat "$pidfile" )
+			echo "Started OpenOffice.org with process #$pid"
 			sleep 0
 		else
 			echo "Unable to start OpenOffice.org (empty pid file at $pidfile)"
@@ -78,16 +88,25 @@ ooo_stop()
 {
 	if [ -s "$pidfile" ]
 	then
+		pid=$( cat "$pidfile" )
 		if [ -e "$startStopDaemon" ]
 		then
 			$startStopDaemon "$groupname" "$username" --stop --quiet --pidfile "$pidfile"
 		else
-			pid=$(cat $pidfile)
-			kill -s 9 $pid
+			$kill $pid
 			sleep 1
+			$kill -s 9 "$pid" > /dev/null
 		fi
-		rm -f "$pidfile"
-		return 0
+		remainingProcess=$( ps "$pid" | grep $pid )
+		if [ -n $remainingProcess ]
+		then
+			rm -f "$pidfile"
+			echo "Successfully killed process #$pid"
+			return 0
+		else
+			echo "Unable to kill process #$pid. Check permissions? (remaining processes '$remainingProcess')"
+			return 0
+		fi
 	else
 		echo "Stopped. Warning: No pid file found at $pidfile so I'm assuming it was never running."
 	fi
