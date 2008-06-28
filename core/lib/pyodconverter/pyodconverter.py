@@ -24,6 +24,11 @@ try:
 except ImportError: #probably a Fedora/Redhat/SuSE system
 	sys.path.append('/usr/lib/openoffice.org/program/')
 	sys.path.append('/usr/lib/openoffice.org2.0/program/')
+	sys.path.append('/usr/lib/openoffice.org2.2/program/')
+	sys.path.append('/usr/lib/openoffice.org2.3/program/')
+	sys.path.append('/usr/lib/openoffice.org2.4/program/')
+	sys.path.append('/usr/lib/openoffice.org3.0/program/')
+
 	try:
 		import uno
 	except ImportError: #unable to find Python UNO libraries, exiting
