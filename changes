@@ -1,0 +1,202 @@
+Docvert 3.4   June 17th 2008
+
+It's out! Some minor bugfixes and language changes. The main change is that "OpenOffice.org Standalone" is now deprecated and I suggest you move to "PyODConverter with OOo Server" (it's much easier to install).
+
+Here's the download page
+Docvert 3.4 RC1   June 6th 2008
+
+Changes:
+
+    * A 3x (at least) speed improvement for those using OpenOffice.org, you just need to switch to the new "PyODConverter with OOo Server" option. The way it works is that previously what was called "OpenOffice.org" was a version of OOo that started and stopped on every conversion. It's now much easier to just run a single OOo in server mode and to keep using that for conversions, and you control this from the admin page. You do need to have OpenOffice.org 2.3+ for this to work.
+    * I've renamed some of the converters to make it more clear:
+          o "PyODConverter" → "PyODConverter with OOo Server"
+          o "OpenOffice.org" → "OpenOffice.org Stand-alone"
+          o "Abiword" ...still the same.
+          o "JODConverter" ...has removed from Docvert because PyODConverter is so much better (re-enable it in lib.php if you really want it)
+    * "OpenOffice.org Stand-alone" is now deprecated (it's still there and it works but I suggest you move to "PyODConverter with OOo Server" ASAP).
+    * English and French language support in the interface (thanks to Francois Marier for the translations).
+    * Lots of bug fixes
+
+Read the install guide at to see how to install this new PyODConverter with OOo Server option.
+Docvert 3.4 Beta 1   5th May 2008
+
+Well this will be a surprise to those who don't watch the subversion repo but we've been working on a new version for a month now,
+
+    * Docvert 3.4 beta 1 in tar.gz format.
+    * Docvert 3.4 beta 1 in .zip format.
+
+Changes since 3.3,
+
+    * English and French language support in the interface (thanks to Francois Marier for the translations).
+    * The config is now stored in .ini files (/etc/docvert/ when using *nix, core/config/windows-specific/config when using Windows) but you can still use the admin page too.
+    * Lots of UI improvements (better use of space, less garish)
+    * Security enhancements (filename scrubbing, stuff like that).
+    * Post-conversion editor improvements for bad PHP XSL libraries.
+    * Fulfiling many packaging requirements for Debian.
+    * Many bug fixes.
+
+Detailed change log
+
+So test away and let me know if it works for you, or if you have any questions.
+
+(btw, after getting married in February my surname is now Holloway)
+Docvert 3.3   15th October 2007
+
+It's out! This release has the long anticipated Document Generator. Here's the download!
+Docvert 3.3 RC2   8th October 2007
+
+Bug fixes, thanks for testing everyone. Here's the download!
+Docvert 3.3 RC1   September 28th 2007
+
+More evolution of the code... go download it!
+Docvert 3.3 Beta 1   September 24th 2007
+
+I had been busy on OOXML (in short, a faux standard designed to maintain Microsoft's Office monopoly).
+
+...but there's been some time in the middle of this to do what I actually enjoy, Docvert! I've been working on a feature that lets you turn webpages into OpenDocument files (eg, grab 10 pages, extract the content, and save as OpenDocument). This allows people to extract useful content from webpages, possibly helping you get free from a bad CMS. Read more about the Document Generator.
+
+    * Download it
+
+Docvert 3.2.3 - (more bugfixes)
+
+This fixes some apparent regressions in Ubuntu 7.04's PHP-XSL module. More details about the bug on the mailing list...
+
+    * Here it is
+
+Docvert 3.2.2 - a bugfixing bugfix release
+
+Fixes some problems with autopipelines for all users. This is a recommended upgrade,
+Docvert 3.2.1 codename "3 2 1 contact" - May 2nd 2007
+
+This release has some fixes for Ubuntu 7.04. Only upgrade if you've got problems,
+Docvert 3.2 final is out - April 14th 2007
+
+It's out,
+
+    * Go download it!
+
+This release uses various OpenOffice.org optimisations and so conversions are now 3-5 times faster than before (when using PyODConverter/JODConverter). A big thanks to Mirko Nasato for his work on this :).
+Docvert 3.2 Beta 3 - now with PyODConverter support.
+
+Due to filesize I removed the bundled JODConverter in favour of PyODConverter... PyODConverter does the same thing but it's faster and only 4KB. Cheers to Mirko Nasato for this.
+
+(you can still use JODConverter if you'd prefer... just download it and drop it in core/lib/jodconverter).
+
+I'll release 3.2 final with some documentation sometime this week if no one finds any problems, so this means you should test it! Grab it in .tar.gz [1.1MB] or .zip [1.5MB]
+Docvert 3.2 Beta 1 - now with JODConverter support
+
+Hi folks, here's what's new,
+
+    * JODConverter support which means it'll use OpenOffice.org much more efficiently.
+    * Admin page where you can configure which converters are available (eg, deny access to Abiword and OOo, force everyone to use JODConverter).
+    * More bug fixes for command-line use.
+
+So download it in .tar.gz [2.9MB] or .zip [3.1MB].
+
+This includes JODConverter, which is why the filesize has jumped up 1.5MB. If people really care about downloading this filesize I'll make an alternate/lighter version for 3.2 final.
+
+Anyway, let me know if it works for you. This is the time to test it :)
+Docvert 3.11 - a bug fix release
+
+Here's the changes! (I'll refrain from the Docvert for Workgroups jokes)
+
+    * Better support for Windows and more accurate problem diagnostics.
+    * XSLT library cleanups.
+    * Documentation updates (also available online
+
+Download it
+Docvert 3.1 final -
+
+Hi folks, here's 3.1 final...
+Changes since 3.0:
+
+    * support for OLE objects. Previously some embedded images of this type were not converted.
+    * support for complex lists (numbered lists inside bulleted lists inside numbered lists).
+    * support for auto-cropping GIF and PNG images. JPGs are not autocropped as its not a lossless format.
+    * custom filenames via the web interface.
+    * document thumbnails now appear again (they were disabled for the 3.0 release).
+    * bug fix to make autopipelines work as expected (this was broken in 3.0)
+    * phpinfo() on the admin page to help debugging
+    * switched my dev environment to E_STRICT which has resulted me noticing many minor bug fixes (like incorrectly using static class methods).
+    * other bug fixes.
+
+So run over to the download page and to convert docs to xml and html.
+Docvert 3.0 final - 16th January 2007
+
+The 3.0 release, after 10 long months of development. Here's what it's got.
+
+    * FTP/WebDAV upload.
+    * Post conversion editing. Click a button to enable an WYSIWYG editor, make a change, and rebuild the document.
+    * Too many features, UI improvements, and bug fixes to list.
+
+Docvert 3.0Beta - 23rd December 2006
+
+Here's a beta of the new release with these features,
+
+    * FTP/WebDAV upload support. This has been a long-requested feature. We support FTP PASV, WebDAV over SSL/TLS, just add 'Upload Locations' from the admin page.
+    * Interface simplifications (read: improvements).
+    * More diagnostics for common problems
+    * Document conversion improvements (better support for titles, nested lists)
+
+Docvert 2.3.2 - 21st November 2006
+
+New release with bugfixes and xvfb now works again on the latest Ubuntu 6.10!
+
+    * Bash script fixes for Ubuntu 6.10
+    * CSS/JS fixes for IE6+
+    * Documentation updates
+
+See the mailing list for more info.
+Docvert 2.3 - 5th October 2006
+
+Now with...
+
+    * Microsoft Word Plugin for making OpenDocument (ODF) or directly generating HTML;
+
+This installs a toolbar [screenshot, PNG 200KB] in Microsoft Word for using Docvert, making it easier for many non-techy users to share a single Docvert Server. The person clicks a button on the toolbar, it's sent to a Docvert Server and when done a Save As window pops-up [screenshot, PNG 200KB] for them to save the results.
+Docvert 2.2.1 - 16th July 2006
+
+Now with...
+
+    * Command line conversions... now under "/bin" there are scripts such as odt2html, odt2xml, odf2html, and odf2xml for Linux and Windows;
+    * Bonus documentation;
+    * Bug fixes for mixing drives under Windows with Abiword (eg Docvert on C:, Abiword on D:).
+    * ZIP library fixes.
+
+All in all, a solid 0.0.1 better than the last release.
+Docvert 2.2 - 27th June 2006
+
+After a holiday and 2 weeks of the lurgy here's a new release with:
+
+    * Schema validation (included by default are DocBook 5 and HTML). W3C Schema, RelaxNG, and DTDs are supported.
+    * A pipeline that produces Eric Meyer's S5 Slideshows from your MS Word or OpenDocuments.
+    * A new feature called AutoPipelines, which allows a pipeline to produce single or multipage content. This can be easily extended using the same syntax as before!
+    * A new process for including supported files.
+    * Better DocBook 5.0, cleaner HTML, and a brighter tomorrow.
+
+Docvert 2.1.6 - 24th May 2006
+
+New in this release is the long waited for Conversion Previews! You can now see the results and the unit tests on a preview page before download.
+Docvert 2.1.5 - 2nd May 2006
+
+On the road to 2.2... many bug fixes for Windows Users, macro changes to help OpenOffice.org, the beginnings of an administration interface.
+Docvert 2.1.4 - 25th Apr 2006
+
+New version with improvements to heading detection, pipelines, and themes. More on the mailing list.
+Docvert 2.1 - 5th Apr 2006
+
+Now has support for...
+
+    * DocBook 5.0
+    * Document Structure Unit Tests
+    * Image conversion between most formats (including WMF and SVG)
+    * Inclusion of meta.xml from the ODF format at the DocBook stage.
+
+And thanks to a lot of work by Mark Rickerby the application has been modularised and it's much easier to follow. Cheers Mark!
+Docvert 2.0 released! - 8th Mar 2006
+
+This new release adds support for Abiword and lots of little bugfixes. In other news we've finally got a new website, a lot more documentation, and there's now a Docvert mailing list.
+About upcoming releases - 28th Sep 2005
+
+This weekend I'll release version 1.1 with some new templates. Work on version 2.0 has started and it has some architectural changes that mean processing is a lot faster (about 3 times faster so far). It'll work with your existing templates and expect this version to be released in about one month.
+
