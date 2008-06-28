@@ -19,7 +19,17 @@ from os.path import splitext
 import sys
 from StringIO import StringIO
 
-import uno
+try:
+	import uno
+except ImportError: #probably a Fedora/Redhat/SuSE system
+	sys.path.append('/usr/lib/openoffice.org/program/')
+	sys.path.append('/usr/lib/openoffice.org2.0/program/')
+	try:
+		import uno
+	except ImportError: #unable to find Python UNO libraries, exiting
+		sys.stderr.write("Error: Unable to find Python UNO libraries in %s. Exiting..." % sys.path)		
+		sys.exit(0)
+		
 import unohelper
 from com.sun.star.beans import PropertyValue
 from com.sun.star.task import ErrorCodeIOException
@@ -129,14 +139,14 @@ if __name__ == "__main__":
 			converter = DocumentConverter()
 			if not isfile(sys.argv[1]):
 				sys.stderr.write("No such input file: %s\n" % sys.argv[1])
-				sys.exit(255)
+				sys.exit(1)
 			converter.convertByPath(sys.argv[1], sys.argv[2])
 		else:
 			helpText = "USAGE: " + sys.argv[0] + " <input-path> <output-path>\n"
 			helpText += "USAGE: " + sys.argv[0] + " --stream  (accepts binary document on stdin and outputs on stdout)\n"
 			sys.stderr.write(helpText)
-			sys.exit(255)
+			sys.exit(2)
 	except Exception, exception:
 		sys.stderr.write("Error: %s" % exception)
-		sys.exit(255)
+		sys.exit(1)
 

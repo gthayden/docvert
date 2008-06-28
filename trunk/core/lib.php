@@ -513,7 +513,8 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 	else
 		{
 		$response = shellCommand($command, null, $stdInData, false);
-		if($response['statusCode'] == 0)
+		$theMagicNumbersOfAZipFile = 'PK';
+		if($response['statusCode'] == 0 || substr($response['stdOut'], 0, strlen($theMagicNumbersOfAZipFile)) == $theMagicNumbersOfAZipFile) //if(successful || it looks like a zip file anyway) 
 			{
 			file_put_contents($commandTemplateVariable['outputDocumentPath'], $response['stdOut']);
 			$output = $response['stdErr'];

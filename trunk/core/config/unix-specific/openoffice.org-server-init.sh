@@ -17,6 +17,7 @@ kill="/bin/kill"
 pidfile="/tmp/openoffice.org-server.pid"
 username="$2"
 groupname="$3"
+cat="/bin/cat"
 startStopDaemon="/sbin/start-stop-daemon"
 rpmDaemon="/usr/bin/daemon"
 whoami=$( whoami )
@@ -56,13 +57,13 @@ ooo_start()
 {
 	if [ -s "$pidfile" ]
 	then
-		pid=$( cat "$pidfile" )
+		pid=$( $cat "$pidfile" )
 		echo "Already running? pid file exists at $pidfile that contains process #$pid"
 	else
 		rm -f "$pidfile"
 		if [ -e "$startStopDaemon" ]
 		then
-			$startStopDaemon "$groupname" "$username" --pidfile $pidfile --start --exec "$ooocommand"
+			$startStopDaemon "$groupname" "$username" --pidfile $pidfile -m --start --exec "$ooocommand"
 		elif [ -e "$rpmDaemon" ]
 		then
 			$rpmDaemon --pidfile=$pidfile $ooocommand
@@ -72,10 +73,11 @@ ooo_start()
 		fi
 		sleep 2
 		pgrep "soffice" > "$pidfile"
+
 		if [ -s "$pidfile" ]
 		then
-			pid=$( cat "$pidfile" )
-			echo "Started OpenOffice.org with process #$pid"
+			pid=$( $cat "$pidfile" )
+			echo "Started OpenOffice.org with process(s) #$pid"
 			sleep 0
 		else
 			echo "Unable to start OpenOffice.org (empty pid file at $pidfile)"
@@ -88,25 +90,31 @@ ooo_stop()
 {
 	if [ -s "$pidfile" ]
 	then
-		pid=$( cat "$pidfile" )
+		pids=$( $cat "$pidfile" )
 		if [ -e "$startStopDaemon" ]
 		then
 			$startStopDaemon "$groupname" "$username" --stop --quiet --pidfile "$pidfile"
 		else
-			$kill $pid
-			sleep 1
-			$kill -s 9 "$pid" > /dev/null
+			$cat "$pidfile" |   
+                        while read line
+                        do
+                                $kill "${line}" 2> /dev/null
+				sleep 1
+				$kill -s 9 "${line}" 2> /dev/null
+                        done
 		fi
-		remainingProcess=$( ps "$pid" | grep $pid )
-		if [ -n $remainingProcess ]
-		then
-			rm -f "$pidfile"
-			echo "Successfully killed process #$pid"
-			return 0
-		else
-			echo "Unable to kill process #$pid. Check permissions? (remaining processes '$remainingProcess')"
-			return 0
-		fi
+		$cat "$pidfile" |   
+                while read line
+                do
+			remainingProcess=$( ps "${line}" | grep ${line} )
+			if [ -n "$remainingProcess" ]
+			then
+				echo "Unable to kill #$remainingProcess. You'll have to clean up manually."
+				exit 1
+			fi
+		done
+		rm -f "$pidfile"
+		echo "Successfully stopped."
 	else
 		echo "Stopped. Warning: No pid file found at $pidfile so I'm assuming it was never running."
 	fi

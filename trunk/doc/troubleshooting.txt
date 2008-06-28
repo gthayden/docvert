@@ -27,6 +27,7 @@ Errors and Troubleshooting
     OR
   I can't download the sample documents.
 * xauth or xvfb errors
+* I get an error about failure to create executable memory, SELinux.
 
 I get a "Parse error, unexpected T_STRING" about "webpage.php"
 --------------------------------------------------------------
@@ -296,5 +297,13 @@ Abiword because their OpenDocument support improved a lot recently, and version
 2.6.3 is quite good).
 
 
+I get an error about failure to create executable memory, SELinux
+-----------------------------------------------------------------
+	I get an error that reads,
 
+	"creation of executable memory area failed: Permission denied
+	FATAL ERROR, could not mmap a file for executable memory either in home dir or in /tmp
+	Cannot continue, perhaps examine your mount options for those directories, or selinux"
 
+	This means that there is a security permissions problem. Check your SELinux settings.
+	(if you do get it working please send in a more thorough explanation)
