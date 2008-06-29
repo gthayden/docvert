@@ -16,19 +16,17 @@ DEFAULT_OPENOFFICE_PORT = 2002
 from os.path import abspath
 from os.path import isfile
 from os.path import splitext
+from os.path import exists as pathExists
 import sys
 from StringIO import StringIO
 
 try:
 	import uno
 except ImportError: #probably a Fedora/Redhat/SuSE system
-	sys.path.append('/usr/lib/openoffice.org/program/')
-	sys.path.append('/usr/lib/openoffice.org2.0/program/')
-	sys.path.append('/usr/lib/openoffice.org2.2/program/')
-	sys.path.append('/usr/lib/openoffice.org2.3/program/')
-	sys.path.append('/usr/lib/openoffice.org2.4/program/')
-	sys.path.append('/usr/lib/openoffice.org3.0/program/')
-
+	possiblePaths = ['/usr/lib/openoffice.org/program/', '/usr/lib/openoffice.org2.0/program/', '/usr/lib/openoffice.org2.2/program/', '/usr/lib/openoffice.org2.3/program/', '/usr/lib/openoffice.org2.4/program/', '/usr/lib/openoffice.org3.0/program/', '/opt/lib/openoffice.org/program/', '/opt/lib/openoffice.org2.0/program/', '/opt/lib/openoffice.org2.2/program/', '/opt/lib/openoffice.org2.3/program/', '/opt/lib/openoffice.org2.4/program/', '/opt/lib/openoffice.org3.0/program/']
+	for possiblePath in possiblePaths:
+		if pathExists(possiblePath):
+			sys.path.append(possiblePath)
 	try:
 		import uno
 	except ImportError: #unable to find Python UNO libraries, exiting
