@@ -513,8 +513,9 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 	else
 		{
 		$response = shellCommand($command, null, $stdInData, false);
-		$theMagicNumbersOfAZipFile = 'PK';
-		if($response['statusCode'] == 0 || substr($response['stdOut'], 0, strlen($theMagicNumbersOfAZipFile)) == $theMagicNumbersOfAZipFile) //if(successful || it looks like a zip file anyway) 
+		$theMagicNumbersOfAZipFile = Array(80, 75); // ASCII code of letters "PK" magic numbers of a zip file ... http://en.wikipedia.org/wiki/Magic_number_(programming)
+		//ignore status code, instead sniff magic numbers
+		if(ord(substr($response['stdOut'], 0, 1)) == $theMagicNumbersOfAZipFile[0] && ord(substr($response['stdOut'], 1, 1)) == $theMagicNumbersOfAZipFile[1]) //if(successful || it looks like a zip file anyway) 
 			{
 			file_put_contents($commandTemplateVariable['outputDocumentPath'], $response['stdOut']);
 			$output = $response['stdErr'];
