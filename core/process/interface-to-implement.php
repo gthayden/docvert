@@ -32,8 +32,17 @@ abstract class PipelineProcess
 		{
 		if($errorType != 'error' && $errorType != 'warning' && $errorType != 'raw' && $errorType != 'note') die('Error type must only be either "error" or "warning" or "raw" (for when the message is appended as is). Was "'.$errorType.'".');
 		if(!function_exists('replaceLanguagePlaceholder')) include_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'webpage.php');
-
+		$dynamicFields = Array();
+		if(is_array($errorMessage))
+			{
+			$dynamicFields = $errorMessage[1];
+			$errorMessage = $errorMessage[0];
+			}
 		$errorMessage = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $errorMessage);
+		foreach($dynamicFields as $key => $value)
+			{
+			$errorMessage = str_replace('&dynamic-'.$key.';', $value, $errorMessage);
+			}
 		if($errorType == 'error' || $errorType == 'warning' || $errorType == 'note')
 			{
 			$errorMessage = '<div class="'.$errorType.'">'.$errorMessage."</div>\n\n";

@@ -18,10 +18,17 @@ class IncludeDependentFiles extends PipelineProcess
 				{
 				$pathWildCard = $this->pipelineDirectory.$trimmedPathToCopy;
 				$pathMatches = glob($pathWildCard);
-				foreach($pathMatches as $pathMatch)
+				if($pathMatches !== False)
 					{
-					$destinationPath = $this->contentDirectory.DIRECTORY_SEPARATOR.basename($pathMatch);
-					$this->copyRecursively($pathMatch, $destinationPath);
+					foreach($pathMatches as $pathMatch)
+						{
+						$destinationPath = $this->contentDirectory.DIRECTORY_SEPARATOR.basename($pathMatch);
+						$this->copyRecursively($pathMatch, $destinationPath);
+						}
+					}
+				else
+					{
+					$this->logError(Array('&error-unable-to-read-directory;', Array('path'=>$pathWildCard)), 'error');
 					}
 				}
 			}
