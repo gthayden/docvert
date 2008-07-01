@@ -18,7 +18,7 @@
 
 		.textbox {width:100%;border-color:#666;border-width:1px;padding:2px;}
 
-		#upload {background:#eeeeee;width:270px;margin:30px 0px 20px;border:solid 2px #dddddd; -moz-border-radius:10px;}
+		#upload {background:#eeeeee;width:300px;margin:30px 0px 20px;border:solid 2px #dddddd; -moz-border-radius:10px;}
 		#upload form {padding-top:2px;}
 		#upload legend {padding:5px 10px;background:#eeeeee;font-weight:bold;color:#666666; -moz-border-radius:10px;}
 		#upload fieldset {border:none;background:#dddddd;margin-top:10px; -moz-border-radius:5px;}
