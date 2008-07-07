@@ -437,7 +437,6 @@ class Themes
 		if(isset($_REQUEST['openofficeorg-server-on']) || isset($_REQUEST['openofficeorg-server-off']) )
 			{
 			$unixConfigPath = dirname(__FILE__).DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'unix-specific'.DIRECTORY_SEPARATOR;
-			$startStopPythonScript = $unixConfigPath.'openoffice.org-server-init.py';
 			$startStopBashScript = $unixConfigPath.'openoffice.org-server-init.sh';
 			$startOrStop = null;
 			if(isset($_REQUEST['openofficeorg-server-on']))
@@ -479,11 +478,12 @@ class Themes
 				if($superUserPreference == 'sudo')
 					{
 					$startStopScript = $startStopBashScript;
-					$sudo = 'sudo';
+					$sudo = 'sudo {runAsUser}';
 					}
-				elseif($superUserPreference == 'setuid')
+				elseif($superUserPreference == 'nothing')
 					{
-					$startStopScript = $startStopPythonScript;
+					$startStopScript = $startStopBashScript;
+					$sudo = 'sudo';
 					}
 
 				$commandTemplate = '{sudo} {startStopScript} {startOrStop} {runAsUser}';
@@ -491,7 +491,7 @@ class Themes
 				$commandTemplate = str_replace('{startStopScript}', $startStopScript, $commandTemplate);
 				$commandTemplate = str_replace('{startOrStop}', $startOrStop, $commandTemplate);
 				$commandTemplate = str_replace('{runAsUser}', $runAsUser, $commandTemplate);
-
+				$commandTemplate = trim($commandTemplate);
 				$output = shellCommand($commandTemplate, 0);
 				switch($startOrStop)
 					{ // due to OOo delay in startup/shutdown we'll just twiddle our thumbs for a bit
@@ -1401,25 +1401,26 @@ class Themes
 		$hideAdminSuperUserMethodInterface = getGlobalConfigItem('hideAdminSuperUserMethodUserInterface');
 		if($hideAdminSuperUserMethodInterface == 'true' || $hideAdminSuperUserMethodInterface == true) return;
 		include_once('config.php');
-		if(isset($_POST['preferSetuid']))
-			{
-			setGlobalConfigItem('superUserPreference', 'setuid');			
-			}
-		elseif(isset($_POST['preferSudo']))
+		if(isset($_POST['preferSudo']))
 			{
 			setGlobalConfigItem('superUserPreference', 'sudo');
 			}
+		elseif(isset($_POST['preferNothing']))
+			{
+			setGlobalConfigItem('superUserPreference', 'nothing');
+			}
+
 		$template = $this->getThemeFragment('admin-superusermethod-content.htmlf');
 		$superUserPreference = getSuperUserPreference();
 		$template = str_replace('&superUserPreference;', $superUserPreference, $template);
 		switch($superUserPreference)
 			{
 			case 'sudo':
-				$template = str_replace('&disableSetuid;', '', $template);
+				$template = str_replace('&disableNothing;', '', $template);
 				$template = str_replace('&disableSudo;', 'disabled="disabled"', $template);
 				break;
-			case 'setuid':
-				$template = str_replace('&disableSetuid;', 'disabled="disabled"', $template);
+			case 'nothing':
+				$template = str_replace('&disableNothing;', 'disabled="disabled"', $template);
 				$template = str_replace('&disableSudo;', '', $template);
 				break;
 			}
