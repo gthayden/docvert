@@ -3,7 +3,7 @@
 					<p style="margin-left:0px;">&currently-docvert-prefers; <b>&superUserPreference;</b></p>
 
 					<form method="post">
-						<input type="submit" name="preferSetuid" value="&prefer-setuid;" &disableSetuid;/><input type="submit" name="preferSudo" value="&prefer-sudo;" &disableSudo;/>
+						<input type="submit" name="preferNothing" value="&prefer-nothing;" &disableNothing;/><input type="submit" name="preferSudo" value="&prefer-sudo;" &disableSudo;/>
 					</form>
 						
 				</div>
