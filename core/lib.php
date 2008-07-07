@@ -430,21 +430,17 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 				$commandTemplate = '{elevatePermissions} {scriptPath} --stream';
 				$customUser = getGlobalConfigItem('runExternalApplicationAsUser');
 				$superUserPreference = getGlobalConfigItem('superUserPreference');
-				if($superUserPreference == null)
+				if($superUserPreference == null || $superUserPreference == 'nothing')
 					{
-					$superUserPreference = 'sudo';
+					$superUserPreference = '';
 					}
-				if($superUserPreference == 'sudo')
+				elseif($superUserPreference == 'sudo')
 					{
 					$commandTemplateVariable['elevatePermissions'] = 'sudo';
 					if($customUser !== null && $customUser != '' && $customUser != 'root')
 						{
 						$commandTemplateVariable['elevatePermissions'] .= ' -u '.$customUser;
 						}
-					}
-				elseif($superUserPreference == 'setuid')
-					{
-					$commandTemplate .= ' --setuid='.$customUser;
 					}
 				$commandTemplateVariable['scriptPath'] = $docvertCommandPath.'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-abiword.py';
 				$stdInData = file_get_contents($commandTemplateVariable['inputDocumentPath']);
