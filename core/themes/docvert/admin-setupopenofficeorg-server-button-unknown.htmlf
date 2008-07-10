@@ -1,0 +1,8 @@
+<h2>&openofficeorg-server-title;</h2>
+<form method="post">
+	<p>
+		&currently-openofficeorg-server-is; &unknown-item;:
+		<input type="submit" name="openofficeorg-server-on" value="&turn-on;"/>
+		<input type="submit" name="openofficeorg-server-off" value="&turn-off;"/>
+	</p>
+</form>

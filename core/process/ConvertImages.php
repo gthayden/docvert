@@ -205,7 +205,7 @@ class ConvertImages extends PipelineProcess
 				{
 				$currentXml = str_replace(basename($fromImagePath), basename($toImagePath), $currentXml);
 				//die($fromImagePath.' '.$toImagePath);
-				displayXmlString($currentXml);
+				//displayXmlString($currentXml);
 				}
 			}
 
