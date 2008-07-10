@@ -478,12 +478,12 @@ class Themes
 				if($superUserPreference == 'sudo')
 					{
 					$startStopScript = $startStopBashScript;
-					$sudo = 'sudo {runAsUser}';
+					$sudo = 'sudo -u {runAsUser}';
 					}
 				elseif($superUserPreference == 'nothing')
 					{
 					$startStopScript = $startStopBashScript;
-					$sudo = 'sudo';
+					$sudo = '';
 					}
 
 				$commandTemplate = '{sudo} {startStopScript} {startOrStop} {runAsUser}';
@@ -518,8 +518,11 @@ class Themes
 					}
 				}
 			}
-
-		if(file_exists($pidFile) && filesize($pidFile) > 0)
+		if(!is_readable($pidFile))
+			{
+			$response = $this->getThemeFragment('admin-setupopenofficeorg-server-button-unknown.htmlf');
+			}
+		elseif(file_exists($pidFile) && filesize($pidFile) > 0)
 			{
 			$response = $this->getThemeFragment('admin-setupopenofficeorg-server-button-disabled.htmlf');
 			}

@@ -1,31 +1,27 @@
 Installing Docvert on Ubuntu Hardy Heron
 ========================================
 
-1- Add these lines to /etc/apt/sources.list:
+1- Install the release key:
 
-  deb http://docvert.org/debian etch main
-
-2- Update the package list:
-
-  apt-get update
-
-3- Install the release keys:
-
-  apt-get install debian-backports-keyring gnupg
+  apt-get install gnupg
   gpg --keyserver subkeys.pgp.net --recv-key AAB0E0D1F4B68080
   gpg -a --export AAB0E0D1F4B68080 | apt-key add -
 
-4- Install openoffice.org-headless:
+2- Add this line to /etc/apt/sources.list:
 
-  apt-get install openoffice.org-headless
+  deb http://docvert.org/debian etch main
 
-5- Install docvert
+3- Update the package list:
+
+  apt-get update
+
+4- Install docvert
 
   apt-get install docvert docvert-openoffice.org
 
-6- Enable docvert by uncommenting the alias
-in /etc/apache2/conf.d/docvert
-   and restarting apache:
+5- Enable docvert by uncommenting the alias in
+   /etc/apache2/conf.d/docvert
+   and then restart apache:
 
   apache2ctl configtest
   apache2ctl graceful
@@ -36,7 +32,6 @@ Installing Docvert on Debian Etch
 
 1- Add these lines to /etc/apt/sources.list:
 
-  deb http://mirror.linux.org.au/backports.org/ etch-backports main
   deb http://www.backports.org/debian etch-backports main
   deb http://docvert.org/debian etch main
 
@@ -44,11 +39,12 @@ Installing Docvert on Debian Etch
 
   apt-get update
 
-3- Install the release keys:
+3- Install the release key:
 
   apt-get install debian-backports-keyring gnupg
   gpg --keyserver subkeys.pgp.net --recv-key AAB0E0D1F4B68080
   gpg -a --export AAB0E0D1F4B68080 | apt-key add -
+  apt-get update
 
 4- Install openoffice.org-headless:
 
@@ -58,9 +54,9 @@ Installing Docvert on Debian Etch
 
   apt-get install docvert docvert-openoffice.org
 
-6- Enable docvert by uncommenting the alias
-in /etc/apache2/conf.d/docvert
-   and restarting apache:
+6- Enable docvert by uncommenting the alias in
+   /etc/apache2/conf.d/docvert
+   and then restart apache:
 
   apache2ctl configtest
   apache2ctl graceful
