@@ -49,14 +49,20 @@ class ConvertImages extends PipelineProcess
 	function losslesslyOptimiseImages()
 		{
 		$jpegPaths = glob($this->contentDirectory.DIRECTORY_SEPARATOR.'*.jp*');
-		foreach($jpegPaths as $jpegPath)
+		if($jpegPaths)
 			{
-			$this->losslesslyOptimiseImage($jpegPath, 'jpeg');
+			foreach($jpegPaths as $jpegPath)
+				{
+				$this->losslesslyOptimiseImage($jpegPath, 'jpeg');
+				}
 			}
 		$pngPaths = glob($this->contentDirectory.DIRECTORY_SEPARATOR.'*.png');
-		foreach($pngPaths as $pngPath)
+		if($pngPaths)
 			{
-			$this->losslesslyOptimiseImage($pngPath, 'png');
+			foreach($pngPaths as $pngPath)
+				{
+				$this->losslesslyOptimiseImage($pngPath, 'png');
+				}
 			}
 		}
 
