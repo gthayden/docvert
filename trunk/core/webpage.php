@@ -172,7 +172,7 @@ class Themes
 		$this->destinationZip = $destinationZipPath;
 		if(!moveFile($sourceZipPath, $destinationZipPath)) webServiceError('&error-webpage-unable-to-move;', 500, Array('source'=>$sourceZipPath, 'destination'=>$destinationZipPath) );
 		chmod($destinationZipPath, 0600); //read/write but not execute for FILES of www-data (or web server user)
-		include_once(dirname(__FILE__).'/core/lib/pclzip-2-6/pclzip.lib.php');
+		include_once(dirname(__FILE__).'/lib/pclzip-2-6/pclzip.lib.php');
 		$archive = new PclZip($destinationZipPath);
 		if (($archivedFiles = $archive->listContent()) == 0)
 			{
