@@ -77,7 +77,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 			$returnZipPath = zipAndDeleteTemporaryFiles($temporaryDirectory);
 			if($afterConversion == 'preview')
 				{
-				include_once(dirname(__FILE__).'/core/webpage.php');
+				include_once(dirname(__FILE__).'/webpage.php');
 				$themes = new Themes;
 				$returnZipPath = $themes->unzipConversionResults($returnZipPath, $previewDirectory);
 				}
@@ -96,7 +96,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 
 		if($afterConversion == 'preview')
 			{
-			include_once(dirname(__FILE__).'/core/webpage.php');
+			include_once(dirname(__FILE__).'/webpage.php');
 			$themes = new Themes;		
 			$themes->previewConversionResults($returnZipPath, $previewDirectory);
 			}
@@ -738,7 +738,7 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 		webServiceError('&error-oasis-path;');
 		}
 	ini_set('include_path',ini_get('include_path').':'.DOCVERT_DIR.'core/lib/pclzip-2-6:');
-	include_once(dirname(__FILE__).'/pclzip.lib.php');
+	include_once(dirname(__FILE__).'/lib/pclzip-2-6/pclzip.lib.php');
 	$unknownImageIndex = 1;
 	$documentDirectory = dirname($oasisOpenDocumentPath).DIRECTORY_SEPARATOR;
 	$archive = new PclZip($oasisOpenDocumentPath);
