@@ -10,7 +10,7 @@ $pathToUse = str_replace('/', DIRECTORY_SEPARATOR, $pathToUse);
 $thereIsAPreview = file_exists($pathToUse.'test.html');
 
 
-$configFilenamesPath = 'core'.DIRECTORY_SEPARATOR.'custom-filenames.php';
+$configFilenamesPath = dirname(__FILE__).DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'custom-filenames.php';
 include_once($configFilenamesPath);
 $customFileNames = getCustomFilenames();
 

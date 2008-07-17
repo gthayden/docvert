@@ -33,7 +33,7 @@ class GeneratePostConversionEditorFiles extends PipelineProcess
 		$editorTemplate = file_get_contents($editorTemplatePath);
 		$editorTemplate = preg_replace_callback('/\&(.*?)\;/s', 'replaceLanguagePlaceholder', $editorTemplate);
 
-		include_once('DocBookToXHTML.php');
+		include_once(dirname(__FILE__).'/DocBookToXHTML.php');
 		$toHtmlObject = new DocBookToXHTML($this->elementAttributes, $this->pipelineDirectory, $this->contentDirectory, $this->docvertTransformDirectory, $this->loopDepth, $this->depthArray, $this->previewDirectory, $this->pipelineSettings);
 		$html = $toHtmlObject->process($currentXml);
 

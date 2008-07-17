@@ -12,11 +12,11 @@ p {font-size:x-small;}
 $appDir = dirname(__file__).DIRECTORY_SEPARATOR;
 define('DOCVERT_DIR', $appDir);
 define('DOCVERT_CLIENT_TYPE', 'web');
-include_once('core'.DIRECTORY_SEPARATOR.'lib.php');
-include_once('core'.DIRECTORY_SEPARATOR.'ftp.php');
-include_once('core'.DIRECTORY_SEPARATOR.'http.php');
-include_once('core'.DIRECTORY_SEPARATOR.'blogger-api.php');
-include_once('core'.DIRECTORY_SEPARATOR.'upload-locations.php');
+include_once(DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'lib.php');
+include_once(DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'ftp.php');
+include_once(DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'http.php');
+include_once(DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'blogger-api.php');
+include_once(DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'upload-locations.php');
 
 if(isset($_POST['uploadto']) && isset($_POST['id']))
 	{
@@ -49,7 +49,7 @@ if(isset($_POST['uploadto']) && isset($_POST['id']))
 		{
 		webServiceError($errorHtml);
 		}
-	// include webpage.php and display an upload completed webpage
+	
 	}
 else
 	{

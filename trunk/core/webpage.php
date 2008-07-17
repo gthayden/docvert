@@ -1,7 +1,7 @@
 <?php
-include_once("ensure-php5.php");
-include_once("shell-command.php");
-include_once("lib.php");
+include_once(dirname(__FILE__).'/ensure-php5.php');
+include_once(dirname(__FILE__).'/shell-command.php');
+include_once(dirname(__FILE__).'/lib.php');
 error_reporting(E_STRICT|E_ALL);
 ob_start();
 Themes::cleanUpOldPreviews(getExpireSessionsAfterDays());
@@ -30,7 +30,7 @@ class Themes
 		{
 		$this->page = basename($_SERVER['SCRIPT_FILENAME'], '.php');
 		$this->allowedAdminAccess = false;
-		include_once('security.php');
+		include_once(dirname(__FILE__).'/security.php');
 		$adminPassword = Security::getAdminPassword();
 		if($adminPassword !== null)
 			{
@@ -172,7 +172,7 @@ class Themes
 		$this->destinationZip = $destinationZipPath;
 		if(!moveFile($sourceZipPath, $destinationZipPath)) webServiceError('&error-webpage-unable-to-move;', 500, Array('source'=>$sourceZipPath, 'destination'=>$destinationZipPath) );
 		chmod($destinationZipPath, 0600); //read/write but not execute for FILES of www-data (or web server user)
-		include_once('./core/lib/pclzip-2-6/pclzip.lib.php');
+		include_once(dirname(__FILE__).'/core/lib/pclzip-2-6/pclzip.lib.php');
 		$archive = new PclZip($destinationZipPath);
 		if (($archivedFiles = $archive->listContent()) == 0)
 			{
@@ -463,7 +463,7 @@ class Themes
 				}
 			if($startOrStop)
 				{
-				include_once('config.php');
+				include_once(dirname(__FILE__).'/config.php');
 				$runAsUser = '';
 				$sudo = '';
 				$startTime = 8;
@@ -567,7 +567,7 @@ class Themes
 
 
 		$toggleStatus = '';
-		include_once('config.php');
+		include_once(dirname(__FILE__).'/config.php');
 		if(DIRECTORY_SEPARATOR == '/') //Unix, so sudo is available
 			{
 			$disallowXVFB = getGlobalConfigItem('disallowXVFB');
@@ -583,7 +583,7 @@ class Themes
 				$shellCommandTemplate = str_replace('{{xvfb}}', $xvfbCommand, $shellCommandTemplate);
 				$shellCommandTemplate = str_replace('{{elevate-privledges}}', $elevatePrivledges, $shellCommandTemplate);
 				$output = shellCommand($shellCommandTemplate, 3);
-				include_once('lib.php');
+				include_once(dirname(__FILE__).'/lib.php');
 				$diagnostics = suggestFixesToCommandLineErrorMessage($output, Array(), false);
 				if($diagnostics)
 					{
@@ -600,7 +600,7 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 		$runAsCustomUser = '';
-		include_once('config.php');
+		include_once(dirname(__FILE__).'/config.php');
 		$hideRunAsUserOption = getGlobalConfigItem('hideAdminRunAsUser');
 		if($hideRunAsUserOption == "true") return;
 
@@ -748,7 +748,7 @@ class Themes
 			}
 		else
 			{
-			include_once('security.php');
+			include_once(dirname(__FILE__).'/security.php');
 			if(Security::getAdminPassword() === null)
 				{
 				return $this->getThemeFragment('admin-createpassword.htmlf');
@@ -840,7 +840,7 @@ class Themes
 
 	function uploadResults()
 		{
-		include_once('upload-locations.php');
+		include_once(dirname(__FILE__).'/upload-locations.php');
 		$uploadHtml = '';
 		$uploadLocations = getUploadLocations();
 		if(count($uploadLocations))
@@ -852,7 +852,7 @@ class Themes
 
 	function uploadLocations()
 		{
-		include_once('upload-locations.php');
+		include_once(dirname(__FILE__).'/upload-locations.php');
 		$uploadHtml = '';
 		$uploadLocations = getUploadLocations();
 		foreach($uploadLocations as $uploadId => $uploadLocation)
@@ -869,7 +869,7 @@ class Themes
 		//[uploadid] => {{upload-id}} [protocol] => webdav [defaultPort] => on
 		//[customPort] => [username] => [password] => [basedirectory] => /var/www/
 
-		include_once('upload-locations.php');
+		include_once(dirname(__FILE__).'/upload-locations.php');
 		if(isset($_POST['host']) && trim($_POST['host']) != '')
 			{
 			//print 'Add because post protocol<br />';
@@ -1146,7 +1146,7 @@ class Themes
 						}
 					$originalUrl = str_replace(Array("\n","\r", "\t", " "), '', $originalUrl);
 
-					include_once('http.php');
+					include_once(dirname(__FILE__).'/http.php');
 					if(trim(getUrlLocalPart($originalUrl)) == '')
 						{
 						$originalUrl = followUrlRedirects($originalUrl.'/');
@@ -1403,7 +1403,7 @@ class Themes
 		if(!$this->allowedAdminAccess) return;
 		$hideAdminSuperUserMethodInterface = getGlobalConfigItem('hideAdminSuperUserMethodUserInterface');
 		if($hideAdminSuperUserMethodInterface == 'true' || $hideAdminSuperUserMethodInterface == true) return;
-		include_once('config.php');
+		include_once(dirname(__FILE__).'/config.php');
 		if(isset($_POST['preferSudo']))
 			{
 			setGlobalConfigItem('superUserPreference', 'sudo');

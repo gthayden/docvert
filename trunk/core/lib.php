@@ -21,11 +21,11 @@
 
 */
 
-include_once('process/interface-to-implement.php');
-include_once('xslt.php');
-include_once('shell-command.php');
-include_once('xml.php');
-include_once('config.php');
+include_once(dirname(__FILE__).'/process/interface-to-implement.php');
+include_once(dirname(__FILE__).'/xslt.php');
+include_once(dirname(__FILE__).'/shell-command.php');
+include_once(dirname(__FILE__).'/xml.php');
+include_once(dirname(__FILE__).'/config.php');
 set_error_handler('phpErrorHandler');
 date_default_timezone_set('UTC');
 error_reporting(E_STRICT|E_ALL);
@@ -77,7 +77,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 			$returnZipPath = zipAndDeleteTemporaryFiles($temporaryDirectory);
 			if($afterConversion == 'preview')
 				{
-				include_once('core/webpage.php');
+				include_once(dirname(__FILE__).'/core/webpage.php');
 				$themes = new Themes;
 				$returnZipPath = $themes->unzipConversionResults($returnZipPath, $previewDirectory);
 				}
@@ -96,7 +96,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 
 		if($afterConversion == 'preview')
 			{
-			include_once('core/webpage.php');
+			include_once(dirname(__FILE__).'/core/webpage.php');
 			$themes = new Themes;		
 			$themes->previewConversionResults($returnZipPath, $previewDirectory);
 			}
@@ -602,7 +602,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 			}
 		if(stripos($output, 'X11') !== false || stripos($output, 'refused by server Xlib') !== false )
 			{
-			include_once('config.php');
+			include_once(dirname(__FILE__).'/config.php');
 			$runAsUser = getGlobalConfigItem('runExternalApplicationAsUser');
 			if($runAsUser == null)
 				{
@@ -681,7 +681,7 @@ function suggestFixesToCommandLineErrorMessage($output, $commandTemplateVariable
 function setupOpenOfficeOrg()
 	{
 	set_time_limit(60 * 2);
-	include_once('security.php');
+	include_once(dirname(__FILE__).'/security.php');
 	$adminPassword = Security::getAdminPassword();
 	if($adminPassword === null)
 		{
@@ -738,7 +738,7 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 		webServiceError('&error-oasis-path;');
 		}
 	ini_set('include_path',ini_get('include_path').':'.DOCVERT_DIR.'core/lib/pclzip-2-6:');
-	include_once('pclzip.lib.php');
+	include_once(dirname(__FILE__).'/pclzip.lib.php');
 	$unknownImageIndex = 1;
 	$documentDirectory = dirname($oasisOpenDocumentPath).DIRECTORY_SEPARATOR;
 	$archive = new PclZip($oasisOpenDocumentPath);
@@ -2007,7 +2007,7 @@ function getAutoDetectLanguage()
 
 function webServiceError($message, $errorNumber = 500, $errorData = null)
 	{
-	include_once('webpage.php');
+	include_once(dirname(__FILE__).'/webpage.php');
 	displayLocalisedErrorPage($message, $errorNumber, $errorData);
 	}
 

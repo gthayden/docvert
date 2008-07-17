@@ -1,6 +1,6 @@
 <?php
 /*
-	Take from
+	Taken from
 
 	http://code.google.com/apis/blogger/developers_guide_protocol.html#create_public_post
 
@@ -25,7 +25,7 @@
 	</entry>
 */
 
-include_once('http.php');
+include_once(dirname(__FILE__).'/http.php');
 
 function copyViaBloggerAPI($uploadLocation, $previewDirectory, $remoteDirectory)
 	{
