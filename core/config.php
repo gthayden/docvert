@@ -1,6 +1,6 @@
 <?php
 
-include_once('lib.php');
+include_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'lib.php');
 
 function getConfigDirectory()
 	{
