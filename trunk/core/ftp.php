@@ -61,7 +61,7 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 		{
 		$errorMessage .= "&error-ftp-unable-to-create-directory; ".$destinationPath."\n";
 		}
-	ftp_site($connectionId, 'CHMOD 0777 '.$destinationPath);
+	@ftp_site($connectionId, 'CHMOD 0777 '.$destinationPath); // non-Unix-based servers may respond with "Command not implemented for that parameter" as they don't support chmod, so don't display any errors of this command.
 	ftp_chdir($connectionId, $destinationPath);
 	//print $sourcePath.' to '.$destinationPath."<br />";
 	if(is_dir($sourcePath))
@@ -90,7 +90,7 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 							{
 							$errorMessage .= "&error-unable-ftp-fput;";
 							}
-						ftp_site($connectionId, 'CHMOD 0755 '.str_replace(" ", "_", $file));
+						@ftp_site($connectionId, 'CHMOD 0755 '.str_replace(" ", "_", $file));
 						}
 					}
 				}
