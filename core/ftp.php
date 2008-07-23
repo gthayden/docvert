@@ -56,8 +56,8 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 	{
 	$errorMessage = '';
 	$sourcePath = str_replace(" ", "-", $sourcePath);
-	$destinationPath = str_replace(" ", "-", $destinationPath);
-	if(!ftp_mkdir($connectionId, $destinationPath))
+	$destinationPath = sanitiseFtpPath($destinationPath);
+	if(@!ftp_mkdir($connectionId, $destinationPath))
 		{
 		$errorMessage .= "&error-ftp-unable-to-create-directory; ".$destinationPath."\n";
 		}
@@ -70,7 +70,7 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 		$handle=opendir('.');
 		while(($file = readdir($handle))!==false)
 			{
-			if(($file != ".") && ($file != ".."))
+			if($file != "." && $file != "..")
 				{
 				if(is_dir($file))
 					{
@@ -78,19 +78,20 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 					chdir($sourcePath);
 					if(!ftp_cdup($connectionId))
 						{
-						$errorMessage .= "&error-unable-ftp-cd-up;";
+						$errorMessage .= '&error-unable-ftp-cd-up;';
 						}
 					}
 				else
 					{
-					if(substr($file, strlen($file) - 4, 4) != ".zip")
+					if(substr($file, strlen($file) - 4, 4) != '.zip')
 						{
-						$fp = fopen($file,"r");
-						if(!ftp_fput($connectionId, str_replace(" ", "_", $file), $fp, FTP_BINARY))
+						$fp = fopen($file, 'r');
+						if(!ftp_fput($connectionId, sanitiseFtpPath($file), $fp, FTP_BINARY))
 							{
-							$errorMessage .= "&error-unable-ftp-fput;";
+							$errorMessage .= '&error-unable-ftp-fput;';
 							}
-						@ftp_site($connectionId, 'CHMOD 0755 '.str_replace(" ", "_", $file));
+						@ftp_site($connectionId, 'CHMOD 0755 '.sanitiseFtpPath($file));
+						fclose($fp);
 						}
 					}
 				}
@@ -99,5 +100,10 @@ function copyFileViaFtp($sourcePath, $destinationPath, $connectionId)
 		}
 
 	return $errorMessage;
+	}
+
+function sanitiseFtpPath($path)
+	{
+	return str_replace(' ', '-', str_replace('\\', '/', $path));
 	}
 ?>
