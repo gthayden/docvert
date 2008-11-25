@@ -8,43 +8,8 @@
 
 	<div style="float:left;width:100%;clear:both;"> &#160; </div>
 
-	<div style="float:left;width:100%;clear:both;padding-bottom:1em;border-bottom:solid 3px #eeeeee">
-		<div style="float:left;width:45%;margin-right:5%">
-			{{change-password}}
+	{{admin-options}}
 
-			{{document-generation}}
 
-			{{configure-upload-locations}}
 
-			{{force-pipeline}}
-
-			{{configure-filenames}}
-
-		</div>
-		<div style="float:left;width:49%">
-			{{choose-language}}
-
-			{{choose-theme}}
-
-			{{setup-openofficeorg-server}}
-
-			{{setup-openofficeorg}}
-
-			{{unix-only-use-xvfb}}
-
-			{{run-as-user}}
-
-			{{non-opendocument-uploads}}
-
-			{{choose-converters}}
-
-			{{super-user-method}}
-		</div>
-	</div>
-
-	<div style="float:left;width:100%;clear:both;"> &#160; </div>
-
-	<div style="float:left;width:100%;clear:both;"> &#160; </div>
-
-	{{php-info}}
 </div>
