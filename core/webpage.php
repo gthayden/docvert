@@ -62,23 +62,11 @@ class Themes
 						setGlobalConfigItem('disallowXVFB', 'false');
 						}
 					}
-				if(isset($_POST['chooseTheme']))
-					{
-					setGlobalConfigItem('theme', $_POST['chooseTheme']);
-					}
-				if(isset($_POST['forcePipeline']))
-					{
-					setGlobalConfigItem('forcePipeline', $_POST['forcePipeline']);
-					}
 				if(isset($_POST['freelyChoosePipelinesButton']))
 					{
 					setGlobalConfigItem('forcePipeline', '');
 					}
 
-				if(isset($_POST['chooseLanguage']))
-					{
-					setGlobalConfigItem('language', $_POST['chooseLanguage']);
-					}
 
 				if(isset($_POST['logout']))
 					{
@@ -109,6 +97,9 @@ class Themes
 		$htmlTemplate = $this->getThemeFragment('template.html');
 		$htmlTemplate = str_replace('{{content}}', $this->choosePage(), $htmlTemplate);
 		$htmlTemplate = str_replace('{{menu-items}}', $this->menuItems(), $htmlTemplate);
+
+		
+
 		switch($this->page)
 			{
 			case 'sample-use':
@@ -119,6 +110,16 @@ class Themes
 				$htmlTemplate = str_replace('{{choose-pipeline}}', $this->choosePipelines(), $htmlTemplate);
 				break;
 			case 'admin':
+				if($this->allowedAdminAccess)
+					{
+					$adminOptions = $this->getThemeFragment('admin-options.htmlf');
+					$htmlTemplate = str_replace('{{admin-options}}', $adminOptions, $htmlTemplate);
+					}
+				else
+					{
+					$htmlTemplate = str_replace('{{admin-options}}', '', $htmlTemplate);;
+					}
+				$htmlTemplate = str_replace('{{tabs}}', $this->adminTabs(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{login}}', $this->login(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{logout}}', $this->logout(), $htmlTemplate);
 				$htmlTemplate = str_replace('{{change-password}}', $this->changePassword(), $htmlTemplate);
@@ -421,6 +422,12 @@ class Themes
 		{
 		if(!$this->allowedAdminAccess) return;
 		return $this->getThemeFragment('admin-logout.htmlf');
+		}
+
+	function adminTabs()
+		{
+		if(!$this->allowedAdminAccess) return;
+		return $this->getThemeFragment('admin-tabs.htmlf');
 		}
 
 	function setupOpenOfficeOrgServer()
@@ -1323,6 +1330,13 @@ class Themes
 	function chooseTheme()
 		{
 		if(!$this->allowedAdminAccess) return;
+
+		if(isset($_POST['chooseTheme']))
+			{
+			setGlobalConfigItem('theme', $_POST['chooseTheme']);
+			}
+
+
 		$themeDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR;
 		$themeDirectories = glob($themeDirectory.'*');
 		$themes = Array();
@@ -1363,6 +1377,12 @@ class Themes
 	function chooseLanguage()
 		{
 		if(!$this->allowedAdminAccess) return;
+
+		if(isset($_POST['chooseLanguage']))
+			{
+			setGlobalConfigItem('language', $_POST['chooseLanguage']);
+			}
+
 		$languageDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'language'.DIRECTORY_SEPARATOR;
 		$languageDirectories = glob($languageDirectory.'*');
 		$languages = Array();
@@ -1434,6 +1454,12 @@ class Themes
 	function forcePipeline()
 		{
 		if(!$this->allowedAdminAccess) return;
+
+		if(isset($_POST['forcePipeline']))
+			{
+			setGlobalConfigItem('forcePipeline', $_POST['forcePipeline']);
+			}
+
 		$template = $this->getThemeFragment('admin-force-pipeline.htmlf');
 		$pipelinesDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'pipeline'.DIRECTORY_SEPARATOR;
 		$pipelines = glob($pipelinesDirectory.'*');

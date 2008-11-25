@@ -413,3 +413,16 @@ ol.chosenPageOrder
 #generator fieldset {border:none;background:#dddddd;margin-top:10px; -moz-border-radius:5px;}
 #generator fieldset legend {font-weight:bold;font-size:small;padding:0 10px;background:#dddddd; -moz-border-radius:5px;}
 
+
+#adminTabs
+	{
+	width:100%;
+	clear:both;
+	}
+
+#adminTabs,
+#adminTabs li
+	{
+	display:inline;
+	}
+
