@@ -794,11 +794,18 @@ function extractUsefulOasisOpenDocumentFiles($oasisOpenDocumentPath)
 					* 15 = WBMP, 16 = XBM
 					*/
 					$imageTypes = array("GIF", "JPG", "PNG", "SWF", "PSD", "BMP", "TIFF", "TIFF", "JPC", "JP2", "JPX", "JB2", "SWC", "IFF", "WBMP", "XBM");
-					if(trim($imageMetadata[1]) != null && trim($imageMetadata[1]) != "" && $imageMetadata[1] < count($imageTypes))
+					if(count($imageMetadata) > 0)
 						{
-						$imageTypeIndex = $imageMetadata[1] - 1;
-						$fileExtension = strtolower($imageTypes[$imageTypeIndex]);
-						//die('File extension: "'.$fileExtension.':'.$imageTypes[$imageTypeIndex].'" ['.$imageMetadata[1].']');
+						if(trim($imageMetadata[1]) != null && trim($imageMetadata[1]) != "" && $imageMetadata[1] < count($imageTypes))
+							{
+							$imageTypeIndex = $imageMetadata[1] - 1;
+							$fileExtension = strtolower($imageTypes[$imageTypeIndex]);
+							//die('File extension: "'.$fileExtension.':'.$imageTypes[$imageTypeIndex].'" ['.$imageMetadata[1].']');
+							}
+						}
+					else
+						{
+						
 						}
 					$newPath = $documentDirectory.'image'.$unknownImageIndex.'.'.$fileExtension;
 					$unknownImageIndex++;

@@ -1,0 +1,5 @@
+<div style="float:left;width:100%;clear:both;"> &#160; </div>
+
+<ul id="adminTabs">
+	<li><a href="admin.php">what</a></li>
+</ul>
