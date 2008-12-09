@@ -1,0 +1,33 @@
+	{{tabs}}	
+
+	{{change-password}}
+
+	{{document-generation}}
+
+	{{configure-upload-locations}}
+
+	{{force-pipeline}}
+
+	{{configure-filenames}}
+
+	{{choose-language}}
+
+	{{choose-theme}}
+
+	{{setup-openofficeorg-server}}
+
+	{{setup-openofficeorg}}
+
+	{{unix-only-use-xvfb}}
+
+	{{run-as-user}}
+
+	{{non-opendocument-uploads}}
+
+	{{choose-converters}}
+
+	{{super-user-method}}
+
+	<div style="float:left;width:100%;clear:both;"> &#160; </div>
+
+	{{php-info}}
