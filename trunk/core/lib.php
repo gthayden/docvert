@@ -253,6 +253,10 @@ function debug_ensureDirectoryReadable($path)
 function moveUploadToConversionDirectory($file, $temporaryDirectory)
 	{
 	$documentPathInfo = pathinfo($file['name']);
+    if(!isset($documentPathInfo['extension']))
+        {
+        $documentPathInfo['extension'] = 'doc';
+        }
 	$documentName = basename($documentPathInfo['basename'], '.'.$documentPathInfo['extension']);
 	$documentName = sanitiseStringToAlphaNumeric($documentName);
 	$conversionDirectory = $temporaryDirectory;
@@ -289,6 +293,10 @@ function isAnOasisOpenDocument($fileUploadArray)
 	if(stripos($fileUploadArray['type'], $validOasisOpenDocumentMimeType) === false)
 		{
 		$pathInfo = pathinfo($fileUploadArray['name']);
+         if(!isset($pathInfo['extension']))
+            {
+            $pathInfo['extension'] = 'doc';
+            }
 		$oasisOpenDocumentFileExtension = 'odt';
 		if($pathInfo['extension'] == $oasisOpenDocumentFileExtension)
 			{
@@ -327,7 +335,7 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 	if(!$mockConversion)
 		{
 		$outputPathInfo = pathinfo($inputDocumentPath);
-		$extensionlessOutputDocumentPath = $outputPathInfo['dirname'].DIRECTORY_SEPARATOR.basename($outputPathInfo['basename'], '.'.$outputPathInfo['extension']);
+		$extensionlessOutputDocumentPath = $outputPathInfo['dirname'].DIRECTORY_SEPARATOR.basename($outputPathInfo['basename']);
 		$outputDocumentPath = $extensionlessOutputDocumentPath.'.odt';
 		}
 	if($outputDocumentPath == '.odt' && !$mockConversion)
@@ -1027,6 +1035,9 @@ function processAPipelineLevel(&$pipelineStages, $currentXml, $pipelineDirectory
 			{
 			$elementAttributes = &$pipelineStage['__attributes'];
 			if(!is_array($elementAttributes)) webServiceError('&error-non-array;');
+			if(!array_key_exists('process',$elementAttributes)) webServiceError('&error-pipeline-lacks-process-attribute;');
+
+
 			$foreachIndex++;
 			if($elementAttributes['process'] == 'Loop')
 				{
