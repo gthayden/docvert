@@ -98,8 +98,6 @@ class Themes
 		$htmlTemplate = str_replace('{{content}}', $this->choosePage(), $htmlTemplate);
 		$htmlTemplate = str_replace('{{menu-items}}', $this->menuItems(), $htmlTemplate);
 
-		
-
 		switch($this->page)
 			{
 			case 'sample-use':
@@ -257,7 +255,7 @@ class Themes
 		if(!$this->previewDirectory) webServiceError('&error-webpage-no-preview-directory-given;');
 		if(!file_exists($this->previewDirectory))
 			{
-			webServiceError('&error-webpage-no-preview-directory;]]', 500, Array('path'=>$this->previewDirectory));
+			webServiceError('&error-webpage-no-preview-directory;', 500, Array('path'=>$this->previewDirectory));
 			}
 		$convertedDocumentPaths = glob($this->previewDirectory.DIRECTORY_SEPARATOR.'*');
 		
