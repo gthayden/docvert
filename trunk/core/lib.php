@@ -257,8 +257,7 @@ function moveUploadToConversionDirectory($file, $temporaryDirectory)
         {
         $documentPathInfo['extension'] = 'doc';
         }
-	$documentName = basename($documentPathInfo['basename'], '.'.$documentPathInfo['extension']);
-	$documentName = sanitiseStringToAlphaNumeric($documentName);
+	$documentName = basename($documentPathInfo['basename']);
 	$conversionDirectory = $temporaryDirectory;
 	$conversionDirectoryToUse = ensureMakeDirectory($conversionDirectory, $documentName);
 	$documentPath = $conversionDirectoryToUse.DIRECTORY_SEPARATOR.$documentPathInfo['basename'];
@@ -912,9 +911,6 @@ function applyPipeline($contentPath, $pipelineToUse, $autoPipeline, $previewDire
 	$pipelineString = file_get_contents($pipelinePath);
 	$pipelineString = removeXmlDeclaration($pipelineString);
 	$pipelineString = trim($pipelineString);
-	
-
-
 	if(strpos($pipelineString, '<autopipeline') !== false)
 		{
 		$autoPipelineString = substr($pipelineString, strpos($pipelineString, '<autopipeline>') + 14);
