@@ -43,7 +43,7 @@ class IncludeDependentFiles extends PipelineProcess
 			$folder = opendir($source);
 			while($file = readdir($folder))
 				{
-				if($file != '.' && $file != '..')
+				if($file != '.' && $file != '..' && $file != ".svn")
 					{
 					$this->copyRecursively($source.DIRECTORY_SEPARATOR.$file, $destination.DIRECTORY_SEPARATOR.$file);
 					}
