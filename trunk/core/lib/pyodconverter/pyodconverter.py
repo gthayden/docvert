@@ -67,6 +67,10 @@ class OutputStreamWrapper(unohelper.Base, XOutputStream):
 
 
 class DocumentConverter:
+	filterPdf = "writer_pdf_Export"
+	magicBytesPdf = "%PDF" 
+	filterOdt = "writer8"
+	magicBytesOdt = "PK"
 	
 	def __init__(self, port=DEFAULT_OPENOFFICE_PORT):
 		self.localContext = uno.getComponentContext()
@@ -78,13 +82,13 @@ class DocumentConverter:
 			raise Exception, "Failed to connect to OpenOffice.org on port %s. %s" % (port, exception)
 		self.desktop = context.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", context)
 
-	def convertByStream(self, stdinBytes):
+	def convertByStream(self, stdinBytes, filterName):
 		inputStream = self.serviceManager.createInstanceWithContext("com.sun.star.io.SequenceInputStream", self.localContext)
 		inputStream.initialize((uno.ByteSequence(stdinBytes),)) 
 
 		document = self.desktop.loadComponentFromURL('private:stream', "_blank", 0, self._toProperties(
 			InputStream=inputStream,
-			ReadOnly=True))
+			Hidden=False))
 
 		if not document:
 			raise Exception, "Error making document"
@@ -93,27 +97,56 @@ class DocumentConverter:
 		except AttributeError:
 			pass
 		outputStream = OutputStreamWrapper(False)
+		properties = dict(
+			Overwrite=True,
+			OutputStream=outputStream,
+			FilterName=filterName)
+		anyException = False
+		if "pdf_" in filterName:
+			properties["FilterData"] = self._addPdf()
 		try:
-			document.storeToURL('private:stream', self._toProperties(
-				OutputStream=outputStream,
-				FilterName="writer8"))
+			document.storeToURL('private:stream', self._toProperties(**properties))
+		except Exception, e:
+			anyException = e
+	        	pass 
 		finally:
 			document.close(True)
-		openDocumentBytes = outputStream.data.getvalue()
+		responseBytes = outputStream.data.getvalue()
 		outputStream.close()
-		return openDocumentBytes
+		if filterName == DocumentConverter.filterOdt and responseBytes[0:len(self.magicBytesOdt)] == self.magicBytesOdt:
+			return responseBytes
+		elif filterName == DocumentConverter.filterPdf and responseBytes[0:len(self.magicBytesPdf)] == self.magicBytesPdf:
+			return responseBytes
 
+		if len(responseBytes) == 0:
+			sys.stderr.write("No response from OpenOffice after the conversion. E.g. response length=0")
+		else:
+			fileHeaderLength = 10
+			if len(responseBytes) < 10:
+				fileHeaderLength = len(responseBytes)
+			sys.stderr.write("Although there was a response it didn't appear to be in the expected format. E.g. The first %i bytes of the response '%s'  weren't in the format of %s" % (fileHeaderLength, responseBytes[0:fileHeaderLength],filterName))
+		if anyException != False:
+			raise anyException
+		raise Exception("The conversion wasn't successful but no exception was raised by OpenOffice, therefore PyODConverter is now raising a generic exception.")
 
-	def convertByPath(self, inputFile, outputFile):
+	def convertByPath(self, inputFile, outputFile, filterName):
 		inputUrl = self._toFileUrl(inputFile)
 		outputUrl = self._toFileUrl(outputFile)
-		document = self.desktop.loadComponentFromURL(inputUrl, "_blank", 0, self._toProperties(Hidden=True))
+		print inputUrl
+		print outputUrl
+
+		document = self.desktop.loadComponentFromURL(inputUrl, "_blank", 0, self._toProperties(Hidden=False))
+		properties = dict(FilterName=filterName, Overwrite=True)
+		if "pdf_" in filterName:
+			properties["FilterData"] = self._addPdf()
 		try:
 			document.refresh()
 		except AttributeError:
 			pass
 		try:
-			document.storeToURL(outputUrl, self._toProperties(FilterName="writer8"))
+			document.storeToURL(outputUrl, self._toProperties(**properties))
+		except Exception: 
+	        	pass 
 		finally:
 			document.close(True)
 
@@ -129,27 +162,40 @@ class DocumentConverter:
 			props.append(prop)
 		return tuple(props)
 
+	def _addPdf(self):
+		return self._toProperties(
+			CompressMode="1",
+			PageRange="1-")		
+
 if __name__ == "__main__":
 	try:
-		if len(sys.argv) == 2 and sys.argv[1] == '--stream':
+		args = sys.argv
+		filterName = DocumentConverter.filterOdt
+		pdfFlag = "--pdf"
+		if pdfFlag in args:
+			filterName = DocumentConverter.filterPdf
+			#filterName = "writer_globaldocument_pdf_Export"
+			args.remove(pdfFlag)
+		if len(args) == 2 and args[1] == '--stream':
 			stdinBytes = sys.stdin.read()
 			converter = DocumentConverter()
-			openDocumentBytes = converter.convertByStream(stdinBytes)
-			sys.stdout.write(openDocumentBytes)
+			responseBytes = converter.convertByStream(stdinBytes, filterName)
+			sys.stdout.write(responseBytes)
 			sys.stderr.write("(Success)\n")
 			sys.exit(0)
-		elif len(sys.argv) == 3:
+		elif len(args) == 3 or len(args) == 4:
 			converter = DocumentConverter()
-			if not isfile(sys.argv[1]):
-				sys.stderr.write("No such input file: %s\n" % sys.argv[1])
+			if not isfile(args[1]):
+				sys.stderr.write("No such input file: %s\n" % args[1])
 				sys.exit(1)
-			converter.convertByPath(sys.argv[1], sys.argv[2])
+			converter.convertByPath(args[1], args[2], filterName)
 		else:
-			helpText = "USAGE: " + sys.argv[0] + " <input-path> <output-path>\n"
-			helpText += "USAGE: " + sys.argv[0] + " --stream  (accepts binary document on stdin and outputs on stdout)\n"
+			helpText = "USAGE: " + args[0] + " <input-path> <output-path>\n"
+			helpText += "USAGE: " + args[0] + " --stream  (accepts binary document on stdin and outputs on stdout)\n"
 			sys.stderr.write(helpText)
 			sys.exit(2)
 	except Exception, exception:
 		sys.stderr.write("Error: %s" % exception)
+		raise exception
 		sys.exit(1)
 
