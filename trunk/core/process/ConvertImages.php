@@ -290,10 +290,11 @@ class ConvertImages extends PipelineProcess
 		if(!file_exists($pyodConverterPath)) die("Can't find PyODconverter at ".htmlentities($pyodConverterPath));
 		$command = $pyodConverterPath.' --stream --pdf';
 		$response = shellCommand($command, 20, $zipData, false);
-		if($response['stdOut'] != "%PDF") die("Expected a PDF response was didn't receive one. Received back ".htmlentities(print_r($response, true)));
+		$pdfMagicBytes = '%PDF';
+		if(substr($response['stdOut'],0,strlen($pdfMagicBytes)) != $pdfMagicBytes) die("Expected a PDF response was didn't receive one. Received back ".htmlentities(print_r($response, true)));
 		$pdfPath = $imagePath.'.pdf';
 		file_put_contents($pdfPath, $response['stdOut']);
-		return $pdfPath
+		return $pdfPath;
 		}
 
 	}
