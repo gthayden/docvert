@@ -135,64 +135,7 @@ class ConvertImages extends PipelineProcess
 					break;
 				case 'wmf':
 				case 'emf':
-					$command = DOCVERT_DIR;
-					if($operatingSystemFamily == 'Windows')
-						{
-						$command .= 'core\\config\\windows-specific\\convert-using-';
-						}
-					elseif($operatingSystemFamily == 'Unix')
-						{
-						$command .= 'core/config/unix-specific/convert-using-';					
-						}
-	
-					$toImageType = $this->isImageBitmapOrVector($toFormat);
-					switch($toImageType)
-						{
-						case 'bitmap':
-							if($operatingSystemFamily == 'Windows')
-								{
-								$command .= 'wmf2gd.bat';
-								}
-							elseif($operatingSystemFamily == 'Unix')
-								{
-								$command .= 'wmf2gd.sh';
-								}
-							$gdImagePath = $insideDirectory.DIRECTORY_SEPARATOR.basename($fromImagePath, '.'.$fromFormat).'.gd';
-							$escapedGdImagePath = escapeshellarg($gdImagePath);
-							$command .= ' \''.$insideDirectory.'\' '.$escapedFromImagePath.' '.$escapedGdImagePath;
-							$wmf2gdResult = shellCommand($command);
-							if(!file_exists($gdImagePath))
-								{
-								webServiceError('&error-process-convertimages-nofile;', 500, Array('command'=>$command, 'output'=>$wmf2gdResult));
-								}
-							$gdImageContents = file_get_contents($gdImagePath);
-							$imageResource = imagecreatefromstring($gdImageContents);
-							silentlyUnlink($gdImagePath);
-							$this->saveImageByResource($imageResource, $toImagePath, $toFormat);
-							break;
-						case 'vector':
-							if($toFormat != 'svg')
-								{
-								webServiceError('&error-process-convertimages-onlysvg;');
-								}
-							if($operatingSystemFamily == 'Windows')
-								{
-								$command .= 'wmf2svg.bat';
-								}
-							elseif($operatingSystemFamily == 'Unix')
-								{
-								$command .= 'wmf2svg.sh';
-								}
-							$command .= ' '.$escapedFromImagePath.' '.$escapedToImagePath;
-							//die($command);
-							$wmf2svgResult = shellCommand($command);
-							if(!file_exists($toImagePath))
-								{
-								webServiceError('&error-process-convertimages-nosvg;', 500, Array('command'=>$command , 'output'=>$wmf2svgResult) );
-								}
-							$this->fixSvgDocument($toImagePath, $insideDirectory);
-							break;
-						}
+					$pdfPath = $this->wmfOrEmfToPdf($fromImagePath, $currentXml);
 					break;
 				case 'svg':
 					webServiceError('&error-process-convertimages-unable-to-convert-svg;');
@@ -294,6 +237,63 @@ class ConvertImages extends PipelineProcess
 				break;
 			}
 		return $imageType;
+		}
+
+
+	function wmfOrEmfToPdf($imagePath, &$currentXml)
+		{
+		//Step 1. Detect width/height of image.
+		$imageOffset = strpos($currentXml, basename($imagePath));
+		if($imageOffset === False) return False; //image not in document, don't worry about it.
+		$lookBackChars = 200;
+		if($imageOffset < $lookBackChars) $lookBackChars = $imageOffset;
+		$previousChars = substr($currentXml, $imageOffset-$lookBackChars, $lookBackChars);
+		$positionOfWidth = strrpos($previousChars, 'svg:width');
+		$positionOfHeight = strrpos($previousChars, 'svg:height');
+		if($positionOfWidth === False || $positionOfHeight === False) die("Unable to detect width/height of wmf/emf image.");
+		$width = substringBefore(substringAfter(substr($previousChars,$positionOfWidth), '"'), '"');
+		$height = substringBefore(substringAfter(substr($previousChars,$positionOfHeight), '"'), '"');
+	
+		//Step 2. Make an ODT file containing only the WMF/EMF (ugh.. I know, but it works and it's reliable because we benefit from OpenOffice's years of reverse-engineering so get over it)
+		//step 2a -- make a working directory for our OpenDocument file and copy the files in
+		$workingDirectory = getTemporaryDirectoryInsideDirectory($this->contentDirectory);
+		mkdir($workingDirectory.DIRECTORY_SEPARATOR.'Pictures');
+		$destinationImagePath = $workingDirectory.DIRECTORY_SEPARATOR.'Pictures'.DIRECTORY_SEPARATOR.basename($imagePath);
+		copy($imagePath, $destinationImagePath);
+		$odtTemplateDirectory = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR;
+		copy($odtTemplateDirectory.'styles.xml', $workingDirectory.DIRECTORY_SEPARATOR.'styles.xml');
+		copy($odtTemplateDirectory.'settings.xml', $workingDirectory.DIRECTORY_SEPARATOR.'settings.xml');
+		copy($odtTemplateDirectory.'meta.xml', $workingDirectory.DIRECTORY_SEPARATOR.'meta.xml');
+		copy($odtTemplateDirectory.'manifest.rdf', $workingDirectory.DIRECTORY_SEPARATOR.'manifest.rdf');
+		copy($odtTemplateDirectory.'mimetype', $workingDirectory.DIRECTORY_SEPARATOR.'mimetype');
+		$contentXml = file_get_contents($odtTemplateDirectory.'content.xml');
+		$imageTemplate = '<text:p><draw:frame text:anchor-type="as-char" svg:width="{{width}}" svg:height="{{height}}" draw:z-index="1"><draw:image xlink:href="{{path}}" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad"/></draw:frame></text:p>';
+		$imageString = str_replace('{{width}}', $width, $imageTemplate);
+		$imageString = str_replace('{{height}}', $height, $imageString);
+		$imageString = str_replace('{{path}}', 'Pictures/'.basename($destinationImagePath), $imageString);
+		$contentXml = str_replace('<!--{{content}}-->', $imageString, $contentXml);
+		file_put_contents($workingDirectory.DIRECTORY_SEPARATOR.'content.xml', $contentXml);
+		mkdir($workingDirectory.DIRECTORY_SEPARATOR.'META-INF');
+		$manifestXml = file_get_contents($odtTemplateDirectory.'manifest.xml');
+		$manifestItemTemplate = ' <manifest:file-entry manifest:media-type="" manifest:full-path="{{path}}"/>';
+		$manifestItem = str_replace('{{path}}', 'Pictures/'.basename($imagePath), $manifestItemTemplate);
+		$manifestXml = str_replace('<!--{{content}}-->', $manifestItem, $manifestXml);
+		file_put_contents($workingDirectory.DIRECTORY_SEPARATOR.'META-INF'.DIRECTORY_SEPARATOR.'manifest.xml', $manifestXml);
+		//step 2b zip it into an ODT
+		$zipPath = $this->contentDirectory.DIRECTORY_SEPARATOR.basename($imagePath).'.odt';
+		$zipPath = zipFiles($workingDirectory, $zipPath);
+		$zipData = file_get_contents($zipPath);
+		silentlyUnlink($zipPath);
+
+		//Step 3 . Stream it to PyODConverter. Make a PDF and save it.
+		$pyodConverterPath = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'pyodconverter'.DIRECTORY_SEPARATOR.'pyodconverter.py';
+		if(!file_exists($pyodConverterPath)) die("Can't find PyODconverter at ".htmlentities($pyodConverterPath));
+		$command = $pyodConverterPath.' --stream --pdf';
+		$response = shellCommand($command, 20, $zipData, false);
+		if($response['stdOut'] != "%PDF") die("Expected a PDF response was didn't receive one. Received back ".htmlentities(print_r($response, true)));
+		$pdfPath = $imagePath.'.pdf';
+		file_put_contents($pdfPath, $response['stdOut']);
+		return $pdfPath
 		}
 
 	}

@@ -517,7 +517,6 @@ function makeOasisOpenDocument($inputDocumentPath, $converter, $mockConversion =
 		{
 		$response = shellCommand($command, null, $stdInData, false);
 		$theMagicNumbersOfAZipFile = Array(80, 75); // ASCII code of letters "PK": the magic numbers of a zip file, see: http://en.wikipedia.org/wiki/Magic_number_(programming)
-		//ignore status code, instead sniff magic numbers. I was going to do substr starts with here and just check the string PK but would that be encoding dependant? That's why it's checking ascii specifically.
 		if(ord(substr($response['stdOut'], 0, 1)) == $theMagicNumbersOfAZipFile[0] && ord(substr($response['stdOut'], 1, 1)) == $theMagicNumbersOfAZipFile[1]) //if(it looks like a zip file anyway) 
 			{
 			file_put_contents($commandTemplateVariable['outputDocumentPath'], $response['stdOut']);
@@ -896,7 +895,7 @@ function getTemporaryDirectoryInsideDirectory($makeInsideDirectory, $prefix = 'd
 function getTemporaryFile()
 	{
 	$temporaryDirectory = null;
-	$temporaryFile = tempnam('xxx', 'docvert'); // 'xxx' to give a directory that doesn't exist as empty string to tempnam on Windows gives the wrong directory
+	$temporaryFile = tempnam('xxx', 'docvert'); // 'xxx' to give a directory that doesn't exist as empty string to tempnam on Windows otherwise it gives the wrong directory
 	return $temporaryFile;
 	}
 
