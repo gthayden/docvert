@@ -1,3 +1,16 @@
+Docvert 4.0 Beta1   November 8th 2010
+
+    * Improved support for EMF/WMF (requires PyODConverter with OOo Server)
+    * Replacing crappy homebrewed XML parser with SimpleXML. Should work
+      identically, if you need the old behaviour then there's
+  	  deprecated_xmlStringToArray()
+    * Minor bugfixes to PyODConverter.
+
+PLEASE NOTE:
+   * PyODConverter with OOo Server is strongly recommended, all other
+     converters are now deprecated and may be removed in the future.
+     Save yourself the hassle and move now.
+
 Docvert 3.4   June 17th 2008
 
 It's out! Some minor bugfixes and language changes. The main change is that "OpenOffice.org Standalone" is now deprecated and I suggest you move to "PyODConverter with OOo Server" (it's much easier to install).
