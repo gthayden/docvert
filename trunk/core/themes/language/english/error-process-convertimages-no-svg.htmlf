@@ -1,0 +1,5 @@
+Unable to generate an SVG file from a PDF. Check the appropriate script under core/config/(YOUR PLATFORM)/convert-using-pdf2svg.(SOMETHING) to debug this issue.
+
+The command I ran was:
+
+&dynamic-command;

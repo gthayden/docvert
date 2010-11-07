@@ -7,7 +7,7 @@ class HelloWorld extends PipelineProcess
 	
 	public function process($currentXml)
 		{
-		return $xmlString;
+		return $currentXml; //you could modify the $currentXml and return it
 		}
 
 	}

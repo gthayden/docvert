@@ -135,7 +135,18 @@ class ConvertImages extends PipelineProcess
 					break;
 				case 'wmf':
 				case 'emf':
-					$pdfPath = $this->wmfOrEmfToPdf($fromImagePath, $currentXml);
+					$pdf = $this->wmfOrEmfToPdf($fromImagePath, $currentXml); //first convert to PDF (so that we have a mainstream format)
+					//header("Content-type: application/pdf");
+					//die(file_get_contents($pdfPath));
+					$svgPath = $this->pdfToSvg($pdf['path'], true);
+					//header("Content-type: image/svg+xml");
+					//die(file_get_contents($svgPath));
+					$pngPath = $this->svgToPng($svgPath, realWorldMeasurementsToPixels($pdf['width']), realWorldMeasurementsToPixels($pdf['height']));
+					//header("Content-type: image/png");
+					//die(file_get_contents($pngPath));
+					if($toFormat == 'png') break;
+					$imageResource = @imagecreatefromstring(file_get_contents($pngPath));
+					$this->saveImageByResource($imageResource, $toImagePath, $toFormat);
 					break;
 				case 'svg':
 					webServiceError('&error-process-convertimages-unable-to-convert-svg;');
@@ -239,6 +250,49 @@ class ConvertImages extends PipelineProcess
 		return $imageType;
 		}
 
+	function pdfToSvg($pdfPath, $deleteOriginal=false)
+		{
+		$pdfToSvgConverterPath = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR;
+		$operatingSystemFamily = getOperatingSystemFamily();
+		if($operatingSystemFamily == 'Windows')
+			{
+			$pdfToSvgConverterPath .= 'windows-specific'.DIRECTORY_SEPARATOR.'convert-using-pdf2svg.bat';
+			}
+		elseif($operatingSystemFamily == 'Unix')
+			{
+			$pdfToSvgConverterPath .= 'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-pdf2svg.sh';
+			}
+		if(!file_exists($pdfToSvgConverterPath)) webServiceError('&error-process-convertimages-no-converter;', 500, Array('path'=>$pdfToSvgConverterPath));
+		$pdfPathInfo = pathinfo($pdfPath);
+		$svgPath = dirname($pdfPath).DIRECTORY_SEPARATOR.basename($pdfPath,'.'.$pdfPathInfo['extension']).'.svg';
+		$command = $pdfToSvgConverterPath.' '.$pdfPath.' '.$svgPath;
+		shellCommand($command);
+		if(!file_exists($svgPath))  webServiceError('&error-process-convertimages-no-svg;', 500, Array('command'=>$command));
+		if($deleteOriginal) silentlyUnlink($pdfPath);
+		return $svgPath;
+		}
+
+	function svgToPng($svgPath, $widthInPixels, $heightInPixels, $deleteOriginal=false)
+		{
+		$svgToPngConverterPath = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR;
+		$operatingSystemFamily = getOperatingSystemFamily();
+		if($operatingSystemFamily == 'Windows')
+			{
+			$svgToPngConverterPath .= 'windows-specific'.DIRECTORY_SEPARATOR.'convert-using-svg2png.bat';
+			}
+		elseif($operatingSystemFamily == 'Unix')
+			{
+			$svgToPngConverterPath .= 'unix-specific'.DIRECTORY_SEPARATOR.'convert-using-svg2png.sh';
+			}
+		if(!file_exists($svgToPngConverterPath)) webServiceError('&error-process-convertimages-no-converter;', 500, Array('path'=>$svgToPngConverterPath));
+		$svgPathInfo = pathinfo($svgPath);
+		$pngPath = dirname($svgPath).DIRECTORY_SEPARATOR.basename($svgPath,'.'.$svgPathInfo['extension']).'.png';
+		$command = $svgToPngConverterPath.' '.$svgPath.' '.$pngPath.' '.$widthInPixels.' '.$heightInPixels;
+		shellCommand($command);
+		if(!file_exists($pngPath))  webServiceError('&error-process-convertimages-no-png;', 500, Array('command'=>$command));
+		if($deleteOriginal) silentlyUnlink($svgPath);
+		return $pngPath;
+		}
 
 	function wmfOrEmfToPdf($imagePath, &$currentXml)
 		{
@@ -251,17 +305,20 @@ class ConvertImages extends PipelineProcess
 		$positionOfWidth = strrpos($previousChars, 'svg:width');
 		$positionOfHeight = strrpos($previousChars, 'svg:height');
 		if($positionOfWidth === False || $positionOfHeight === False) die("Unable to detect width/height of wmf/emf image.");
-		$width = substringBefore(substringAfter(substr($previousChars,$positionOfWidth), '"'), '"');
+		$width = substringBefore(substringAfter(substr($previousChars,$positionOfWidth), '"'), '"'); //TODO use an XML parser
 		$height = substringBefore(substringAfter(substr($previousChars,$positionOfHeight), '"'), '"');
-	
-		//Step 2. Make an ODT file containing only the WMF/EMF (ugh.. I know, but it works and it's reliable because we benefit from OpenOffice's years of reverse-engineering so get over it)
+		//Step 2. Make an ODT file containing only the WMF/EMF (ugh.. I know, but it works and it's reliable
+		// because we benefit from OpenOffice's years of reverse-engineering so get over it)
 		//step 2a -- make a working directory for our OpenDocument file and copy the files in
 		$workingDirectory = getTemporaryDirectoryInsideDirectory($this->contentDirectory);
 		mkdir($workingDirectory.DIRECTORY_SEPARATOR.'Pictures');
 		$destinationImagePath = $workingDirectory.DIRECTORY_SEPARATOR.'Pictures'.DIRECTORY_SEPARATOR.basename($imagePath);
 		copy($imagePath, $destinationImagePath);
 		$odtTemplateDirectory = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR;
-		copy($odtTemplateDirectory.'styles.xml', $workingDirectory.DIRECTORY_SEPARATOR.'styles.xml');
+		$stylesXml = file_get_contents($odtTemplateDirectory.'styles.xml');
+		$stylesXml = str_replace('{{page-width}}', $width, $stylesXml);
+		$stylesXml = str_replace('{{page-height}}', $height, $stylesXml);
+		file_put_contents($workingDirectory.DIRECTORY_SEPARATOR.'styles.xml', $stylesXml);
 		copy($odtTemplateDirectory.'settings.xml', $workingDirectory.DIRECTORY_SEPARATOR.'settings.xml');
 		copy($odtTemplateDirectory.'meta.xml', $workingDirectory.DIRECTORY_SEPARATOR.'meta.xml');
 		copy($odtTemplateDirectory.'manifest.rdf', $workingDirectory.DIRECTORY_SEPARATOR.'manifest.rdf');
@@ -284,7 +341,7 @@ class ConvertImages extends PipelineProcess
 		$zipPath = zipFiles($workingDirectory, $zipPath);
 		$zipData = file_get_contents($zipPath);
 		silentlyUnlink($zipPath);
-
+		silentlyUnlink($workingDirectory);
 		//Step 3 . Stream it to PyODConverter. Make a PDF and save it.
 		$pyodConverterPath = DOCVERT_DIR.'core'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'pyodconverter'.DIRECTORY_SEPARATOR.'pyodconverter.py';
 		if(!file_exists($pyodConverterPath)) die("Can't find PyODconverter at ".htmlentities($pyodConverterPath));
@@ -294,7 +351,10 @@ class ConvertImages extends PipelineProcess
 		if(substr($response['stdOut'],0,strlen($pdfMagicBytes)) != $pdfMagicBytes) die("Expected a PDF response was didn't receive one. Received back ".htmlentities(print_r($response, true)));
 		$pdfPath = $imagePath.'.pdf';
 		file_put_contents($pdfPath, $response['stdOut']);
-		return $pdfPath;
+		return Array(
+			'width' => $width,
+			'height' => $height,
+			'path' => $pdfPath);
 		}
 
 	}

@@ -1335,8 +1335,12 @@ function silentlyUnlink($path)
 			{
 			silentlyUnlink($pathContainsItem);
 			}
+		if(@!rmdir($path)) silentlyAppendLineToLog('Unable to delete directory '.$path, 'error');
 		}
-	if(@!unlink($path)) silentlyAppendLineToLog('Unable to delete file '.$path, 'error');
+	else
+		{
+		if(@!unlink($path)) silentlyAppendLineToLog('Unable to delete file '.$path, 'error');
+		}
 	}
 
 
@@ -1854,6 +1858,27 @@ function getUrlLocalPartDirectory($url)
 	return substr($url, 0, strrpos($url, '/')+1);
 	}
 
+function realWorldMeasurementsToPixels($measurement) //just a basic guess based on popular screen DPIs
+	{ //expects measurement to be "x.xxCM" or "x.xxMM" or "x.xxIN" or "x.xxPX" where x.xx is any number.
+	$dpi = 120;
+	$centimetersPerInch = 2.54;
+	$measurement = strtolower($measurement);
+	$number = substr($measurement, 0, -2);
+	$unit = substr($measurement, -2);
+	switch($unit)
+		{
+		case 'px':
+			return round($number);
+		case 'in':
+			return round($number * $dpi);
+		case 'cm':
+			return round(($number / $centimetersPerInch) * $dpi);
+		case 'mm':
+			return round((($number * 100) / $centimetersPerInch) * $dpi);
+		}
+	webServiceError('&error-real-world-measurements-to-pixels;', 500, Array('measurement'=>$measurement) );
+	}
+
 function generateDocument($pages, $generatorPipeline)
 	{
 	if(preg_match('/.\\//s', $generatorPipeline))
@@ -2015,8 +2040,6 @@ function getAutoDetectLanguage()
 	{
 	return '(auto)';
 	}
-
-
 
 function webServiceError($message, $errorNumber = 500, $errorData = null)
 	{
