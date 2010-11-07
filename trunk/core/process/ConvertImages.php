@@ -144,7 +144,6 @@ class ConvertImages extends PipelineProcess
 					$pngPath = $this->svgToPng($svgPath, realWorldMeasurementsToPixels($pdf['width']), realWorldMeasurementsToPixels($pdf['height']));
 					//header("Content-type: image/png");
 					//die(file_get_contents($pngPath));
-					if($toFormat == 'png') break;
 					$imageResource = @imagecreatefromstring(file_get_contents($pngPath));
 					$this->saveImageByResource($imageResource, $toImagePath, $toFormat);
 					break;
@@ -265,7 +264,7 @@ class ConvertImages extends PipelineProcess
 		if(!file_exists($pdfToSvgConverterPath)) webServiceError('&error-process-convertimages-no-converter;', 500, Array('path'=>$pdfToSvgConverterPath));
 		$pdfPathInfo = pathinfo($pdfPath);
 		$svgPath = dirname($pdfPath).DIRECTORY_SEPARATOR.basename($pdfPath,'.'.$pdfPathInfo['extension']).'.svg';
-		$command = $pdfToSvgConverterPath.' '.$pdfPath.' '.$svgPath;
+		$command = escapeshellarg($pdfToSvgConverterPath).' '.escapeshellarg($pdfPath).' '.escapeshellarg($svgPath);
 		shellCommand($command);
 		if(!file_exists($svgPath))  webServiceError('&error-process-convertimages-no-svg;', 500, Array('command'=>$command));
 		if($deleteOriginal) silentlyUnlink($pdfPath);
@@ -287,7 +286,7 @@ class ConvertImages extends PipelineProcess
 		if(!file_exists($svgToPngConverterPath)) webServiceError('&error-process-convertimages-no-converter;', 500, Array('path'=>$svgToPngConverterPath));
 		$svgPathInfo = pathinfo($svgPath);
 		$pngPath = dirname($svgPath).DIRECTORY_SEPARATOR.basename($svgPath,'.'.$svgPathInfo['extension']).'.png';
-		$command = $svgToPngConverterPath.' '.$svgPath.' '.$pngPath.' '.$widthInPixels.' '.$heightInPixels;
+		$command = escapeshellarg($svgToPngConverterPath).' '.escapeshellarg($svgPath).' '.escapeshellarg($pngPath).' '.escapeshellarg($widthInPixels).' '.escapeshellarg($heightInPixels);
 		shellCommand($command);
 		if(!file_exists($pngPath))  webServiceError('&error-process-convertimages-no-png;', 500, Array('command'=>$command));
 		if($deleteOriginal) silentlyUnlink($svgPath);
@@ -349,7 +348,8 @@ class ConvertImages extends PipelineProcess
 		$response = shellCommand($command, 20, $zipData, false);
 		$pdfMagicBytes = '%PDF';
 		if(substr($response['stdOut'],0,strlen($pdfMagicBytes)) != $pdfMagicBytes) die("Expected a PDF response was didn't receive one. Received back ".htmlentities(print_r($response, true)));
-		$pdfPath = $imagePath.'.pdf';
+		$imagePathInfo = pathinfo($imagePath);
+		$pdfPath = dirname($imagePath).DIRECTORY_SEPARATOR.basename($imagePath,'.'.$imagePathInfo['extension']).'.pdf';
 		file_put_contents($pdfPath, $response['stdOut']);
 		return Array(
 			'width' => $width,
