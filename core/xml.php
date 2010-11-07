@@ -1,6 +1,78 @@
 <?php
 
+$test = '
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+	<stage process="ConvertImages" formats="wmf2png, wmf2svg, bmp2png" deleteOriginals="true" autoCrop="false" autoCropThreshold="20"/>
+	<stage process="TransformOpenDocumentToDocBook"/>
+
+	<!-- <stage process="ValidateAgainstSchema" withFile="docbook.rng"/> -->
+	<stage process="GeneratePostConversionEditorFiles"/>
+
+	<stage process="Test" withFile="internal://test-docbook.xsl"/>
+	
+	<stage process="Loop" numberOfTimes="xpathCount://db:chapter">
+		<stage process="SplitPages"/>
+		<!-- <stage process="ValidateAgainstSchema" withFile="docbook.rng"/> -->
+		<stage process="DocBookToXHTML"/>
+
+		<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
+		{{custom-stages}}
+		<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
+		<stage process="Serialize" toFile="{customSection}"/>
+	</stage>
+
+	<stage process="GetPreface"/>
+
+	<!-- <stage process="ValidateAgainstSchema" withFile="docbook.rng"/> -->
+
+	<stage process="DocBookToXHTML" withTableOfContents="true"/>
+
+	<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
+	{{custom-stages}}
+	<!-- <stage process="ValidateAgainstSchema" withFile="xhtml.rng"/> -->
+	<stage process="Serialize" toFile="{customIndex}"/>
+</pipeline>
+';
+
+//print_r(xmlStringToArray($test));
+//print "\n\n\n----------------------\n\n\n";
+//print_r(deprecated_xmlStringToArray($test));
+
+
 function xmlStringToArray($xmlString)
+	{
+	return xmlStringWithRootToArray('<root>'.$xmlString.'</root>');
+	}
+
+function xmlStringWithRootToArray($xmlString)
+	{
+	$simpleXml = simplexml_load_string(trim($xmlString));
+	return simpleXmlToArray($simpleXml);
+	}
+
+function simpleXmlToArray($simpleXml)
+	{
+	$xmlArray = Array();
+	foreach($simpleXml as $child)
+		{
+		$childElement = Array();
+		$childElement['__nodeName'] = (string) $child->getName();
+		$childElement['__attributes'] = Array();
+		foreach($child->attributes() as $key => $value)
+			{
+			$childElement['__attributes'][(string)$key] = (string)$value;
+			}
+		if($child->count())
+			{
+			$childElement['__children'] = simpleXmlToArray($child);
+			}
+		$xmlArray[] = $childElement;
+		}
+	return $xmlArray;
+	}
+
+function deprecated_xmlStringToArray($xmlString)
 	{
 	$xmlString = preg_replace('/<!--.*?-->/s','',$xmlString);
 	$exitAfterManyLoops = 0;
