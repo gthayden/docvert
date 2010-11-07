@@ -1859,7 +1859,7 @@ function getUrlLocalPartDirectory($url)
 	}
 
 function realWorldMeasurementsToPixels($measurement) //just a basic guess based on popular screen DPIs
-	{ //expects measurement to be "x.xxCM" or "x.xxMM" or "x.xxIN" or "x.xxPX" where x.xx is any number.
+	{ //expects measurement to be "x.xxCM" or "x.xxMM" or "x.xxIN" or "x.xxPX" or "x.xxPT" where x.xx is any number.
 	$dpi = 120;
 	$centimetersPerInch = 2.54;
 	$measurement = strtolower($measurement);
@@ -1875,6 +1875,8 @@ function realWorldMeasurementsToPixels($measurement) //just a basic guess based 
 			return round(($number / $centimetersPerInch) * $dpi);
 		case 'mm':
 			return round((($number * 100) / $centimetersPerInch) * $dpi);
+		case 'pt':
+			return round(($number / 72) * $dpi); // from http://desktoppub.about.com/od/faq/qt/pointsinaninch.htm and http://desktoppub.about.com/library/weekly/measures.txt
 		}
 	webServiceError('&error-real-world-measurements-to-pixels;', 500, Array('measurement'=>$measurement) );
 	}

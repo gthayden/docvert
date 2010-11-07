@@ -135,15 +135,39 @@ class ConvertImages extends PipelineProcess
 					break;
 				case 'wmf':
 				case 'emf':
-					$pdf = $this->wmfOrEmfToPdf($fromImagePath, $currentXml); //first convert to PDF (so that we have a mainstream format)
-					//header("Content-type: application/pdf");
-					//die(file_get_contents($pdfPath));
-					$svgPath = $this->pdfToSvg($pdf['path'], true);
-					//header("Content-type: image/svg+xml");
-					//die(file_get_contents($svgPath));
-					$pngPath = $this->svgToPng($svgPath, realWorldMeasurementsToPixels($pdf['width']), realWorldMeasurementsToPixels($pdf['height']));
-					//header("Content-type: image/png");
-					//die(file_get_contents($pngPath));
+					$fromImagePathInfo = pathinfo($fromImagePath);
+					$imageWidth = 0;
+					$imageHeight = 0;
+					$pdfPath = dirname($fromImagePath).DIRECTORY_SEPARATOR.basename($fromImagePath,'.'.$fromImagePathInfo['extension']).'.pdf';
+					if(!file_exists($pdfPath))
+						{
+						$pdf = $this->wmfOrEmfToPdf($fromImagePath, $currentXml); //first convert to PDF (so that we have a mainstream format)
+						$pdfPath = $pdf['path'];
+						$imageWidth = $pdf['width'];
+						$imageHeight = $pdf['height'];
+						//header("Content-type: application/pdf");
+						//die(file_get_contents($pdfPath));
+						}
+					$svgPath = dirname($fromImagePath).DIRECTORY_SEPARATOR.basename($fromImagePath,'.'.$fromImagePathInfo['extension']).'.svg';
+					if(!file_exists($svgPath))
+						{
+						$svgPath = $this->pdfToSvg($pdf['path'], true);
+						//header("Content-type: image/svg+xml");
+						//die(file_get_contents($svgPath));
+						}
+					$pngPath = dirname($fromImagePath).DIRECTORY_SEPARATOR.basename($fromImagePath,'.'.$fromImagePathInfo['extension']).'.png';
+					if(!file_exists($pngPath))
+						{
+						if($imageWidth == 0 && $imageHeight == 0)
+							{
+							$dimensions = $this->getWidthHeightFromSvg($svgPath);
+							$imageWidth = $dimensions['width'];
+							$imageHeight = $dimensions['height'];
+							}
+						$pngPath = $this->svgToPng($svgPath, realWorldMeasurementsToPixels($imageWidth), realWorldMeasurementsToPixels($imageHeight));
+						//header("Content-type: image/png");
+						//die(file_get_contents($pngPath));
+						}
 					$imageResource = @imagecreatefromstring(file_get_contents($pngPath));
 					$this->saveImageByResource($imageResource, $toImagePath, $toFormat);
 					break;
@@ -269,6 +293,14 @@ class ConvertImages extends PipelineProcess
 		if(!file_exists($svgPath))  webServiceError('&error-process-convertimages-no-svg;', 500, Array('command'=>$command));
 		if($deleteOriginal) silentlyUnlink($pdfPath);
 		return $svgPath;
+		}
+
+	function getWidthHeightFromSvg($svgPath)
+		{
+		$svg = simplexml_load_file($svgPath);
+		return Array(
+			'width' => (string)$svg['width'],
+			'height' => (string)$svg['height']);
 		}
 
 	function svgToPng($svgPath, $widthInPixels, $heightInPixels, $deleteOriginal=false)
