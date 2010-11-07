@@ -30,47 +30,38 @@
 				<style:list-level-properties text:space-before="0.25in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="2" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="○">
 				<style:list-level-properties text:space-before="0.5in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="3" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="■">
 				<style:list-level-properties text:space-before="0.75in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="4" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="●">
 				<style:list-level-properties text:space-before="1in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="5" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="○">
 				<style:list-level-properties text:space-before="1.25in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="6" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="■">
 				<style:list-level-properties text:space-before="1.5in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="7" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="●">
 				<style:list-level-properties text:space-before="1.75in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="8" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="○">
 				<style:list-level-properties text:space-before="2in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="9" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="■">
 				<style:list-level-properties text:space-before="2.25in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
 			</text:list-level-style-bullet>
-
 			<text:list-level-style-bullet text:level="10" text:style-name="Bullet_20_Symbols" style:num-suffix="." text:bullet-char="●">
 				<style:list-level-properties text:space-before="2.5in" text:min-label-width="0.25in"/>
 				<style:text-properties style:font-name="StarSymbol"/>
@@ -92,4 +83,19 @@
 			</style:graphic-properties>
 		</style:style>
 	</office:styles>
+	<office:automatic-styles>
+		<style:page-layout style:name="firstPage">
+			<style:page-layout-properties fo:page-width="{{page-width}}" fo:page-height="{{page-height}}" style:num-format="1" style:print-orientation="portrait" fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm" style:writing-mode="lr-tb" style:layout-grid-color="#c0c0c0" style:layout-grid-lines="42" style:layout-grid-base-height="0.635cm" style:layout-grid-ruby-height="0cm" style:layout-grid-mode="none" style:layout-grid-ruby-below="false" style:layout-grid-print="false" style:layout-grid-display="false" style:layout-grid-base-width="0cm" style:layout-grid-snap-to-characters="true" style:footnote-max-height="0cm">
+			</style:page-layout-properties>
+			<style:header-style>
+				<style:header-footer-properties fo:min-height="0cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-bottom="0cm"/>
+			</style:header-style>
+			<style:footer-style>
+				<style:header-footer-properties fo:min-height="0cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0cm"/>
+			</style:footer-style>
+		</style:page-layout>
+	</office:automatic-styles>
+	<office:master-styles>
+		<style:master-page style:name="Standard" style:page-layout-name="firstPage"/>
+	</office:master-styles>
 </office:document-styles>

@@ -1,0 +1,1 @@
+Docvert requires the ZipArchive PHP library but this wasn't available. Please install this module. The documentation on this module can be found at http://php.net/manual/en/class.ziparchive.php
