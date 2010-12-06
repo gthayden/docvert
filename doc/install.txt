@@ -12,75 +12,78 @@ Requirements
 
 *	PHP 5 or later, with the "ZLIB" and "XSL" extensions.
 
+	Optional Libraries
+	-----------------------------------------------------
 
-Optional Libraries
--------------------------------------------------------------
-*	If you want to convert Microsoft Word documents then
-	you'll need to choose a Microsoft Word to OpenDocument
-	converter.
+	*	If you want to convert Microsoft Word documents then
+		you'll need to choose a Microsoft Word to OpenDocument
+		converter.
 
-	Your options are as follows (in order of preference)
+		Your options are as follows (in order of preference)
 
-	Option 1) "PyODConverter via OOo Server" depends on
-		* OpenOffice.org 2.3 or later (NOTE version. 2.3)
-		* python-uno (Python UNO libraries)
-		* "openoffice.org-headless".
+		Option 1) "PyODConverter via OOo Server" depends on
+			* OpenOffice.org 2.3 or later (NOTE version. 2.3)
+			* python-uno (Python UNO libraries)
+			* "openoffice.org-headless".
 
-	Option 2) "OpenOffice.org Stand-alone" depends on,		
-		* OpenOffice.org 1.9.122 or later (NOTE version. 1.9+)
-		* Xvfb  (on Linux/BSD/OSX)
+		Option 2) "OpenOffice.org Stand-alone" depends on,		
+			* OpenOffice.org 1.9.122 or later (NOTE version. 1.9+)
+			* Xvfb  (on Linux/BSD/OSX)
 
-	Option 3)
-		* Abiword 2.4.2 or later with the ODF plugin.
+		Option 3)
+			* Abiword 2.4.2 or later with the ODF plugin.
 
-*	If you want to convert bitmap images like BMP, JPG,
-	PNG, GIF you'll need PHP GD ("php5-gd").
+	*	If you want to convert bitmap images like BMP, JPG,
+		PNG, GIF you'll need PHP GD ("php5-gd").
 
-*	If your documents files have diagrams or graphs in WMF
-	or EMF (windows metafile format) and you want to convert
-	them to PNG/JPEG/SVG then you'll need to install
-	"libwmf".
+	*	If your documents files have diagrams or graphs in WMF
+		or EMF (windows metafile format) and you want to convert
+		them to PNG/JPEG/SVG then you'll need to install
+		"libwmf".
 
-		Windows:
-		http://gnuwin32.sourceforge.net/packages/libwmf.htm
-		and grab "Complete package, except sources"
+			Windows:
+			http://gnuwin32.sourceforge.net/packages/libwmf.htm
+			and grab "Complete package, except sources"
 
-		Linux:
-		your distribution's packaging, and find
-			libwmf0.2-7 or later,
-			libwmf-bin
-		http://wvware.sourceforge.net/libwmf.html
+			Linux:
+			your distribution's packaging, and find
+				libwmf0.2-7 or later,
+				libwmf-bin
+			http://wvware.sourceforge.net/libwmf.html
 
-*	If you want to validate documents against a schema
-	you'll need
+	*	If you want to validate documents against a schema
+		you'll need
 
-		Linux:
-		Trang from your distro's package manager or
-		<http://thaiopensource.com/relaxng/trang.html>
+			Linux:
+			Trang from your distro's package manager or
+			<http://thaiopensource.com/relaxng/trang.html>
 
-		Windows:
-		...I don't know. If you could suggest a good
-		schema validator with command line support
-		I'll support it.
+			Windows:
+			...I don't know. If you could suggest a good
+			schema validator with command line support
+			I'll support it.
 
-*	If your documents have SVG images and you want to
-	convert them to PNG/JPEG/GIF, then you'll need to
-	install "svgrlib".
+	*	If your documents have SVG images and you want to
+		convert them to PNG/JPEG/GIF, then you'll need to
+		install "svgrlib".
 
-		Windows:
-		http://www.gimp.org/~tml/gimp/win32/downloads.html
+			Windows:
+			http://www.gimp.org/~tml/gimp/win32/downloads.html
 
-		Linux:
-		your distribution's packaging, and find
-			librsvg2-2
-			librsvg-bin
-		http://librsvg.sourceforge.net/download/
+			Linux:
+			your distribution's packaging, and find
+				librsvg2-2
+				librsvg-bin
+			http://librsvg.sourceforge.net/download/
 
-*	If you're using "Document Generation" you'll need PHP-Tidy
-	("php5-tidy").
+	*	If you're using "Document Generation" you'll need PHP-Tidy
+		("php5-tidy").
 
 Install + Security
 =============================================================
+
+PLEASE NOTE: Using Debian/Ubuntu? Don't use these instructions instead use installing-from-debian-repo.txt
+
 
 Step 1.	Host the Docvert software on a web server.
 

@@ -320,7 +320,7 @@ class ConvertImages extends PipelineProcess
 		$pngPath = dirname($svgPath).DIRECTORY_SEPARATOR.basename($svgPath,'.'.$svgPathInfo['extension']).'.png';
 		$command = escapeshellarg($svgToPngConverterPath).' '.escapeshellarg($svgPath).' '.escapeshellarg($pngPath).' '.escapeshellarg($widthInPixels).' '.escapeshellarg($heightInPixels);
 		shellCommand($command);
-		if(!file_exists($pngPath))  webServiceError('&error-process-convertimages-no-png;', 500, Array('command'=>$command));
+		if(!file_exists($pngPath)) webServiceError('&error-process-convertimages-no-png;', 500, Array('command'=>$command));
 		if($deleteOriginal) silentlyUnlink($svgPath);
 		return $pngPath;
 		}
@@ -328,18 +328,26 @@ class ConvertImages extends PipelineProcess
 	function wmfOrEmfToPdf($imagePath, &$currentXml)
 		{
 		//Step 1. Detect width/height of image.
-		$imageOffset = strpos($currentXml, basename($imagePath));
+		$imageName = basename($imagePath);
+		$imageOffset = strpos($currentXml, $imageName);
 		if($imageOffset === False) return False; //image not in document, don't worry about it.
-		$lookBackChars = 200;
-		if($imageOffset < $lookBackChars) $lookBackChars = $imageOffset;
-		$previousChars = substr($currentXml, $imageOffset-$lookBackChars, $lookBackChars);
-		$positionOfWidth = strrpos($previousChars, 'svg:width');
-		$positionOfHeight = strrpos($previousChars, 'svg:height');
-		if($positionOfWidth === False || $positionOfHeight === False) die("Unable to detect width/height of wmf/emf image.");
-		$width = substringBefore(substringAfter(substr($previousChars,$positionOfWidth), '"'), '"'); //TODO use an XML parser
-		$height = substringBefore(substringAfter(substr($previousChars,$positionOfHeight), '"'), '"');
-		//Step 2. Make an ODT file containing only the WMF/EMF (ugh.. I know, but it works and it's reliable
-		// because we benefit from OpenOffice's years of reverse-engineering so get over it)
+
+		//header('Content-type: text/xml'); die($currentXml);
+		$dom = simplexml_load_string($currentXml);
+		$xpath = "//*[@xlink:href='".$imageName."']//parent::draw:frame";
+		$imageMatch = $dom->xpath($xpath);
+		if(count($imageMatch) == 0)
+			{
+			webServiceError('&error-process-convertimages-no-dom;', 500, Array('xpath'=>$xpath));
+			}
+		$imageMatch = $imageMatch[0];
+		$attributes = $imageMatch->attributes('svg', true);
+		$width = (string) $attributes['width'];
+		$height = (string) $attributes['height'];
+		
+		//Step 2. Make an ODT file containing only the WMF/EMF
+		// (ugh.. I know, but it works and it's reliable because we benefit from OpenOffice's years of
+		// reverse-engineering the EMF/WMF formats so really we should get over it)
 		//step 2a -- make a working directory for our OpenDocument file and copy the files in
 		$workingDirectory = getTemporaryDirectoryInsideDirectory($this->contentDirectory);
 		mkdir($workingDirectory.DIRECTORY_SEPARATOR.'Pictures');
