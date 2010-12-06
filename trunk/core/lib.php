@@ -98,6 +98,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 			{
 			include_once(dirname(__FILE__).'/webpage.php');
 			$themes = new Themes;		
+			die($previewDirectory);
 			$themes->previewConversionResults($returnZipPath, $previewDirectory);
 			}
 		elseif($afterConversion == 'saveZip')

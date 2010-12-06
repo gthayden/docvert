@@ -1,63 +1,23 @@
-Installing Docvert on Ubuntu Hardy Heron
-========================================
+Installing Docvert on Debian/Ubuntu
+===================================
 
-1- Install the release key:
+Install Docvert
 
-  apt-get install gnupg
-  gpg --keyserver subkeys.pgp.net --recv-key AAB0E0D1F4B68080
-  gpg -a --export AAB0E0D1F4B68080 | apt-key add -
+    apt-get install docvert docvert-openoffice.org
 
-2- Add this line to /etc/apt/sources.list:
+Note: there's a docvert-openoffice server daemon script
+at /etc/init.d/docvert-converter if you want to stop/restart it.
 
-  deb http://docvert.org/debian etch main
+Enable docvert by uncommenting the alias in
 
-3- Update the package list:
+    /etc/apache2/conf.d/docvert
 
-  apt-get update
+and then restart apache:
 
-4- Install docvert
+    apache2ctl configtest
+    apache2ctl graceful
 
-  apt-get install docvert docvert-openoffice.org
-
-5- Enable docvert by uncommenting the alias in
-   /etc/apache2/conf.d/docvert
-   and then restart apache:
-
-  apache2ctl configtest
-  apache2ctl graceful
-
-
-Installing Docvert on Debian Etch
-==================================
-
-1- Add these lines to /etc/apt/sources.list:
-
-  deb http://www.backports.org/debian etch-backports main
-  deb http://docvert.org/debian etch main
-
-2- Update the package list:
-
-  apt-get update
-
-3- Install the release key:
-
-  apt-get install debian-backports-keyring gnupg
-  gpg --keyserver subkeys.pgp.net --recv-key AAB0E0D1F4B68080
-  gpg -a --export AAB0E0D1F4B68080 | apt-key add -
-  apt-get update
-
-4- Install openoffice.org-headless:
-
-  apt-get install -t etch-backports openoffice.org-headless
-
-5- Install docvert
-
-  apt-get install docvert docvert-openoffice.org
-
-6- Enable docvert by uncommenting the alias in
-   /etc/apache2/conf.d/docvert
-   and then restart apache:
-
-  apache2ctl configtest
-  apache2ctl graceful
-
+Note: If you wish to run the latest Docvert code then you can grab it
+from Google Code and replace the code in /usr/share/docvert however bypassing
+Debian upgrades may mean that Debian overwrites your Docvert install so only
+do this if you know what you're doing.
