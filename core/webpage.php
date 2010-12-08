@@ -166,11 +166,11 @@ class Themes
 
 	function unzipConversionResults($sourceZipPath, $previewDirectory)
 		{
-		chmod($previewDirectory, 0700); //read/write/execute for DIRECTORIES of www-data (or web server user)
+		chmod($previewDirectory, 0700);
 		$destinationZipPath = $previewDirectory.DIRECTORY_SEPARATOR.basename($sourceZipPath);
 		$this->destinationZip = $destinationZipPath;
 		if(!moveFile($sourceZipPath, $destinationZipPath)) webServiceError('&error-webpage-unable-to-move;', 500, Array('source'=>$sourceZipPath, 'destination'=>$destinationZipPath) );
-		chmod($destinationZipPath, 0600); //read/write but not execute for FILES of www-data (or web server user)
+		chmod($destinationZipPath, 0666);
 		include_once(dirname(__FILE__).'/lib/pclzip-2-6/pclzip.lib.php');
 		$archive = new PclZip($destinationZipPath);
 		if (($archivedFiles = $archive->listContent()) == 0)
@@ -182,9 +182,9 @@ class Themes
 			$extractedFileMetaData = $archive->extractByIndex($archivedFile['index'], PCLZIP_OPT_PATH, $previewDirectory);
 			$extractedFileMetaData = $extractedFileMetaData[0];
 			$extractedDestinationPath = substr($extractedFileMetaData['filename'], 2);
-			if(file_exists($extractedDestinationPath))
+			if(file_exists($extractedDestinationPath) && !chmod($extractedDestinationPath, 0700))
 				{
-				chmod($extractedDestinationPath, 0600); //read/write but not execute for FILES of www-data (or web server user)
+				webServiceError('&error-webpage-unzipping-files;', 500, Array('errorMessage'=>$extractedDestinationPath));
 				}
 			}
 		return $this->destinationZip;
@@ -197,10 +197,16 @@ class Themes
 			webServiceError('&error-internal-error-zip-path-not-found;', 500, Array('path'=>$sourceZipPath) );
 			}
 		$this->destinationZip = $sourceZipPath;
-		//print $previewDirectory.'<br />';
 
 		// 'writable' hardcoded here because it's the public web preview directory. This should not change. Ever.
-		$publicPreviewDirectory = 'writable/'.basename($previewDirectory);
+		$appRoot = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
+		$publicPreviewDirectory = 'writable'.DIRECTORY_SEPARATOR.basename($previewDirectory);
+		if(!mkdir($appRoot.$publicPreviewDirectory, 0700) && !file_exists($appRoot.$publicPreviewDirectory))
+			{
+			
+			webServiceError('&error-problem-creating-directory;', 500, Array('directoryToMake' => $appRoot.$publicPreviewDirectory, 'numberOfAttempts' => 1));
+			}
+		$this->unzipConversionResults($sourceZipPath, $appRoot.$publicPreviewDirectory);
 
 		//print $publicPreviewDirectory.'<br />';
 		$this->previewDirectory = $publicPreviewDirectory;
@@ -263,7 +269,7 @@ class Themes
 			{
 			if(substr($convertedDocumentPath, strlen($convertedDocumentPath) - 4) != '.zip')
 				{
-				return 'frameset.php?path='.str_replace('\\', '/', $convertedDocumentPath);
+				return 'frameset.php?path='.urlencode(str_replace('\\', '/', $convertedDocumentPath));
 				}
 			}
 		webServiceError('&error-webpage-unable-to-display-preview-directory;', 500, Array('path'=>$this->previewDirectory) );
@@ -1334,7 +1340,6 @@ class Themes
 			setGlobalConfigItem('theme', $_POST['chooseTheme']);
 			}
 
-
 		$themeDirectory = dirname(__file__).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR;
 		$themeDirectories = glob($themeDirectory.'*');
 		$themes = Array();
@@ -1368,9 +1373,6 @@ class Themes
 		$pageTemplate = str_replace('{{list-of-themes}}', $themeHtml, $pageTemplate);
 		return $pageTemplate;
 		}
-
-
-
 
 	function chooseLanguage()
 		{
@@ -1448,7 +1450,6 @@ class Themes
 		return $template;
 		}
 
-
 	function forcePipeline()
 		{
 		if(!$this->allowedAdminAccess) return;
@@ -1457,7 +1458,6 @@ class Themes
 			{
 			setGlobalConfigItem('forcePipeline', $_POST['forcePipeline']);
 			}
-
 		$template = $this->getThemeFragment('admin-force-pipeline.htmlf');
 		$pipelinesDirectory = dirname(dirname(__file__)).DIRECTORY_SEPARATOR.'pipeline'.DIRECTORY_SEPARATOR;
 		$pipelines = glob($pipelinesDirectory.'*');

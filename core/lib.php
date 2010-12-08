@@ -79,7 +79,7 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 				{
 				include_once(dirname(__FILE__).'/webpage.php');
 				$themes = new Themes;
-				$returnZipPath = $themes->unzipConversionResults($returnZipPath, $previewDirectory);
+				//$returnZipPath = $themes->unzipConversionResults($returnZipPath, $previewDirectory); //WTF
 				}
 			}
 		else
@@ -98,7 +98,6 @@ function processConversion($files, $converter, $pipeline, $autoPipeline, $afterC
 			{
 			include_once(dirname(__FILE__).'/webpage.php');
 			$themes = new Themes;		
-			die($previewDirectory);
 			$themes->previewConversionResults($returnZipPath, $previewDirectory);
 			}
 		elseif($afterConversion == 'saveZip')
@@ -210,7 +209,7 @@ function ensureMakeDirectory($makeInsideDirectory, $directoryName)
 			}
 		if($variation >= 10)
 			{
-			webServiceError('&problem-creating-directory', 500, Array('directoryToMake'=>$directoryToMake, 'numberOfAttempts'=>$variation) );
+			webServiceError('&error-problem-creating-directory', 500, Array('directoryToMake'=>$directoryToMake, 'numberOfAttempts'=>$variation) );
 			}
 		}
 	while (!mkdir($directoryToMake, 0700));
