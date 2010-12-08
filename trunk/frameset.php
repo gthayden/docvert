@@ -4,7 +4,7 @@ if(!isset($_GET['path']))
 	die('This script is for displaying an HTML frameset and must be called with a URL parameter. It\'s not for direct access, it\'s called on document previews.');
 	}
 
-$pathToUse = ensureOnlyValidCharacters($_GET['path']);
+$pathToUse = ensureOnlyValidCharacters(urlDecode($_GET['path']));
 $pathToUse = str_replace('\\', '/', $pathToUse).'/';
 $pathToUse = str_replace('/', DIRECTORY_SEPARATOR, $pathToUse);
 $thereIsAPreview = file_exists($pathToUse.'test.html');
@@ -79,9 +79,9 @@ function ensureOnlyValidCharacters($input)
 	{
 	$copyOfInput = $input;
 	$copyOfInput = preg_replace('/[A-Za-z0-9]?/', '', $copyOfInput);
-	$otherValidCharacters = array('_', '-', '(', ')', '/', '\\', '%20', '.', ',', '[', ']', '{', '}', '"', "'");
+	$otherValidCharacters = array('_', '-', '(', ')', '/', '\\', '%20', '.', ',', '[', ']', '{', '}', '"', "'", '.', '&');
 	$copyOfInput = trim(str_replace($otherValidCharacters, '', $copyOfInput));
-	if($copyOfInput != '') die('Unable to display a path due to invalid characters: '.revealXml($copyOfInput));
+	if($copyOfInput != '') die('Unable to display a path due to invalid characters: '.htmlentities($copyOfInput). '(from "'.htmlentities($input).'")');
 	return $input;			
 	}
 
