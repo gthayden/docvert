@@ -85,7 +85,7 @@
 	</office:styles>
 	<office:automatic-styles>
 		<style:page-layout style:name="firstPage">
-			<style:page-layout-properties fo:page-width="{{page-width}}" fo:page-height="{{page-height}}" style:num-format="1" style:print-orientation="portrait" fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm" style:writing-mode="lr-tb" style:layout-grid-color="#c0c0c0" style:layout-grid-lines="42" style:layout-grid-base-height="0.635cm" style:layout-grid-ruby-height="0cm" style:layout-grid-mode="none" style:layout-grid-ruby-below="false" style:layout-grid-print="false" style:layout-grid-display="false" style:layout-grid-base-width="0cm" style:layout-grid-snap-to-characters="true" style:footnote-max-height="0cm">
+			<style:page-layout-properties fo:page-width="{{page-width}}" fo:page-height="{{page-height}}" style:num-format="1" style:print-orientation="portrait" fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm" style:writing-mode="lr-tb" style:layout-grid-color="#c0c0c0" style:layout-grid-lines="42" style:layout-grid-base-height="0.635cm" style:layout-grid-ruby-height="0cm" style:layout-grid-mode="none" style:layout-grid-ruby-below="false" style:layout-grid-print="false" style:layout-grid-display="false" style:layout-grid-base-width="0cm" style:layout-grid-snap-to-characters="true" fo:background-color="#ffffff" style:footnote-max-height="0cm">
 			</style:page-layout-properties>
 			<style:header-style>
 				<style:header-footer-properties fo:min-height="0cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-bottom="0cm"/>
