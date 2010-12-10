@@ -113,16 +113,14 @@
 </xsl:template>
 
 <xsl:template match="db:footnote">
-	<div class="footnote">
-		<sup>
-			<a>
-				<xsl:attribute name="href">#footnote-<xsl:value-of select="@label"/></xsl:attribute>
-				<xsl:attribute name="name">source-of-footnote-<xsl:value-of select="@label"/></xsl:attribute>
-				<xsl:attribute name="title">Footnote <xsl:value-of select="@label"/></xsl:attribute>
-				<xsl:value-of select="@label"/>
-			</a>
-		</sup>
-	</div>
+	<sup class="footnote">
+		<a>
+			<xsl:attribute name="href">#footnote-<xsl:value-of select="@label"/></xsl:attribute>
+			<xsl:attribute name="name">source-of-footnote-<xsl:value-of select="@label"/></xsl:attribute>
+			<xsl:attribute name="title">Footnote <xsl:value-of select="@label"/></xsl:attribute>
+			<xsl:value-of select="@label"/>
+		</a>
+	</sup>
 </xsl:template>
 
 <xsl:template match="db:footnote/db:para[count(preceding-sibling::db:para) = 0]" role="footnoteText">
