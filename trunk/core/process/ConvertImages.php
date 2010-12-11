@@ -9,7 +9,6 @@ class ConvertImages extends PipelineProcess
 	
 	public function process($currentXml)
 		{
-
 		if(!array_key_exists('formats', $this->elementAttributes)) webServiceError('&error-process-convertimages-formats;');
 		if(!array_key_exists('deleteOriginals', $this->elementAttributes)) webServiceError('&error-process-convertimages-deleteoriginals-required;');
 
@@ -178,12 +177,10 @@ class ConvertImages extends PipelineProcess
 					webServiceError('&error-process-convertimages-unable-to-convert-from-x;', 500, Array('fromFormat'=>$fromFormat) );
 					break;
 				}
-
 			if($deleteOriginals)
 				{
 				silentlyUnlink($fromImagePath);
 				}
-
 			if(!isset($this->formatsConverted[$fromFormat]))
 				{
 				$currentXml = str_replace(basename($fromImagePath), basename($toImagePath), $currentXml);
@@ -191,7 +188,6 @@ class ConvertImages extends PipelineProcess
 				//displayXmlString($currentXml);
 				}
 			}
-
 		$this->formatsConverted[$fromFormat] = "done";
 		return $currentXml;
 		}

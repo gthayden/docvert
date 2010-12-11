@@ -1,3 +1,9 @@
+Docvert 4.0   December 11th 2010
+
+    * Minor fixes to EMF/WMF support (requires PyODConverter with OOo Server)
+    * Documentation improvements
+    * Various bug fixes to default Docbook to HTML (inline footnotes).
+
 Docvert 4.0 Beta1   November 8th 2010
 
     * Improved support for EMF/WMF (requires PyODConverter with OOo Server)

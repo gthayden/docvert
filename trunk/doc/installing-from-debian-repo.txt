@@ -17,7 +17,31 @@ and then restart apache:
     apache2ctl configtest
     apache2ctl graceful
 
-Note: If you wish to run the latest Docvert code then you can grab it
-from Google Code and replace the code in /usr/share/docvert however bypassing
-Debian upgrades may mean that Debian overwrites your Docvert install so only
-do this if you know what you're doing.
+This will install an older version of Docvert at http://localhost/docvert/
+
+You'll notice a 'Docvert OpenOffice' daemon installed in /etc.init.d/docvert-converter
+
+If you now wish to bypass Debian upgrades to install the most recent Docvert version
+then you can now overwrite some files.
+
+WARNING: Bypassing Debian upgrades may mean that Debian may overwrite parts of your
+Docvert install so only do this if you know what you're doing.
+
+To upgrade your install to the latest version of Docvert then,
+
+    apt-get install subversion
+
+Now decide whether you want to run the very latest version or the latest
+stable version. You might get some hints from the list of changes,
+
+    http://code.google.com/p/docvert/source/list
+
+If you decide that you want the latest version:
+
+    svn export http://docvert.googlecode.com/svn/trunk/ /usr/share/docvert --force
+
+Or if you want particular Subversion revision (revision 176, below, is version 4.0), 
+
+    svn export -r 176 http://docvert.googlecode.com/svn/trunk/ /usr/share/docvert --force
+
+
