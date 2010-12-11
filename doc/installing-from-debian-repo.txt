@@ -1,5 +1,13 @@
 Installing Docvert on Debian/Ubuntu
-===================================
+
+Table of Contents
+=================
+
+* Install
+* Optional libraries
+
+Install
+==================================================================
 
 Install Docvert
 
@@ -40,8 +48,27 @@ If you decide that you want the latest version:
 
     svn export http://docvert.googlecode.com/svn/trunk/ /usr/share/docvert --force
 
-Or if you want particular Subversion revision (revision 176, below, is version 4.0), 
+Or if you want particular Subversion revision (revision 177, below, is version 4.0), 
 
-    svn export -r 176 http://docvert.googlecode.com/svn/trunk/ /usr/share/docvert --force
+    svn export -r 177 http://docvert.googlecode.com/svn/trunk/ /usr/share/docvert --force
 
+
+Optional libraries
+==================================================================
+
+*	If you want to convert bitmap images like BMP, JPG,
+	PNG, GIF you'll need PHP GD ("php5-gd").
+
+*	If you want to validate documents against a schema
+	you'll need "trang"
+
+*	If your documents have SVG images and you want to
+	convert them to PNG/JPEG/GIF, then you'll need to
+	install "librsvg-bin".
+
+*	If you're using "Document Generation" you'll need PHP-Tidy
+	("php5-tidy").
+
+*	If you want EMF/WMF support then you'll need rsvg ("librsvg-bin")
+	and pdf2svg ("pdf2svg")
 
