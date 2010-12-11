@@ -37,21 +37,6 @@ Requirements
 	*	If you want to convert bitmap images like BMP, JPG,
 		PNG, GIF you'll need PHP GD ("php5-gd").
 
-	*	If your documents files have diagrams or graphs in WMF
-		or EMF (windows metafile format) and you want to convert
-		them to PNG/JPEG/SVG then you'll need to install
-		"libwmf".
-
-			Windows:
-			http://gnuwin32.sourceforge.net/packages/libwmf.htm
-			and grab "Complete package, except sources"
-
-			Linux:
-			your distribution's packaging, and find
-				libwmf0.2-7 or later,
-				libwmf-bin
-			http://wvware.sourceforge.net/libwmf.html
-
 	*	If you want to validate documents against a schema
 		you'll need
 
@@ -79,6 +64,9 @@ Requirements
 
 	*	If you're using "Document Generation" you'll need PHP-Tidy
 		("php5-tidy").
+
+	*	If you want EMF/WMF support then you'll need rsvg ("librsvg-bin")
+		and "pdf2svg"
 
 Install + Security
 =============================================================
