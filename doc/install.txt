@@ -1,5 +1,6 @@
 Docvert
 
+(PLEASE NOTE: Using Debian/Ubuntu? Instead use installing-from-debian-repo.txt)
 
 Table of Contents
 =================

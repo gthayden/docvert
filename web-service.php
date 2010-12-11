@@ -1,6 +1,6 @@
 <?php
 /*
-	Docvert 3.4 - Copyright (C) 2005-2006-2007
+	Docvert 4.0 - Copyright (C) 2005-2010
 	by Matthew Cruickshank and the smart people in the CREDITS file.
 	One day I'll release them from that file.
 	
